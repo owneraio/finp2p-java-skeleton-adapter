@@ -128,7 +128,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/owneraio/finp2p-java-sdk</url>
+            <url>https://maven.pkg.github.com/owneraio/finp2p-java-skeleton-adapter</url>
         </repository>
     </distributionManagement>
 </project>
