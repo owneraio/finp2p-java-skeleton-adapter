@@ -1,6 +1,6 @@
 package io.ownera.ledger.adapter;
 
-import io.ownera.ledger.adapter.service.InMemoryLedger;
+import io.ownera.ledger.adapter.sample.InMemoryLedger;
 import io.ownera.ledger.adapter.service.LedgerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

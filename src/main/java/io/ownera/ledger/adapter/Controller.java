@@ -3,9 +3,7 @@ package io.ownera.ledger.adapter;
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.LedgerService;
 import io.ownera.ledger.adapter.service.TokenServiceException;
-import io.ownera.ledger.adapter.service.model.ServiceAssetResult;
-import io.ownera.ledger.adapter.service.model.ServiceOperationResult;
-import io.ownera.ledger.adapter.service.model.ServiceOperationStatus;
+import io.ownera.ledger.adapter.service.model.AssetCreationStatus;
 import io.ownera.ledger.adapter.service.model.ServiceTokenResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +37,7 @@ public class Controller {
     ) {
         logger.info("Create asset: {}", request);
         try {
-            ServiceOperationResult<ServiceAssetResult> result = ledgerService.createAsset(idempotencyKey,
+            ServiceOperationResult<AssetCreationStatus> result = ledgerService.createAsset(idempotencyKey,
                     request.getAsset().getFinp2pAsset().getResourceId());
             return ResponseEntity.status(HttpStatus.OK).body(createAssetResponse(result));
         } catch (TokenServiceException e) {

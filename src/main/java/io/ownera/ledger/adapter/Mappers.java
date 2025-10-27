@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
+import io.ownera.ledger.adapter.service.model.Signature;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 public class Mappers {
 
-    public static CreateAssetResponse createAssetResponse(ServiceOperationResult<ServiceAssetResult> result) {
+    public static CreateAssetResponse createAssetResponse(ServiceOperationResult<AssetCreationStatus> result) {
         CreateAssetResponse response = new CreateAssetResponse();
         if (result.isCompleted) {
             response.isCompleted(true);
@@ -34,7 +35,7 @@ public class Mappers {
         return response;
     }
 
-    public static CreateAssetOperation createAssetOperationCompleted(ServiceAssetResult result) {
+    public static CreateAssetOperation createAssetOperationCompleted(AssetCreationStatus result) {
         CreateAssetOperation operation = new CreateAssetOperation();
         operation.isCompleted(true);
         operation.response(new AssetCreateResponse()
@@ -115,10 +116,10 @@ public class Mappers {
                 receipt.setOperation(receiptOperationFailed(opStatus.errorCode, opStatus.error));
                 return new OperationStatus(receipt);
             } else {
-                if (opStatus.result instanceof ServiceAssetResult) {
+                if (opStatus.result instanceof AssetCreationStatus) {
                     OperationStatusCreateAsset receipt = new OperationStatusCreateAsset();
                     receipt.setType(OperationStatusCreateAsset.TypeEnum.CREATE_ASSET);
-                    ServiceAssetResult assetResult = (ServiceAssetResult) opStatus.result;
+                    AssetCreationStatus assetResult = (AssetCreationStatus) opStatus.result;
                     receipt.setOperation(createAssetOperationCompleted(assetResult));
                     return new OperationStatus(receipt);
                 } else if (opStatus.result instanceof ServiceTokenResult) {
@@ -170,8 +171,8 @@ public class Mappers {
     }
 
 
-    public static ServiceSignature fromAPI(Signature signature) {
-        return new ServiceSignature(
+    public static Signature fromAPI(io.ownera.ledger.adapter.api.model.Signature signature) {
+        return new Signature(
                 signature.getSignature(),
                 fromAPI(signature.getTemplate()),
                 fromAPI(signature.getHashFunc())
