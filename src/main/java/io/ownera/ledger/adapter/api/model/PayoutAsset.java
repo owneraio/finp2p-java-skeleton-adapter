@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.CryptocurrencyAsset;
 import io.ownera.ledger.adapter.api.model.FiatAsset;
+import io.ownera.ledger.adapter.api.model.Finp2pAsset;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -40,6 +42,7 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -54,9 +57,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 @JsonDeserialize(using = PayoutAsset.PayoutAssetDeserializer.class)
 @JsonSerialize(using = PayoutAsset.PayoutAssetSerializer.class)
 public class PayoutAsset extends AbstractOpenApiSchema {
@@ -145,12 +149,38 @@ public class PayoutAsset extends AbstractOpenApiSchema {
                 log.log(Level.FINER, "Input data does not match schema 'FiatAsset'", e);
             }
 
+            // deserialize Finp2pAsset
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (Finp2pAsset.class.equals(Integer.class) || Finp2pAsset.class.equals(Long.class) || Finp2pAsset.class.equals(Float.class) || Finp2pAsset.class.equals(Double.class) || Finp2pAsset.class.equals(Boolean.class) || Finp2pAsset.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((Finp2pAsset.class.equals(Integer.class) || Finp2pAsset.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((Finp2pAsset.class.equals(Float.class) || Finp2pAsset.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (Finp2pAsset.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (Finp2pAsset.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(Finp2pAsset.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'Finp2pAsset'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'Finp2pAsset'", e);
+            }
+
             if (match == 1) {
                 PayoutAsset ret = new PayoutAsset();
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format("Failed deserialization for PayoutAsset: %d classes match result, expected 1", match));
+            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for PayoutAsset: %d classes match result, expected 1", match));
         }
 
         /**
@@ -179,16 +209,21 @@ public class PayoutAsset extends AbstractOpenApiSchema {
         setActualInstance(o);
     }
 
+    public PayoutAsset(Finp2pAsset o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
     static {
         schemas.put("CryptocurrencyAsset", CryptocurrencyAsset.class);
         schemas.put("FiatAsset", FiatAsset.class);
+        schemas.put("Finp2pAsset", Finp2pAsset.class);
         JSON.registerDescendants(PayoutAsset.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("cryptocurrency", CryptocurrencyAsset.class);
         mappings.put("fiat", FiatAsset.class);
-        mappings.put("cryptocurrencyAsset", CryptocurrencyAsset.class);
-        mappings.put("fiatAsset", FiatAsset.class);
+        mappings.put("finp2p", Finp2pAsset.class);
         mappings.put("payoutAsset", PayoutAsset.class);
         JSON.registerDiscriminator(PayoutAsset.class, "type", mappings);
     }
@@ -201,7 +236,7 @@ public class PayoutAsset extends AbstractOpenApiSchema {
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * CryptocurrencyAsset, FiatAsset
+     * CryptocurrencyAsset, FiatAsset, Finp2pAsset
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
@@ -218,14 +253,19 @@ public class PayoutAsset extends AbstractOpenApiSchema {
             return;
         }
 
-        throw new RuntimeException("Invalid instance type. Must be CryptocurrencyAsset, FiatAsset");
+        if (JSON.isInstanceOf(Finp2pAsset.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        throw new RuntimeException("Invalid instance type. Must be CryptocurrencyAsset, FiatAsset, Finp2pAsset");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * CryptocurrencyAsset, FiatAsset
+     * CryptocurrencyAsset, FiatAsset, Finp2pAsset
      *
-     * @return The actual instance (CryptocurrencyAsset, FiatAsset)
+     * @return The actual instance (CryptocurrencyAsset, FiatAsset, Finp2pAsset)
      */
     @Override
     public Object getActualInstance() {
@@ -252,6 +292,17 @@ public class PayoutAsset extends AbstractOpenApiSchema {
      */
     public FiatAsset getFiatAsset() throws ClassCastException {
         return (FiatAsset)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `Finp2pAsset`. If the actual instance is not `Finp2pAsset`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `Finp2pAsset`
+     * @throws ClassCastException if the instance is not `Finp2pAsset`
+     */
+    public Finp2pAsset getFinp2pAsset() throws ClassCastException {
+        return (Finp2pAsset)super.getActualInstance();
     }
 
 
@@ -297,6 +348,12 @@ public class PayoutAsset extends AbstractOpenApiSchema {
     if (getActualInstance() instanceof FiatAsset) {
         if (getActualInstance() != null) {
           joiner.add(((FiatAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof Finp2pAsset) {
+        if (getActualInstance() != null) {
+          joiner.add(((Finp2pAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
         }
         return joiner.toString();
     }

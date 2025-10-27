@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,15 +39,16 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   EIP712Types.JSON_PROPERTY_DEFINITIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class EIP712Types {
   public static final String JSON_PROPERTY_DEFINITIONS = "definitions";
+  @javax.annotation.Nonnull
   private List<EIP712TypeDefinition> definitions = new ArrayList<>();
 
   public EIP712Types() { 
   }
 
-  public EIP712Types definitions(List<EIP712TypeDefinition> definitions) {
+  public EIP712Types definitions(@javax.annotation.Nonnull List<EIP712TypeDefinition> definitions) {
     this.definitions = definitions;
     return this;
   }
@@ -63,17 +65,17 @@ public class EIP712Types {
    * Get definitions
    * @return definitions
    */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DEFINITIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<EIP712TypeDefinition> getDefinitions() {
     return definitions;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DEFINITIONS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefinitions(List<EIP712TypeDefinition> definitions) {
+  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setDefinitions(@javax.annotation.Nonnull List<EIP712TypeDefinition> definitions) {
     this.definitions = definitions;
   }
 
@@ -154,8 +156,8 @@ public class EIP712Types {
     if (getDefinitions() != null) {
       for (int i = 0; i < getDefinitions().size(); i++) {
         if (getDefinitions().get(i) != null) {
-          joiner.add(getDefinitions().get(i).toUrlQueryString(String.format("%sdefinitions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getDefinitions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdefinitions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

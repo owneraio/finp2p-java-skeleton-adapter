@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,18 +40,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   EIP712TypeDefinition.JSON_PROPERTY_NAME,
   EIP712TypeDefinition.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class EIP712TypeDefinition {
   public static final String JSON_PROPERTY_NAME = "name";
+  @javax.annotation.Nonnull
   private String name;
 
   public static final String JSON_PROPERTY_FIELDS = "fields";
+  @javax.annotation.Nonnull
   private List<EIP712FieldDefinition> fields = new ArrayList<>();
 
   public EIP712TypeDefinition() { 
   }
 
-  public EIP712TypeDefinition name(String name) {
+  public EIP712TypeDefinition name(@javax.annotation.Nonnull String name) {
     this.name = name;
     return this;
   }
@@ -59,22 +62,22 @@ public class EIP712TypeDefinition {
    * Get name
    * @return name
    */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(String name) {
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setName(@javax.annotation.Nonnull String name) {
     this.name = name;
   }
 
 
-  public EIP712TypeDefinition fields(List<EIP712FieldDefinition> fields) {
+  public EIP712TypeDefinition fields(@javax.annotation.Nonnull List<EIP712FieldDefinition> fields) {
     this.fields = fields;
     return this;
   }
@@ -91,17 +94,17 @@ public class EIP712TypeDefinition {
    * Get fields
    * @return fields
    */
-  @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_FIELDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @javax.annotation.Nonnull
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<EIP712FieldDefinition> getFields() {
     return fields;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FIELDS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFields(List<EIP712FieldDefinition> fields) {
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setFields(@javax.annotation.Nonnull List<EIP712FieldDefinition> fields) {
     this.fields = fields;
   }
 
@@ -182,15 +185,15 @@ public class EIP712TypeDefinition {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format("%sname%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getName()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
     }
 
     // add `fields` to the URL query string
     if (getFields() != null) {
       for (int i = 0; i < getFields().size(); i++) {
         if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format("%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

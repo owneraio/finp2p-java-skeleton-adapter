@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,12 +19,13 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.LedgerAssetInfoLedgerReference;
+import io.ownera.ledger.adapter.api.model.ContractDetails;
 import io.ownera.ledger.adapter.api.model.LedgerTokenId;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,18 +39,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   LedgerAssetInfo.JSON_PROPERTY_LEDGER_TOKEN_ID,
   LedgerAssetInfo.JSON_PROPERTY_LEDGER_REFERENCE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class LedgerAssetInfo {
   public static final String JSON_PROPERTY_LEDGER_TOKEN_ID = "ledgerTokenId";
+  @javax.annotation.Nonnull
   private LedgerTokenId ledgerTokenId;
 
   public static final String JSON_PROPERTY_LEDGER_REFERENCE = "ledgerReference";
-  private LedgerAssetInfoLedgerReference ledgerReference;
+  @javax.annotation.Nullable
+  private ContractDetails ledgerReference;
 
   public LedgerAssetInfo() { 
   }
 
-  public LedgerAssetInfo ledgerTokenId(LedgerTokenId ledgerTokenId) {
+  public LedgerAssetInfo ledgerTokenId(@javax.annotation.Nonnull LedgerTokenId ledgerTokenId) {
     this.ledgerTokenId = ledgerTokenId;
     return this;
   }
@@ -59,21 +62,21 @@ public class LedgerAssetInfo {
    * @return ledgerTokenId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LEDGER_TOKEN_ID)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_TOKEN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public LedgerTokenId getLedgerTokenId() {
     return ledgerTokenId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_LEDGER_TOKEN_ID)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_TOKEN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLedgerTokenId(LedgerTokenId ledgerTokenId) {
+  public void setLedgerTokenId(@javax.annotation.Nonnull LedgerTokenId ledgerTokenId) {
     this.ledgerTokenId = ledgerTokenId;
   }
 
 
-  public LedgerAssetInfo ledgerReference(LedgerAssetInfoLedgerReference ledgerReference) {
+  public LedgerAssetInfo ledgerReference(@javax.annotation.Nullable ContractDetails ledgerReference) {
     this.ledgerReference = ledgerReference;
     return this;
   }
@@ -83,16 +86,16 @@ public class LedgerAssetInfo {
    * @return ledgerReference
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_LEDGER_REFERENCE)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_REFERENCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public LedgerAssetInfoLedgerReference getLedgerReference() {
+  public ContractDetails getLedgerReference() {
     return ledgerReference;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_LEDGER_REFERENCE)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_REFERENCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLedgerReference(LedgerAssetInfoLedgerReference ledgerReference) {
+  public void setLedgerReference(@javax.annotation.Nullable ContractDetails ledgerReference) {
     this.ledgerReference = ledgerReference;
   }
 

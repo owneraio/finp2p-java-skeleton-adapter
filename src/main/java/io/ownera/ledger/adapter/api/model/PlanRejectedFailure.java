@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -57,9 +59,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 @JsonDeserialize(using = PlanRejectedFailure.PlanRejectedFailureDeserializer.class)
 @JsonSerialize(using = PlanRejectedFailure.PlanRejectedFailureSerializer.class)
 public class PlanRejectedFailure extends AbstractOpenApiSchema {
@@ -153,7 +156,7 @@ public class PlanRejectedFailure extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format("Failed deserialization for PlanRejectedFailure: %d classes match result, expected 1", match));
+            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for PlanRejectedFailure: %d classes match result, expected 1", match));
         }
 
         /**
@@ -190,8 +193,6 @@ public class PlanRejectedFailure extends AbstractOpenApiSchema {
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("regulationFailure", RegulationFailure.class);
         mappings.put("validationFailure", ValidationFailure.class);
-        mappings.put("RegulationFailure", RegulationFailure.class);
-        mappings.put("ValidationFailure", ValidationFailure.class);
         mappings.put("PlanRejected_failure", PlanRejectedFailure.class);
         JSON.registerDiscriminator(PlanRejectedFailure.class, "failureType", mappings);
     }

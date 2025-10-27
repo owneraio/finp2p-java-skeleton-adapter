@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,12 +19,14 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.DepositInstruction;
+import io.ownera.ledger.adapter.api.model.OperationMetadata;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -36,27 +38,36 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   DepositInstructionResponse.JSON_PROPERTY_CID,
   DepositInstructionResponse.JSON_PROPERTY_IS_COMPLETED,
+  DepositInstructionResponse.JSON_PROPERTY_OPERATION_METADATA,
   DepositInstructionResponse.JSON_PROPERTY_ERROR,
   DepositInstructionResponse.JSON_PROPERTY_RESPONSE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class DepositInstructionResponse {
   public static final String JSON_PROPERTY_CID = "cid";
+  @javax.annotation.Nonnull
   private String cid;
 
   public static final String JSON_PROPERTY_IS_COMPLETED = "isCompleted";
-  private Boolean isCompleted;
+  @javax.annotation.Nonnull
+  private Boolean isCompleted = false;
+
+  public static final String JSON_PROPERTY_OPERATION_METADATA = "operationMetadata";
+  @javax.annotation.Nullable
+  private OperationMetadata operationMetadata;
 
   public static final String JSON_PROPERTY_ERROR = "error";
+  @javax.annotation.Nullable
   private Object error;
 
   public static final String JSON_PROPERTY_RESPONSE = "response";
+  @javax.annotation.Nullable
   private DepositInstruction response;
 
   public DepositInstructionResponse() { 
   }
 
-  public DepositInstructionResponse cid(String cid) {
+  public DepositInstructionResponse cid(@javax.annotation.Nonnull String cid) {
     this.cid = cid;
     return this;
   }
@@ -66,21 +77,21 @@ public class DepositInstructionResponse {
    * @return cid
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_CID)
+  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getCid() {
     return cid;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_CID)
+  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCid(String cid) {
+  public void setCid(@javax.annotation.Nonnull String cid) {
     this.cid = cid;
   }
 
 
-  public DepositInstructionResponse isCompleted(Boolean isCompleted) {
+  public DepositInstructionResponse isCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
     this.isCompleted = isCompleted;
     return this;
   }
@@ -90,21 +101,45 @@ public class DepositInstructionResponse {
    * @return isCompleted
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
+  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Boolean getIsCompleted() {
     return isCompleted;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
+  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIsCompleted(Boolean isCompleted) {
+  public void setIsCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
     this.isCompleted = isCompleted;
   }
 
 
-  public DepositInstructionResponse error(Object error) {
+  public DepositInstructionResponse operationMetadata(@javax.annotation.Nullable OperationMetadata operationMetadata) {
+    this.operationMetadata = operationMetadata;
+    return this;
+  }
+
+  /**
+   * Get operationMetadata
+   * @return operationMetadata
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public OperationMetadata getOperationMetadata() {
+    return operationMetadata;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOperationMetadata(@javax.annotation.Nullable OperationMetadata operationMetadata) {
+    this.operationMetadata = operationMetadata;
+  }
+
+
+  public DepositInstructionResponse error(@javax.annotation.Nullable Object error) {
     this.error = error;
     return this;
   }
@@ -114,21 +149,21 @@ public class DepositInstructionResponse {
    * @return error
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ERROR)
+  @JsonProperty(value = JSON_PROPERTY_ERROR, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getError() {
     return error;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ERROR)
+  @JsonProperty(value = JSON_PROPERTY_ERROR, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setError(Object error) {
+  public void setError(@javax.annotation.Nullable Object error) {
     this.error = error;
   }
 
 
-  public DepositInstructionResponse response(DepositInstruction response) {
+  public DepositInstructionResponse response(@javax.annotation.Nullable DepositInstruction response) {
     this.response = response;
     return this;
   }
@@ -138,16 +173,16 @@ public class DepositInstructionResponse {
    * @return response
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_RESPONSE)
+  @JsonProperty(value = JSON_PROPERTY_RESPONSE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public DepositInstruction getResponse() {
     return response;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_RESPONSE)
+  @JsonProperty(value = JSON_PROPERTY_RESPONSE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResponse(DepositInstruction response) {
+  public void setResponse(@javax.annotation.Nullable DepositInstruction response) {
     this.response = response;
   }
 
@@ -166,13 +201,14 @@ public class DepositInstructionResponse {
     DepositInstructionResponse depositInstructionResponse = (DepositInstructionResponse) o;
     return Objects.equals(this.cid, depositInstructionResponse.cid) &&
         Objects.equals(this.isCompleted, depositInstructionResponse.isCompleted) &&
+        Objects.equals(this.operationMetadata, depositInstructionResponse.operationMetadata) &&
         Objects.equals(this.error, depositInstructionResponse.error) &&
         Objects.equals(this.response, depositInstructionResponse.response);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(cid, isCompleted, error, response);
+    return Objects.hash(cid, isCompleted, operationMetadata, error, response);
   }
 
   @Override
@@ -181,6 +217,7 @@ public class DepositInstructionResponse {
     sb.append("class DepositInstructionResponse {\n");
     sb.append("    cid: ").append(toIndentedString(cid)).append("\n");
     sb.append("    isCompleted: ").append(toIndentedString(isCompleted)).append("\n");
+    sb.append("    operationMetadata: ").append(toIndentedString(operationMetadata)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");
     sb.append("    response: ").append(toIndentedString(response)).append("\n");
     sb.append("}");
@@ -232,17 +269,22 @@ public class DepositInstructionResponse {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format("%scid%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getCid()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
     }
 
     // add `isCompleted` to the URL query string
     if (getIsCompleted() != null) {
-      joiner.add(String.format("%sisCompleted%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getIsCompleted()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sisCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsCompleted()))));
+    }
+
+    // add `operationMetadata` to the URL query string
+    if (getOperationMetadata() != null) {
+      joiner.add(getOperationMetadata().toUrlQueryString(prefix + "operationMetadata" + suffix));
     }
 
     // add `error` to the URL query string
     if (getError() != null) {
-      joiner.add(String.format("%serror%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getError()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%serror%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getError()))));
     }
 
     // add `response` to the URL query string

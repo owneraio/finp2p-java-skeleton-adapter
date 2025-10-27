@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,18 +39,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   GetAssetBalanceRequest.JSON_PROPERTY_OWNER,
   GetAssetBalanceRequest.JSON_PROPERTY_ASSET
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class GetAssetBalanceRequest {
   public static final String JSON_PROPERTY_OWNER = "owner";
+  @javax.annotation.Nonnull
   private Source owner;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
+  @javax.annotation.Nonnull
   private Asset asset;
 
   public GetAssetBalanceRequest() { 
   }
 
-  public GetAssetBalanceRequest owner(Source owner) {
+  public GetAssetBalanceRequest owner(@javax.annotation.Nonnull Source owner) {
     this.owner = owner;
     return this;
   }
@@ -59,21 +62,21 @@ public class GetAssetBalanceRequest {
    * @return owner
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Source getOwner() {
     return owner;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOwner(Source owner) {
+  public void setOwner(@javax.annotation.Nonnull Source owner) {
     this.owner = owner;
   }
 
 
-  public GetAssetBalanceRequest asset(Asset asset) {
+  public GetAssetBalanceRequest asset(@javax.annotation.Nonnull Asset asset) {
     this.asset = asset;
     return this;
   }
@@ -83,16 +86,16 @@ public class GetAssetBalanceRequest {
    * @return asset
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Asset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(Asset asset) {
+  public void setAsset(@javax.annotation.Nonnull Asset asset) {
     this.asset = asset;
   }
 

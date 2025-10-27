@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -45,33 +46,40 @@ import io.ownera.ledger.adapter.api.ApiClient;
   DepositInstructionRequest.JSON_PROPERTY_NONCE,
   DepositInstructionRequest.JSON_PROPERTY_SIGNATURE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class DepositInstructionRequest {
   public static final String JSON_PROPERTY_DESTINATION = "destination";
+  @javax.annotation.Nonnull
   private Destination destination;
 
   public static final String JSON_PROPERTY_OWNER = "owner";
+  @javax.annotation.Nonnull
   private Source owner;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
+  @javax.annotation.Nonnull
   private DepositAsset asset;
 
   public static final String JSON_PROPERTY_AMOUNT = "amount";
+  @javax.annotation.Nullable
   private String amount;
 
   public static final String JSON_PROPERTY_DETAILS = "details";
+  @javax.annotation.Nullable
   private Object details;
 
   public static final String JSON_PROPERTY_NONCE = "nonce";
+  @javax.annotation.Nullable
   private String nonce;
 
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
+  @javax.annotation.Nullable
   private Signature signature;
 
   public DepositInstructionRequest() { 
   }
 
-  public DepositInstructionRequest destination(Destination destination) {
+  public DepositInstructionRequest destination(@javax.annotation.Nonnull Destination destination) {
     this.destination = destination;
     return this;
   }
@@ -81,21 +89,21 @@ public class DepositInstructionRequest {
    * @return destination
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Destination getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDestination(Destination destination) {
+  public void setDestination(@javax.annotation.Nonnull Destination destination) {
     this.destination = destination;
   }
 
 
-  public DepositInstructionRequest owner(Source owner) {
+  public DepositInstructionRequest owner(@javax.annotation.Nonnull Source owner) {
     this.owner = owner;
     return this;
   }
@@ -105,21 +113,21 @@ public class DepositInstructionRequest {
    * @return owner
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Source getOwner() {
     return owner;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_OWNER)
+  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOwner(Source owner) {
+  public void setOwner(@javax.annotation.Nonnull Source owner) {
     this.owner = owner;
   }
 
 
-  public DepositInstructionRequest asset(DepositAsset asset) {
+  public DepositInstructionRequest asset(@javax.annotation.Nonnull DepositAsset asset) {
     this.asset = asset;
     return this;
   }
@@ -129,21 +137,21 @@ public class DepositInstructionRequest {
    * @return asset
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public DepositAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(DepositAsset asset) {
+  public void setAsset(@javax.annotation.Nonnull DepositAsset asset) {
     this.asset = asset;
   }
 
 
-  public DepositInstructionRequest amount(String amount) {
+  public DepositInstructionRequest amount(@javax.annotation.Nullable String amount) {
     this.amount = amount;
     return this;
   }
@@ -153,21 +161,21 @@ public class DepositInstructionRequest {
    * @return amount
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_AMOUNT)
+  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getAmount() {
     return amount;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_AMOUNT)
+  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAmount(String amount) {
+  public void setAmount(@javax.annotation.Nullable String amount) {
     this.amount = amount;
   }
 
 
-  public DepositInstructionRequest details(Object details) {
+  public DepositInstructionRequest details(@javax.annotation.Nullable Object details) {
     this.details = details;
     return this;
   }
@@ -177,21 +185,21 @@ public class DepositInstructionRequest {
    * @return details
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getDetails() {
     return details;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDetails(Object details) {
+  public void setDetails(@javax.annotation.Nullable Object details) {
     this.details = details;
   }
 
 
-  public DepositInstructionRequest nonce(String nonce) {
+  public DepositInstructionRequest nonce(@javax.annotation.Nullable String nonce) {
     this.nonce = nonce;
     return this;
   }
@@ -201,21 +209,21 @@ public class DepositInstructionRequest {
    * @return nonce
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NONCE)
+  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getNonce() {
     return nonce;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_NONCE)
+  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNonce(String nonce) {
+  public void setNonce(@javax.annotation.Nullable String nonce) {
     this.nonce = nonce;
   }
 
 
-  public DepositInstructionRequest signature(Signature signature) {
+  public DepositInstructionRequest signature(@javax.annotation.Nullable Signature signature) {
     this.signature = signature;
     return this;
   }
@@ -225,16 +233,16 @@ public class DepositInstructionRequest {
    * @return signature
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Signature getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSignature(Signature signature) {
+  public void setSignature(@javax.annotation.Nullable Signature signature) {
     this.signature = signature;
   }
 
@@ -340,17 +348,17 @@ public class DepositInstructionRequest {
 
     // add `amount` to the URL query string
     if (getAmount() != null) {
-      joiner.add(String.format("%samount%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getAmount()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%samount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAmount()))));
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format("%sdetails%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getDetails()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
     }
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format("%snonce%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getNonce()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
     }
 
     // add `signature` to the URL query string

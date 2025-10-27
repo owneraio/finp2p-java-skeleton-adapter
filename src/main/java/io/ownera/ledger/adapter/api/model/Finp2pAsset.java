@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,13 +37,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   Finp2pAsset.JSON_PROPERTY_TYPE,
   Finp2pAsset.JSON_PROPERTY_RESOURCE_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Finp2pAsset {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    FINP2P("finp2p");
+    FINP2P(String.valueOf("finp2p"));
 
     private String value;
 
@@ -72,15 +73,17 @@ public class Finp2pAsset {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
+  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_RESOURCE_ID = "resourceId";
+  @javax.annotation.Nonnull
   private String resourceId;
 
   public Finp2pAsset() { 
   }
 
-  public Finp2pAsset type(TypeEnum type) {
+  public Finp2pAsset type(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -90,21 +93,21 @@ public class Finp2pAsset {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  public Finp2pAsset resourceId(String resourceId) {
+  public Finp2pAsset resourceId(@javax.annotation.Nonnull String resourceId) {
     this.resourceId = resourceId;
     return this;
   }
@@ -114,16 +117,16 @@ public class Finp2pAsset {
    * @return resourceId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_RESOURCE_ID)
+  @JsonProperty(value = JSON_PROPERTY_RESOURCE_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getResourceId() {
     return resourceId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_RESOURCE_ID)
+  @JsonProperty(value = JSON_PROPERTY_RESOURCE_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setResourceId(String resourceId) {
+  public void setResourceId(@javax.annotation.Nonnull String resourceId) {
     this.resourceId = resourceId;
   }
 
@@ -204,12 +207,12 @@ public class Finp2pAsset {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `resourceId` to the URL query string
     if (getResourceId() != null) {
-      joiner.add(String.format("%sresourceId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getResourceId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sresourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getResourceId()))));
     }
 
     return joiner.toString();

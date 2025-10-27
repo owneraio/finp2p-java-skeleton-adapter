@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -13,29 +13,51 @@
 
 package io.ownera.ledger.adapter.api;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Configuration {
-    public static final String VERSION = "x.x.x";
+  public static final String VERSION = "x.x.x";
 
-    private static ApiClient defaultApiClient = new ApiClient();
+  private static final AtomicReference<ApiClient> defaultApiClient = new AtomicReference<>();
+  private static volatile Supplier<ApiClient> apiClientFactory = ApiClient::new;
 
-    /**
-     * Get the default API client, which would be used when creating API
-     * instances without providing an API client.
-     *
-     * @return Default API client
-     */
-    public static ApiClient getDefaultApiClient() {
-        return defaultApiClient;
+  /**
+   * Get the default API client, which would be used when creating API instances without providing an API client.
+   *
+   * @return Default API client
+   */
+  public static ApiClient getDefaultApiClient() {
+    ApiClient client = defaultApiClient.get();
+    if (client == null) {
+      client = defaultApiClient.updateAndGet(val -> {
+        if (val != null) { // changed by another thread
+          return val;
+        }
+        return apiClientFactory.get();
+      });
     }
+    return client;
+  }
 
-    /**
-     * Set the default API client, which would be used when creating API
-     * instances without providing an API client.
-     *
-     * @param apiClient API client
-     */
-    public static void setDefaultApiClient(ApiClient apiClient) {
-        defaultApiClient = apiClient;
-    }
+  /**
+   * Set the default API client, which would be used when creating API instances without providing an API client.
+   *
+   * @param apiClient API client
+   */
+  public static void setDefaultApiClient(ApiClient apiClient) {
+    defaultApiClient.set(apiClient);
+  }
+
+  /**
+   * set the callback used to create new ApiClient objects
+   */
+  public static void setApiClientFactory(Supplier<ApiClient> factory) {
+    apiClientFactory = Objects.requireNonNull(factory);
+  }
+
+  private Configuration() {
+  }
 }

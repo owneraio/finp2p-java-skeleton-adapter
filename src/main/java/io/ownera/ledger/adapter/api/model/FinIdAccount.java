@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,13 +37,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   FinIdAccount.JSON_PROPERTY_TYPE,
   FinIdAccount.JSON_PROPERTY_FIN_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class FinIdAccount {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    FIN_ID("finId");
+    FIN_ID(String.valueOf("finId"));
 
     private String value;
 
@@ -72,15 +73,17 @@ public class FinIdAccount {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
+  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_FIN_ID = "finId";
+  @javax.annotation.Nonnull
   private String finId;
 
   public FinIdAccount() { 
   }
 
-  public FinIdAccount type(TypeEnum type) {
+  public FinIdAccount type(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -90,21 +93,21 @@ public class FinIdAccount {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  public FinIdAccount finId(String finId) {
+  public FinIdAccount finId(@javax.annotation.Nonnull String finId) {
     this.finId = finId;
     return this;
   }
@@ -114,16 +117,16 @@ public class FinIdAccount {
    * @return finId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFinId() {
     return finId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFinId(String finId) {
+  public void setFinId(@javax.annotation.Nonnull String finId) {
     this.finId = finId;
   }
 
@@ -204,12 +207,12 @@ public class FinIdAccount {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `finId` to the URL query string
     if (getFinId() != null) {
-      joiner.add(String.format("%sfinId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getFinId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
     }
 
     return joiner.toString();

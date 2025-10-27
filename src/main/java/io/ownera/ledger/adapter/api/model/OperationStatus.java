@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,165 +19,344 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.OperationStatusOperation;
+import io.ownera.ledger.adapter.api.model.ExecutionPlanApprovalOperation;
+import io.ownera.ledger.adapter.api.model.OperationStatusApproval;
+import io.ownera.ledger.adapter.api.model.OperationStatusCreateAsset;
+import io.ownera.ledger.adapter.api.model.OperationStatusDeposit;
+import io.ownera.ledger.adapter.api.model.OperationStatusReceipt;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.ApiClient;
-/**
- * OperationStatus
- */
-@JsonPropertyOrder({
-  OperationStatus.JSON_PROPERTY_TYPE,
-  OperationStatus.JSON_PROPERTY_OPERATION
-})
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
-public class OperationStatus {
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    RECEIPT("receipt"),
-    
-    DEPOSIT("deposit"),
-    
-    EMPTY("empty"),
-    
-    APPROVAL("approval"),
-    
-    CREATE_ASSET("createAsset");
+import io.ownera.ledger.adapter.api.JSON;
 
-    private String value;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@JsonDeserialize(using = OperationStatus.OperationStatusDeserializer.class)
+@JsonSerialize(using = OperationStatus.OperationStatusSerializer.class)
+public class OperationStatus extends AbstractOpenApiSchema {
+    private static final Logger log = Logger.getLogger(OperationStatus.class.getName());
 
-    TypeEnum(String value) {
-      this.value = value;
+    public static class OperationStatusSerializer extends StdSerializer<OperationStatus> {
+        public OperationStatusSerializer(Class<OperationStatus> t) {
+            super(t);
+        }
+
+        public OperationStatusSerializer() {
+            this(null);
+        }
+
+        @Override
+        public void serialize(OperationStatus value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            jgen.writeObject(value.getActualInstance());
+        }
     }
 
-    @JsonValue
-    public String getValue() {
-      return value;
+    public static class OperationStatusDeserializer extends StdDeserializer<OperationStatus> {
+        public OperationStatusDeserializer() {
+            this(OperationStatus.class);
+        }
+
+        public OperationStatusDeserializer(Class<?> vc) {
+            super(vc);
+        }
+
+        @Override
+        public OperationStatus deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JsonNode tree = jp.readValueAsTree();
+            Object deserialized = null;
+            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
+            int match = 0;
+            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
+            // deserialize OperationStatusApproval
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (OperationStatusApproval.class.equals(Integer.class) || OperationStatusApproval.class.equals(Long.class) || OperationStatusApproval.class.equals(Float.class) || OperationStatusApproval.class.equals(Double.class) || OperationStatusApproval.class.equals(Boolean.class) || OperationStatusApproval.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((OperationStatusApproval.class.equals(Integer.class) || OperationStatusApproval.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((OperationStatusApproval.class.equals(Float.class) || OperationStatusApproval.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (OperationStatusApproval.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (OperationStatusApproval.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(OperationStatusApproval.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'OperationStatusApproval'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'OperationStatusApproval'", e);
+            }
+
+            // deserialize OperationStatusCreateAsset
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (OperationStatusCreateAsset.class.equals(Integer.class) || OperationStatusCreateAsset.class.equals(Long.class) || OperationStatusCreateAsset.class.equals(Float.class) || OperationStatusCreateAsset.class.equals(Double.class) || OperationStatusCreateAsset.class.equals(Boolean.class) || OperationStatusCreateAsset.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((OperationStatusCreateAsset.class.equals(Integer.class) || OperationStatusCreateAsset.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((OperationStatusCreateAsset.class.equals(Float.class) || OperationStatusCreateAsset.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (OperationStatusCreateAsset.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (OperationStatusCreateAsset.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(OperationStatusCreateAsset.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'OperationStatusCreateAsset'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'OperationStatusCreateAsset'", e);
+            }
+
+            // deserialize OperationStatusDeposit
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (OperationStatusDeposit.class.equals(Integer.class) || OperationStatusDeposit.class.equals(Long.class) || OperationStatusDeposit.class.equals(Float.class) || OperationStatusDeposit.class.equals(Double.class) || OperationStatusDeposit.class.equals(Boolean.class) || OperationStatusDeposit.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((OperationStatusDeposit.class.equals(Integer.class) || OperationStatusDeposit.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((OperationStatusDeposit.class.equals(Float.class) || OperationStatusDeposit.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (OperationStatusDeposit.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (OperationStatusDeposit.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(OperationStatusDeposit.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'OperationStatusDeposit'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'OperationStatusDeposit'", e);
+            }
+
+            // deserialize OperationStatusReceipt
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (OperationStatusReceipt.class.equals(Integer.class) || OperationStatusReceipt.class.equals(Long.class) || OperationStatusReceipt.class.equals(Float.class) || OperationStatusReceipt.class.equals(Double.class) || OperationStatusReceipt.class.equals(Boolean.class) || OperationStatusReceipt.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((OperationStatusReceipt.class.equals(Integer.class) || OperationStatusReceipt.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((OperationStatusReceipt.class.equals(Float.class) || OperationStatusReceipt.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (OperationStatusReceipt.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (OperationStatusReceipt.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(OperationStatusReceipt.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'OperationStatusReceipt'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'OperationStatusReceipt'", e);
+            }
+
+            if (match == 1) {
+                OperationStatus ret = new OperationStatus();
+                ret.setActualInstance(deserialized);
+                return ret;
+            }
+            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for OperationStatus: %d classes match result, expected 1", match));
+        }
+
+        /**
+         * Handle deserialization of the 'null' value.
+         */
+        @Override
+        public OperationStatus getNullValue(DeserializationContext ctxt) throws JsonMappingException {
+            throw new JsonMappingException(ctxt.getParser(), "OperationStatus cannot be null");
+        }
+    }
+
+    // store a list of schema names defined in oneOf
+    public static final Map<String, Class<?>> schemas = new HashMap<>();
+
+    public OperationStatus() {
+        super("oneOf", Boolean.FALSE);
+    }
+
+    public OperationStatus(OperationStatusApproval o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public OperationStatus(OperationStatusCreateAsset o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public OperationStatus(OperationStatusDeposit o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public OperationStatus(OperationStatusReceipt o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    static {
+        schemas.put("OperationStatusApproval", OperationStatusApproval.class);
+        schemas.put("OperationStatusCreateAsset", OperationStatusCreateAsset.class);
+        schemas.put("OperationStatusDeposit", OperationStatusDeposit.class);
+        schemas.put("OperationStatusReceipt", OperationStatusReceipt.class);
+        JSON.registerDescendants(OperationStatus.class, Collections.unmodifiableMap(schemas));
+        // Initialize and register the discriminator mappings.
+        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        mappings.put("approval", OperationStatusApproval.class);
+        mappings.put("createAsset", OperationStatusCreateAsset.class);
+        mappings.put("deposit", OperationStatusDeposit.class);
+        mappings.put("receipt", OperationStatusReceipt.class);
+        mappings.put("operationStatus", OperationStatus.class);
+        JSON.registerDiscriminator(OperationStatus.class, "type", mappings);
     }
 
     @Override
-    public String toString() {
-      return String.valueOf(value);
+    public Map<String, Class<?>> getSchemas() {
+        return OperationStatus.schemas;
     }
 
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
+    /**
+     * Set the instance that matches the oneOf child schema, check
+     * the instance parameter is valid against the oneOf child schemas:
+     * OperationStatusApproval, OperationStatusCreateAsset, OperationStatusDeposit, OperationStatusReceipt
+     *
+     * It could be an instance of the 'oneOf' schemas.
+     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
+     */
+    @Override
+    public void setActualInstance(Object instance) {
+        if (JSON.isInstanceOf(OperationStatusApproval.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
         }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+
+        if (JSON.isInstanceOf(OperationStatusCreateAsset.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(OperationStatusDeposit.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(OperationStatusReceipt.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        throw new RuntimeException("Invalid instance type. Must be OperationStatusApproval, OperationStatusCreateAsset, OperationStatusDeposit, OperationStatusReceipt");
     }
-  }
 
-  public static final String JSON_PROPERTY_TYPE = "type";
-  private TypeEnum type;
-
-  public static final String JSON_PROPERTY_OPERATION = "operation";
-  private OperationStatusOperation operation;
-
-  public OperationStatus() { 
-  }
-
-  public OperationStatus type(TypeEnum type) {
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Get type
-   * @return type
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public TypeEnum getType() {
-    return type;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
-    this.type = type;
-  }
-
-
-  public OperationStatus operation(OperationStatusOperation operation) {
-    this.operation = operation;
-    return this;
-  }
-
-  /**
-   * Get operation
-   * @return operation
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_OPERATION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public OperationStatusOperation getOperation() {
-    return operation;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_OPERATION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperation(OperationStatusOperation operation) {
-    this.operation = operation;
-  }
-
-
-  /**
-   * Return true if this operationStatus object is equal to o.
-   */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    /**
+     * Get the actual instance, which can be the following:
+     * OperationStatusApproval, OperationStatusCreateAsset, OperationStatusDeposit, OperationStatusReceipt
+     *
+     * @return The actual instance (OperationStatusApproval, OperationStatusCreateAsset, OperationStatusDeposit, OperationStatusReceipt)
+     */
+    @Override
+    public Object getActualInstance() {
+        return super.getActualInstance();
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    /**
+     * Get the actual instance of `OperationStatusApproval`. If the actual instance is not `OperationStatusApproval`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `OperationStatusApproval`
+     * @throws ClassCastException if the instance is not `OperationStatusApproval`
+     */
+    public OperationStatusApproval getOperationStatusApproval() throws ClassCastException {
+        return (OperationStatusApproval)super.getActualInstance();
     }
-    OperationStatus operationStatus = (OperationStatus) o;
-    return Objects.equals(this.type, operationStatus.type) &&
-        Objects.equals(this.operation, operationStatus.operation);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(type, operation);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class OperationStatus {\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
+    /**
+     * Get the actual instance of `OperationStatusCreateAsset`. If the actual instance is not `OperationStatusCreateAsset`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `OperationStatusCreateAsset`
+     * @throws ClassCastException if the instance is not `OperationStatusCreateAsset`
+     */
+    public OperationStatusCreateAsset getOperationStatusCreateAsset() throws ClassCastException {
+        return (OperationStatusCreateAsset)super.getActualInstance();
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    /**
+     * Get the actual instance of `OperationStatusDeposit`. If the actual instance is not `OperationStatusDeposit`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `OperationStatusDeposit`
+     * @throws ClassCastException if the instance is not `OperationStatusDeposit`
+     */
+    public OperationStatusDeposit getOperationStatusDeposit() throws ClassCastException {
+        return (OperationStatusDeposit)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `OperationStatusReceipt`. If the actual instance is not `OperationStatusReceipt`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `OperationStatusReceipt`
+     * @throws ClassCastException if the instance is not `OperationStatusReceipt`
+     */
+    public OperationStatusReceipt getOperationStatusReceipt() throws ClassCastException {
+        return (OperationStatusReceipt)super.getActualInstance();
+    }
+
+
 
   /**
    * Convert the instance into URL query string.
@@ -211,17 +390,32 @@ public class OperationStatus {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    if (getActualInstance() instanceof OperationStatusCreateAsset) {
+        if (getActualInstance() != null) {
+          joiner.add(((OperationStatusCreateAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+        }
+        return joiner.toString();
     }
-
-    // add `operation` to the URL query string
-    if (getOperation() != null) {
-      joiner.add(getOperation().toUrlQueryString(prefix + "operation" + suffix));
+    if (getActualInstance() instanceof OperationStatusDeposit) {
+        if (getActualInstance() != null) {
+          joiner.add(((OperationStatusDeposit)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        }
+        return joiner.toString();
     }
-
-    return joiner.toString();
+    if (getActualInstance() instanceof OperationStatusReceipt) {
+        if (getActualInstance() != null) {
+          joiner.add(((OperationStatusReceipt)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof OperationStatusApproval) {
+        if (getActualInstance() != null) {
+          joiner.add(((OperationStatusApproval)getActualInstance()).toUrlQueryString(prefix + "one_of_3" + suffix));
+        }
+        return joiner.toString();
+    }
+    return null;
   }
+
 }
 

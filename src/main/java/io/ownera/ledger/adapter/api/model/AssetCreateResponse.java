@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,15 +37,16 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   AssetCreateResponse.JSON_PROPERTY_LEDGER_ASSET_INFO
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class AssetCreateResponse {
   public static final String JSON_PROPERTY_LEDGER_ASSET_INFO = "ledgerAssetInfo";
+  @javax.annotation.Nonnull
   private LedgerAssetInfo ledgerAssetInfo;
 
   public AssetCreateResponse() { 
   }
 
-  public AssetCreateResponse ledgerAssetInfo(LedgerAssetInfo ledgerAssetInfo) {
+  public AssetCreateResponse ledgerAssetInfo(@javax.annotation.Nonnull LedgerAssetInfo ledgerAssetInfo) {
     this.ledgerAssetInfo = ledgerAssetInfo;
     return this;
   }
@@ -54,16 +56,16 @@ public class AssetCreateResponse {
    * @return ledgerAssetInfo
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LEDGER_ASSET_INFO)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_ASSET_INFO, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public LedgerAssetInfo getLedgerAssetInfo() {
     return ledgerAssetInfo;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_LEDGER_ASSET_INFO)
+  @JsonProperty(value = JSON_PROPERTY_LEDGER_ASSET_INFO, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLedgerAssetInfo(LedgerAssetInfo ledgerAssetInfo) {
+  public void setLedgerAssetInfo(@javax.annotation.Nonnull LedgerAssetInfo ledgerAssetInfo) {
     this.ledgerAssetInfo = ledgerAssetInfo;
   }
 

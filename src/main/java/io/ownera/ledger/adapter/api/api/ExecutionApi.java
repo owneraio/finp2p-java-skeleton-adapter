@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -15,10 +15,13 @@ package io.ownera.ledger.adapter.api.api;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.ApiException;
 import io.ownera.ledger.adapter.api.ApiResponse;
+import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
 import io.ownera.ledger.adapter.api.model.ApproveExecutionPlanRequest;
 import io.ownera.ledger.adapter.api.model.ApproveExecutionPlanResponse;
+import io.ownera.ledger.adapter.api.model.ExecutionPlanProposalRequest;
+import io.ownera.ledger.adapter.api.model.ExecutionPlanProposalStatusRequest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,10 +46,31 @@ import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class ExecutionApi {
+  /**
+   * Utility class for extending HttpRequest.Builder functionality.
+   */
+  private static class HttpRequestBuilderExtensions {
+    /**
+     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
+     *
+     * @param builder the HttpRequest.Builder to which headers will be added
+     * @param headers a map of header names and values to add; may be null
+     * @return the same HttpRequest.Builder instance with the additional headers set
+     */
+    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                builder.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return builder;
+    }
+  }
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
   private final String memberVarBaseUri;
@@ -56,7 +80,7 @@ public class ExecutionApi {
   private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
   public ExecutionApi() {
-    this(new ApiClient());
+    this(Configuration.getDefaultApiClient());
   }
 
   public ExecutionApi(ApiClient apiClient) {
@@ -68,6 +92,7 @@ public class ExecutionApi {
     memberVarResponseInterceptor = apiClient.getResponseInterceptor();
     memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
   }
+
 
   protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
     String body = response.body() == null ? null : new String(response.body().readAllBytes());
@@ -83,14 +108,74 @@ public class ExecutionApi {
   }
 
   /**
+   * Download file from the given response.
+   *
+   * @param response Response
+   * @return File
+   * @throws ApiException If fail to read file content from response and write to disk
+   */
+  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+    try {
+      File file = prepareDownloadFile(response);
+      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+      return file;
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+  }
+
+  /**
+   * <p>Prepare the file for download from the response.</p>
+   *
+   * @param response a {@link java.net.http.HttpResponse} object.
+   * @return a {@link java.io.File} object.
+   * @throws java.io.IOException if any.
+   */
+  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+    String filename = null;
+    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+      // Get filename from the Content-Disposition header.
+      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+      if (matcher.find())
+        filename = matcher.group(1);
+    }
+    File file = null;
+    if (filename != null) {
+      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+      file = filePath.toFile();
+      tempDir.toFile().deleteOnExit();   // best effort cleanup
+      file.deleteOnExit(); // best effort cleanup
+    } else {
+      file = java.nio.file.Files.createTempFile("download-", "").toFile();
+      file.deleteOnExit(); // best effort cleanup
+    }
+    return file;
+  }
+
+  /**
    * Approve execution plan
    * Expects a ledger to approve the upcoming execution plan
    * @param approveExecutionPlanRequest  (optional)
    * @return ApproveExecutionPlanResponse
    * @throws ApiException if fails to make API call
    */
-  public ApproveExecutionPlanResponse approveExecutionPlan(ApproveExecutionPlanRequest approveExecutionPlanRequest) throws ApiException {
-    ApiResponse<ApproveExecutionPlanResponse> localVarResponse = approveExecutionPlanWithHttpInfo(approveExecutionPlanRequest);
+  public ApproveExecutionPlanResponse approveExecutionPlan(@javax.annotation.Nullable ApproveExecutionPlanRequest approveExecutionPlanRequest) throws ApiException {
+    return approveExecutionPlan(approveExecutionPlanRequest, null);
+  }
+
+  /**
+   * Approve execution plan
+   * Expects a ledger to approve the upcoming execution plan
+   * @param approveExecutionPlanRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApproveExecutionPlanResponse
+   * @throws ApiException if fails to make API call
+   */
+  public ApproveExecutionPlanResponse approveExecutionPlan(@javax.annotation.Nullable ApproveExecutionPlanRequest approveExecutionPlanRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<ApproveExecutionPlanResponse> localVarResponse = approveExecutionPlanWithHttpInfo(approveExecutionPlanRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -101,8 +186,20 @@ public class ExecutionApi {
    * @return ApiResponse&lt;ApproveExecutionPlanResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ApproveExecutionPlanResponse> approveExecutionPlanWithHttpInfo(ApproveExecutionPlanRequest approveExecutionPlanRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = approveExecutionPlanRequestBuilder(approveExecutionPlanRequest);
+  public ApiResponse<ApproveExecutionPlanResponse> approveExecutionPlanWithHttpInfo(@javax.annotation.Nullable ApproveExecutionPlanRequest approveExecutionPlanRequest) throws ApiException {
+    return approveExecutionPlanWithHttpInfo(approveExecutionPlanRequest, null);
+  }
+
+  /**
+   * Approve execution plan
+   * Expects a ledger to approve the upcoming execution plan
+   * @param approveExecutionPlanRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;ApproveExecutionPlanResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ApproveExecutionPlanResponse> approveExecutionPlanWithHttpInfo(@javax.annotation.Nullable ApproveExecutionPlanRequest approveExecutionPlanRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = approveExecutionPlanRequestBuilder(approveExecutionPlanRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -114,10 +211,25 @@ public class ExecutionApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("approveExecutionPlan", localVarResponse);
         }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ApproveExecutionPlanResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        ApproveExecutionPlanResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ApproveExecutionPlanResponse>() {});
+        
+        localVarResponse.body().close();
+
         return new ApiResponse<ApproveExecutionPlanResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<ApproveExecutionPlanResponse>() {}) // closes the InputStream
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -130,7 +242,7 @@ public class ExecutionApi {
     }
   }
 
-  private HttpRequest.Builder approveExecutionPlanRequestBuilder(ApproveExecutionPlanRequest approveExecutionPlanRequest) throws ApiException {
+  private HttpRequest.Builder approveExecutionPlanRequestBuilder(@javax.annotation.Nullable ApproveExecutionPlanRequest approveExecutionPlanRequest, Map<String, String> headers) throws ApiException {
 
     HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -150,6 +262,225 @@ public class ExecutionApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Approve a plan proposal plan
+   * Request adapter approval or rejection to a proposal in an execution plan
+   * @param executionPlanProposalRequest  (optional)
+   * @return ApproveExecutionPlanResponse
+   * @throws ApiException if fails to make API call
+   */
+  public ApproveExecutionPlanResponse executionPlanProposal(@javax.annotation.Nullable ExecutionPlanProposalRequest executionPlanProposalRequest) throws ApiException {
+    return executionPlanProposal(executionPlanProposalRequest, null);
+  }
+
+  /**
+   * Approve a plan proposal plan
+   * Request adapter approval or rejection to a proposal in an execution plan
+   * @param executionPlanProposalRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApproveExecutionPlanResponse
+   * @throws ApiException if fails to make API call
+   */
+  public ApproveExecutionPlanResponse executionPlanProposal(@javax.annotation.Nullable ExecutionPlanProposalRequest executionPlanProposalRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<ApproveExecutionPlanResponse> localVarResponse = executionPlanProposalWithHttpInfo(executionPlanProposalRequest, headers);
+    return localVarResponse.getData();
+  }
+
+  /**
+   * Approve a plan proposal plan
+   * Request adapter approval or rejection to a proposal in an execution plan
+   * @param executionPlanProposalRequest  (optional)
+   * @return ApiResponse&lt;ApproveExecutionPlanResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ApproveExecutionPlanResponse> executionPlanProposalWithHttpInfo(@javax.annotation.Nullable ExecutionPlanProposalRequest executionPlanProposalRequest) throws ApiException {
+    return executionPlanProposalWithHttpInfo(executionPlanProposalRequest, null);
+  }
+
+  /**
+   * Approve a plan proposal plan
+   * Request adapter approval or rejection to a proposal in an execution plan
+   * @param executionPlanProposalRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;ApproveExecutionPlanResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ApproveExecutionPlanResponse> executionPlanProposalWithHttpInfo(@javax.annotation.Nullable ExecutionPlanProposalRequest executionPlanProposalRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = executionPlanProposalRequestBuilder(executionPlanProposalRequest, headers);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("executionPlanProposal", localVarResponse);
+        }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<ApproveExecutionPlanResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        ApproveExecutionPlanResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<ApproveExecutionPlanResponse>() {});
+        
+        localVarResponse.body().close();
+
+        return new ApiResponse<ApproveExecutionPlanResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
+        );
+      } finally {
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder executionPlanProposalRequestBuilder(@javax.annotation.Nullable ExecutionPlanProposalRequest executionPlanProposalRequest, Map<String, String> headers) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/plan/proposal";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(executionPlanProposalRequest);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
+    if (memberVarInterceptor != null) {
+      memberVarInterceptor.accept(localVarRequestBuilder);
+    }
+    return localVarRequestBuilder;
+  }
+
+  /**
+   * Notify the adapter on the agreement status (Approve/Rejected) for a specific proposal
+   * notify the adapter on proposal status
+   * @param executionPlanProposalStatusRequest  (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void executionPlanProposalStatus(@javax.annotation.Nullable ExecutionPlanProposalStatusRequest executionPlanProposalStatusRequest) throws ApiException {
+    executionPlanProposalStatus(executionPlanProposalStatusRequest, null);
+  }
+
+  /**
+   * Notify the adapter on the agreement status (Approve/Rejected) for a specific proposal
+   * notify the adapter on proposal status
+   * @param executionPlanProposalStatusRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @throws ApiException if fails to make API call
+   */
+  public void executionPlanProposalStatus(@javax.annotation.Nullable ExecutionPlanProposalStatusRequest executionPlanProposalStatusRequest, Map<String, String> headers) throws ApiException {
+    executionPlanProposalStatusWithHttpInfo(executionPlanProposalStatusRequest, headers);
+  }
+
+  /**
+   * Notify the adapter on the agreement status (Approve/Rejected) for a specific proposal
+   * notify the adapter on proposal status
+   * @param executionPlanProposalStatusRequest  (optional)
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> executionPlanProposalStatusWithHttpInfo(@javax.annotation.Nullable ExecutionPlanProposalStatusRequest executionPlanProposalStatusRequest) throws ApiException {
+    return executionPlanProposalStatusWithHttpInfo(executionPlanProposalStatusRequest, null);
+  }
+
+  /**
+   * Notify the adapter on the agreement status (Approve/Rejected) for a specific proposal
+   * notify the adapter on proposal status
+   * @param executionPlanProposalStatusRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;Void&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> executionPlanProposalStatusWithHttpInfo(@javax.annotation.Nullable ExecutionPlanProposalStatusRequest executionPlanProposalStatusRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = executionPlanProposalStatusRequestBuilder(executionPlanProposalStatusRequest, headers);
+    try {
+      HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
+          localVarRequestBuilder.build(),
+          HttpResponse.BodyHandlers.ofInputStream());
+      if (memberVarResponseInterceptor != null) {
+        memberVarResponseInterceptor.accept(localVarResponse);
+      }
+      try {
+        if (localVarResponse.statusCode()/ 100 != 2) {
+          throw getApiException("executionPlanProposalStatus", localVarResponse);
+        }
+        return new ApiResponse<>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            null
+        );
+      } finally {
+        // Drain the InputStream
+        while (localVarResponse.body().read() != -1) {
+          // Ignore
+        }
+        localVarResponse.body().close();
+      }
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new ApiException(e);
+    }
+  }
+
+  private HttpRequest.Builder executionPlanProposalStatusRequestBuilder(@javax.annotation.Nullable ExecutionPlanProposalStatusRequest executionPlanProposalStatusRequest, Map<String, String> headers) throws ApiException {
+
+    HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+    String localVarPath = "/plan/proposal/status";
+
+    localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+    localVarRequestBuilder.header("Content-Type", "application/json");
+    localVarRequestBuilder.header("Accept", "application/json");
+
+    try {
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(executionPlanProposalStatusRequest);
+      localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+    if (memberVarReadTimeout != null) {
+      localVarRequestBuilder.timeout(memberVarReadTimeout);
+    }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }

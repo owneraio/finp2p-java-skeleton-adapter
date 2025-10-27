@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -40,13 +41,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   HashListTemplate.JSON_PROPERTY_HASH_GROUPS,
   HashListTemplate.JSON_PROPERTY_HASH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class HashListTemplate {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    HASH_LIST("hashList");
+    HASH_LIST(String.valueOf("hashList"));
 
     private String value;
 
@@ -76,18 +77,21 @@ public class HashListTemplate {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
+  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_HASH_GROUPS = "hashGroups";
+  @javax.annotation.Nonnull
   private List<HashGroup> hashGroups = new ArrayList<>();
 
   public static final String JSON_PROPERTY_HASH = "hash";
+  @javax.annotation.Nonnull
   private String hash;
 
   public HashListTemplate() { 
   }
 
-  public HashListTemplate type(TypeEnum type) {
+  public HashListTemplate type(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -97,21 +101,21 @@ public class HashListTemplate {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  public HashListTemplate hashGroups(List<HashGroup> hashGroups) {
+  public HashListTemplate hashGroups(@javax.annotation.Nonnull List<HashGroup> hashGroups) {
     this.hashGroups = hashGroups;
     return this;
   }
@@ -129,21 +133,21 @@ public class HashListTemplate {
    * @return hashGroups
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_HASH_GROUPS)
+  @JsonProperty(value = JSON_PROPERTY_HASH_GROUPS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<HashGroup> getHashGroups() {
     return hashGroups;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_HASH_GROUPS)
+  @JsonProperty(value = JSON_PROPERTY_HASH_GROUPS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHashGroups(List<HashGroup> hashGroups) {
+  public void setHashGroups(@javax.annotation.Nonnull List<HashGroup> hashGroups) {
     this.hashGroups = hashGroups;
   }
 
 
-  public HashListTemplate hash(String hash) {
+  public HashListTemplate hash(@javax.annotation.Nonnull String hash) {
     this.hash = hash;
     return this;
   }
@@ -153,16 +157,16 @@ public class HashListTemplate {
    * @return hash
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_HASH)
+  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getHash() {
     return hash;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_HASH)
+  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHash(String hash) {
+  public void setHash(@javax.annotation.Nonnull String hash) {
     this.hash = hash;
   }
 
@@ -245,22 +249,22 @@ public class HashListTemplate {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `hashGroups` to the URL query string
     if (getHashGroups() != null) {
       for (int i = 0; i < getHashGroups().size(); i++) {
         if (getHashGroups().get(i) != null) {
-          joiner.add(getHashGroups().get(i).toUrlQueryString(String.format("%shashGroups%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getHashGroups().get(i).toUrlQueryString(String.format(Locale.ROOT, "%shashGroups%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
     }
 
     return joiner.toString();

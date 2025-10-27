@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,24 +39,28 @@ import io.ownera.ledger.adapter.api.ApiClient;
   EIP712Domain.JSON_PROPERTY_CHAIN_ID,
   EIP712Domain.JSON_PROPERTY_VERIFYING_CONTRACT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class EIP712Domain {
   public static final String JSON_PROPERTY_NAME = "name";
+  @javax.annotation.Nullable
   private String name;
 
   public static final String JSON_PROPERTY_VERSION = "version";
+  @javax.annotation.Nullable
   private String version;
 
   public static final String JSON_PROPERTY_CHAIN_ID = "chainId";
+  @javax.annotation.Nullable
   private Integer chainId;
 
   public static final String JSON_PROPERTY_VERIFYING_CONTRACT = "verifyingContract";
+  @javax.annotation.Nullable
   private String verifyingContract;
 
   public EIP712Domain() { 
   }
 
-  public EIP712Domain name(String name) {
+  public EIP712Domain name(@javax.annotation.Nullable String name) {
     this.name = name;
     return this;
   }
@@ -65,21 +70,21 @@ public class EIP712Domain {
    * @return name
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(String name) {
+  public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
 
 
-  public EIP712Domain version(String version) {
+  public EIP712Domain version(@javax.annotation.Nullable String version) {
     this.version = version;
     return this;
   }
@@ -89,21 +94,21 @@ public class EIP712Domain {
    * @return version
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonProperty(value = JSON_PROPERTY_VERSION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setVersion(String version) {
+  public void setVersion(@javax.annotation.Nullable String version) {
     this.version = version;
   }
 
 
-  public EIP712Domain chainId(Integer chainId) {
+  public EIP712Domain chainId(@javax.annotation.Nullable Integer chainId) {
     this.chainId = chainId;
     return this;
   }
@@ -113,21 +118,21 @@ public class EIP712Domain {
    * @return chainId
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CHAIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getChainId() {
     return chainId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_CHAIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_CHAIN_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setChainId(Integer chainId) {
+  public void setChainId(@javax.annotation.Nullable Integer chainId) {
     this.chainId = chainId;
   }
 
 
-  public EIP712Domain verifyingContract(String verifyingContract) {
+  public EIP712Domain verifyingContract(@javax.annotation.Nullable String verifyingContract) {
     this.verifyingContract = verifyingContract;
     return this;
   }
@@ -137,16 +142,16 @@ public class EIP712Domain {
    * @return verifyingContract
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_VERIFYING_CONTRACT)
+  @JsonProperty(value = JSON_PROPERTY_VERIFYING_CONTRACT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVerifyingContract() {
     return verifyingContract;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_VERIFYING_CONTRACT)
+  @JsonProperty(value = JSON_PROPERTY_VERIFYING_CONTRACT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setVerifyingContract(String verifyingContract) {
+  public void setVerifyingContract(@javax.annotation.Nullable String verifyingContract) {
     this.verifyingContract = verifyingContract;
   }
 
@@ -231,22 +236,22 @@ public class EIP712Domain {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format("%sname%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getName()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
     }
 
     // add `version` to the URL query string
     if (getVersion() != null) {
-      joiner.add(String.format("%sversion%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getVersion()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sversion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
     }
 
     // add `chainId` to the URL query string
     if (getChainId() != null) {
-      joiner.add(String.format("%schainId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getChainId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%schainId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChainId()))));
     }
 
     // add `verifyingContract` to the URL query string
     if (getVerifyingContract() != null) {
-      joiner.add(String.format("%sverifyingContract%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getVerifyingContract()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sverifyingContract%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVerifyingContract()))));
     }
 
     return joiner.toString();

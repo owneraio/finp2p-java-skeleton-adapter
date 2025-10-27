@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,13 +19,17 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.Destination;
+import io.ownera.ledger.adapter.api.model.PaymentMethod;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -36,27 +40,36 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   DepositInstruction.JSON_PROPERTY_ACCOUNT,
   DepositInstruction.JSON_PROPERTY_DESCRIPTION,
+  DepositInstruction.JSON_PROPERTY_PAYMENT_OPTIONS,
   DepositInstruction.JSON_PROPERTY_DETAILS,
   DepositInstruction.JSON_PROPERTY_OPERATION_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class DepositInstruction {
   public static final String JSON_PROPERTY_ACCOUNT = "account";
+  @javax.annotation.Nonnull
   private Destination account;
 
   public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  @javax.annotation.Nullable
   private String description;
 
+  public static final String JSON_PROPERTY_PAYMENT_OPTIONS = "paymentOptions";
+  @javax.annotation.Nullable
+  private List<PaymentMethod> paymentOptions = new ArrayList<>();
+
   public static final String JSON_PROPERTY_DETAILS = "details";
+  @javax.annotation.Nullable
   private Object details;
 
   public static final String JSON_PROPERTY_OPERATION_ID = "operationId";
+  @javax.annotation.Nullable
   private String operationId;
 
   public DepositInstruction() { 
   }
 
-  public DepositInstruction account(Destination account) {
+  public DepositInstruction account(@javax.annotation.Nonnull Destination account) {
     this.account = account;
     return this;
   }
@@ -66,21 +79,21 @@ public class DepositInstruction {
    * @return account
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Destination getAccount() {
     return account;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(Destination account) {
+  public void setAccount(@javax.annotation.Nonnull Destination account) {
     this.account = account;
   }
 
 
-  public DepositInstruction description(String description) {
+  public DepositInstruction description(@javax.annotation.Nullable String description) {
     this.description = description;
     return this;
   }
@@ -89,65 +102,99 @@ public class DepositInstruction {
    * Instructions for the deposit operation
    * @return description
    */
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDescription() {
     return description;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDescription(String description) {
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescription(@javax.annotation.Nullable String description) {
     this.description = description;
   }
 
 
-  public DepositInstruction details(Object details) {
+  public DepositInstruction paymentOptions(@javax.annotation.Nullable List<PaymentMethod> paymentOptions) {
+    this.paymentOptions = paymentOptions;
+    return this;
+  }
+
+  public DepositInstruction addPaymentOptionsItem(PaymentMethod paymentOptionsItem) {
+    if (this.paymentOptions == null) {
+      this.paymentOptions = new ArrayList<>();
+    }
+    this.paymentOptions.add(paymentOptionsItem);
+    return this;
+  }
+
+  /**
+   * Get paymentOptions
+   * @return paymentOptions
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_PAYMENT_OPTIONS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public List<PaymentMethod> getPaymentOptions() {
+    return paymentOptions;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_PAYMENT_OPTIONS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setPaymentOptions(@javax.annotation.Nullable List<PaymentMethod> paymentOptions) {
+    this.paymentOptions = paymentOptions;
+  }
+
+
+  public DepositInstruction details(@javax.annotation.Nullable Object details) {
     this.details = details;
     return this;
   }
 
   /**
-   * Any addition deposit specific information
+   * Any addition deposit specific information, deprecated use \&quot;payment method options\&quot; instead fields
    * @return details
+   * @deprecated
    */
+  @Deprecated
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getDetails() {
     return details;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDetails(Object details) {
+  public void setDetails(@javax.annotation.Nullable Object details) {
     this.details = details;
   }
 
 
-  public DepositInstruction operationId(String operationId) {
+  public DepositInstruction operationId(@javax.annotation.Nullable String operationId) {
     this.operationId = operationId;
     return this;
   }
 
   /**
-   * operation id
+   * operation id reference while will correlate with any receipt associated with the deposit operation
    * @return operationId
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperationId() {
     return operationId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationId(String operationId) {
+  public void setOperationId(@javax.annotation.Nullable String operationId) {
     this.operationId = operationId;
   }
 
@@ -166,13 +213,14 @@ public class DepositInstruction {
     DepositInstruction depositInstruction = (DepositInstruction) o;
     return Objects.equals(this.account, depositInstruction.account) &&
         Objects.equals(this.description, depositInstruction.description) &&
+        Objects.equals(this.paymentOptions, depositInstruction.paymentOptions) &&
         Objects.equals(this.details, depositInstruction.details) &&
         Objects.equals(this.operationId, depositInstruction.operationId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(account, description, details, operationId);
+    return Objects.hash(account, description, paymentOptions, details, operationId);
   }
 
   @Override
@@ -181,6 +229,7 @@ public class DepositInstruction {
     sb.append("class DepositInstruction {\n");
     sb.append("    account: ").append(toIndentedString(account)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    paymentOptions: ").append(toIndentedString(paymentOptions)).append("\n");
     sb.append("    details: ").append(toIndentedString(details)).append("\n");
     sb.append("    operationId: ").append(toIndentedString(operationId)).append("\n");
     sb.append("}");
@@ -237,17 +286,27 @@ public class DepositInstruction {
 
     // add `description` to the URL query string
     if (getDescription() != null) {
-      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getDescription()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+    }
+
+    // add `paymentOptions` to the URL query string
+    if (getPaymentOptions() != null) {
+      for (int i = 0; i < getPaymentOptions().size(); i++) {
+        if (getPaymentOptions().get(i) != null) {
+          joiner.add(getPaymentOptions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%spaymentOptions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+        }
+      }
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format("%sdetails%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getDetails()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
     }
 
     // add `operationId` to the URL query string
     if (getOperationId() != null) {
-      joiner.add(String.format("%soperationId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getOperationId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%soperationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationId()))));
     }
 
     return joiner.toString();

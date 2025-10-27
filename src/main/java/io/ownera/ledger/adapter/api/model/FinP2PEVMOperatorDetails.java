@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,18 +37,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   FinP2PEVMOperatorDetails.JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS,
   FinP2PEVMOperatorDetails.JSON_PROPERTY_ALLOWANCE_REQUIRED
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class FinP2PEVMOperatorDetails {
   public static final String JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS = "FinP2POperatorContractAddress";
+  @javax.annotation.Nullable
   private String finP2POperatorContractAddress;
 
   public static final String JSON_PROPERTY_ALLOWANCE_REQUIRED = "allowanceRequired";
+  @javax.annotation.Nullable
   private Boolean allowanceRequired;
 
   public FinP2PEVMOperatorDetails() { 
   }
 
-  public FinP2PEVMOperatorDetails finP2POperatorContractAddress(String finP2POperatorContractAddress) {
+  public FinP2PEVMOperatorDetails finP2POperatorContractAddress(@javax.annotation.Nullable String finP2POperatorContractAddress) {
     this.finP2POperatorContractAddress = finP2POperatorContractAddress;
     return this;
   }
@@ -57,21 +60,21 @@ public class FinP2PEVMOperatorDetails {
    * @return finP2POperatorContractAddress
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS)
+  @JsonProperty(value = JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getFinP2POperatorContractAddress() {
     return finP2POperatorContractAddress;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS)
+  @JsonProperty(value = JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setFinP2POperatorContractAddress(String finP2POperatorContractAddress) {
+  public void setFinP2POperatorContractAddress(@javax.annotation.Nullable String finP2POperatorContractAddress) {
     this.finP2POperatorContractAddress = finP2POperatorContractAddress;
   }
 
 
-  public FinP2PEVMOperatorDetails allowanceRequired(Boolean allowanceRequired) {
+  public FinP2PEVMOperatorDetails allowanceRequired(@javax.annotation.Nullable Boolean allowanceRequired) {
     this.allowanceRequired = allowanceRequired;
     return this;
   }
@@ -81,16 +84,16 @@ public class FinP2PEVMOperatorDetails {
    * @return allowanceRequired
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_ALLOWANCE_REQUIRED)
+  @JsonProperty(value = JSON_PROPERTY_ALLOWANCE_REQUIRED, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getAllowanceRequired() {
     return allowanceRequired;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ALLOWANCE_REQUIRED)
+  @JsonProperty(value = JSON_PROPERTY_ALLOWANCE_REQUIRED, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAllowanceRequired(Boolean allowanceRequired) {
+  public void setAllowanceRequired(@javax.annotation.Nullable Boolean allowanceRequired) {
     this.allowanceRequired = allowanceRequired;
   }
 
@@ -171,12 +174,12 @@ public class FinP2PEVMOperatorDetails {
 
     // add `FinP2POperatorContractAddress` to the URL query string
     if (getFinP2POperatorContractAddress() != null) {
-      joiner.add(String.format("%sFinP2POperatorContractAddress%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getFinP2POperatorContractAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sFinP2POperatorContractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinP2POperatorContractAddress()))));
     }
 
     // add `allowanceRequired` to the URL query string
     if (getAllowanceRequired() != null) {
-      joiner.add(String.format("%sallowanceRequired%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getAllowanceRequired()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sallowanceRequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowanceRequired()))));
     }
 
     return joiner.toString();

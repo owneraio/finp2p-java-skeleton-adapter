@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -15,6 +15,7 @@ package io.ownera.ledger.adapter.api.api;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.ApiException;
 import io.ownera.ledger.adapter.api.ApiResponse;
+import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
 import io.ownera.ledger.adapter.api.model.DepositInstructionRequest;
@@ -45,10 +46,31 @@ import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class PaymentsApi {
+  /**
+   * Utility class for extending HttpRequest.Builder functionality.
+   */
+  private static class HttpRequestBuilderExtensions {
+    /**
+     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
+     *
+     * @param builder the HttpRequest.Builder to which headers will be added
+     * @param headers a map of header names and values to add; may be null
+     * @return the same HttpRequest.Builder instance with the additional headers set
+     */
+    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                builder.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return builder;
+    }
+  }
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
   private final String memberVarBaseUri;
@@ -58,7 +80,7 @@ public class PaymentsApi {
   private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
   public PaymentsApi() {
-    this(new ApiClient());
+    this(Configuration.getDefaultApiClient());
   }
 
   public PaymentsApi(ApiClient apiClient) {
@@ -70,6 +92,7 @@ public class PaymentsApi {
     memberVarResponseInterceptor = apiClient.getResponseInterceptor();
     memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
   }
+
 
   protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
     String body = response.body() == null ? null : new String(response.body().readAllBytes());
@@ -85,6 +108,54 @@ public class PaymentsApi {
   }
 
   /**
+   * Download file from the given response.
+   *
+   * @param response Response
+   * @return File
+   * @throws ApiException If fail to read file content from response and write to disk
+   */
+  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+    try {
+      File file = prepareDownloadFile(response);
+      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+      return file;
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+  }
+
+  /**
+   * <p>Prepare the file for download from the response.</p>
+   *
+   * @param response a {@link java.net.http.HttpResponse} object.
+   * @return a {@link java.io.File} object.
+   * @throws java.io.IOException if any.
+   */
+  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+    String filename = null;
+    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+      // Get filename from the Content-Disposition header.
+      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+      if (matcher.find())
+        filename = matcher.group(1);
+    }
+    File file = null;
+    if (filename != null) {
+      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+      file = filePath.toFile();
+      tempDir.toFile().deleteOnExit();   // best effort cleanup
+      file.deleteOnExit(); // best effort cleanup
+    } else {
+      file = java.nio.file.Files.createTempFile("download-", "").toFile();
+      file.deleteOnExit(); // best effort cleanup
+    }
+    return file;
+  }
+
+  /**
    * Deposit instruction
    * Create a deposit instruction for an owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
@@ -92,8 +163,21 @@ public class PaymentsApi {
    * @return DepositInstructionResponse
    * @throws ApiException if fails to make API call
    */
-  public DepositInstructionResponse depositInstruction(String idempotencyKey, DepositInstructionRequest depositInstructionRequest) throws ApiException {
-    ApiResponse<DepositInstructionResponse> localVarResponse = depositInstructionWithHttpInfo(idempotencyKey, depositInstructionRequest);
+  public DepositInstructionResponse depositInstruction(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable DepositInstructionRequest depositInstructionRequest) throws ApiException {
+    return depositInstruction(idempotencyKey, depositInstructionRequest, null);
+  }
+
+  /**
+   * Deposit instruction
+   * Create a deposit instruction for an owner
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param depositInstructionRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return DepositInstructionResponse
+   * @throws ApiException if fails to make API call
+   */
+  public DepositInstructionResponse depositInstruction(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable DepositInstructionRequest depositInstructionRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<DepositInstructionResponse> localVarResponse = depositInstructionWithHttpInfo(idempotencyKey, depositInstructionRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -105,8 +189,21 @@ public class PaymentsApi {
    * @return ApiResponse&lt;DepositInstructionResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<DepositInstructionResponse> depositInstructionWithHttpInfo(String idempotencyKey, DepositInstructionRequest depositInstructionRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = depositInstructionRequestBuilder(idempotencyKey, depositInstructionRequest);
+  public ApiResponse<DepositInstructionResponse> depositInstructionWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable DepositInstructionRequest depositInstructionRequest) throws ApiException {
+    return depositInstructionWithHttpInfo(idempotencyKey, depositInstructionRequest, null);
+  }
+
+  /**
+   * Deposit instruction
+   * Create a deposit instruction for an owner
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param depositInstructionRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;DepositInstructionResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<DepositInstructionResponse> depositInstructionWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable DepositInstructionRequest depositInstructionRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = depositInstructionRequestBuilder(idempotencyKey, depositInstructionRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -118,10 +215,25 @@ public class PaymentsApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("depositInstruction", localVarResponse);
         }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<DepositInstructionResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        DepositInstructionResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<DepositInstructionResponse>() {});
+        
+        localVarResponse.body().close();
+
         return new ApiResponse<DepositInstructionResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<DepositInstructionResponse>() {}) // closes the InputStream
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -134,7 +246,7 @@ public class PaymentsApi {
     }
   }
 
-  private HttpRequest.Builder depositInstructionRequestBuilder(String idempotencyKey, DepositInstructionRequest depositInstructionRequest) throws ApiException {
+  private HttpRequest.Builder depositInstructionRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable DepositInstructionRequest depositInstructionRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling depositInstruction");
@@ -161,6 +273,8 @@ public class PaymentsApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }
@@ -175,8 +289,21 @@ public class PaymentsApi {
    * @return PayoutResponse
    * @throws ApiException if fails to make API call
    */
-  public PayoutResponse payout(String idempotencyKey, PayoutRequest payoutRequest) throws ApiException {
-    ApiResponse<PayoutResponse> localVarResponse = payoutWithHttpInfo(idempotencyKey, payoutRequest);
+  public PayoutResponse payout(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable PayoutRequest payoutRequest) throws ApiException {
+    return payout(idempotencyKey, payoutRequest, null);
+  }
+
+  /**
+   * Payout request
+   * Payout owner assets to external destination
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param payoutRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return PayoutResponse
+   * @throws ApiException if fails to make API call
+   */
+  public PayoutResponse payout(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable PayoutRequest payoutRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<PayoutResponse> localVarResponse = payoutWithHttpInfo(idempotencyKey, payoutRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -188,8 +315,21 @@ public class PaymentsApi {
    * @return ApiResponse&lt;PayoutResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<PayoutResponse> payoutWithHttpInfo(String idempotencyKey, PayoutRequest payoutRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = payoutRequestBuilder(idempotencyKey, payoutRequest);
+  public ApiResponse<PayoutResponse> payoutWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable PayoutRequest payoutRequest) throws ApiException {
+    return payoutWithHttpInfo(idempotencyKey, payoutRequest, null);
+  }
+
+  /**
+   * Payout request
+   * Payout owner assets to external destination
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param payoutRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;PayoutResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<PayoutResponse> payoutWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable PayoutRequest payoutRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = payoutRequestBuilder(idempotencyKey, payoutRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -201,10 +341,25 @@ public class PaymentsApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("payout", localVarResponse);
         }
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<PayoutResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        PayoutResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<PayoutResponse>() {});
+        
+        localVarResponse.body().close();
+
         return new ApiResponse<PayoutResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<PayoutResponse>() {}) // closes the InputStream
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -217,7 +372,7 @@ public class PaymentsApi {
     }
   }
 
-  private HttpRequest.Builder payoutRequestBuilder(String idempotencyKey, PayoutRequest payoutRequest) throws ApiException {
+  private HttpRequest.Builder payoutRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable PayoutRequest payoutRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling payout");
@@ -244,6 +399,8 @@ public class PaymentsApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }

@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -51,42 +52,52 @@ import io.ownera.ledger.adapter.api.ApiClient;
   Receipt.JSON_PROPERTY_TRADE_DETAILS,
   Receipt.JSON_PROPERTY_PROOF
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Receipt {
   public static final String JSON_PROPERTY_ID = "id";
+  @javax.annotation.Nonnull
   private String id;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
+  @javax.annotation.Nonnull
   private Asset asset;
 
   public static final String JSON_PROPERTY_QUANTITY = "quantity";
+  @javax.annotation.Nonnull
   private String quantity;
 
   public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
+  @javax.annotation.Nonnull
   private Long timestamp;
 
   public static final String JSON_PROPERTY_SOURCE = "source";
+  @javax.annotation.Nullable
   private Source source;
 
   public static final String JSON_PROPERTY_DESTINATION = "destination";
+  @javax.annotation.Nullable
   private Destination destination;
 
   public static final String JSON_PROPERTY_TRANSACTION_DETAILS = "transactionDetails";
+  @javax.annotation.Nullable
   private TransactionDetails transactionDetails;
 
   public static final String JSON_PROPERTY_OPERATION_TYPE = "operationType";
+  @javax.annotation.Nullable
   private OperationType operationType;
 
   public static final String JSON_PROPERTY_TRADE_DETAILS = "tradeDetails";
+  @javax.annotation.Nonnull
   private ReceiptTradeDetails tradeDetails;
 
   public static final String JSON_PROPERTY_PROOF = "proof";
+  @javax.annotation.Nullable
   private ProofPolicy proof;
 
   public Receipt() { 
   }
 
-  public Receipt id(String id) {
+  public Receipt id(@javax.annotation.Nonnull String id) {
     this.id = id;
     return this;
   }
@@ -96,21 +107,21 @@ public class Receipt {
    * @return id
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setId(String id) {
+  public void setId(@javax.annotation.Nonnull String id) {
     this.id = id;
   }
 
 
-  public Receipt asset(Asset asset) {
+  public Receipt asset(@javax.annotation.Nonnull Asset asset) {
     this.asset = asset;
     return this;
   }
@@ -120,21 +131,21 @@ public class Receipt {
    * @return asset
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Asset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(Asset asset) {
+  public void setAsset(@javax.annotation.Nonnull Asset asset) {
     this.asset = asset;
   }
 
 
-  public Receipt quantity(String quantity) {
+  public Receipt quantity(@javax.annotation.Nonnull String quantity) {
     this.quantity = quantity;
     return this;
   }
@@ -144,21 +155,21 @@ public class Receipt {
    * @return quantity
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_QUANTITY)
+  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getQuantity() {
     return quantity;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_QUANTITY)
+  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setQuantity(String quantity) {
+  public void setQuantity(@javax.annotation.Nonnull String quantity) {
     this.quantity = quantity;
   }
 
 
-  public Receipt timestamp(Long timestamp) {
+  public Receipt timestamp(@javax.annotation.Nonnull Long timestamp) {
     this.timestamp = timestamp;
     return this;
   }
@@ -168,21 +179,21 @@ public class Receipt {
    * @return timestamp
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Long getTimestamp() {
     return timestamp;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
+  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTimestamp(Long timestamp) {
+  public void setTimestamp(@javax.annotation.Nonnull Long timestamp) {
     this.timestamp = timestamp;
   }
 
 
-  public Receipt source(Source source) {
+  public Receipt source(@javax.annotation.Nullable Source source) {
     this.source = source;
     return this;
   }
@@ -192,21 +203,21 @@ public class Receipt {
    * @return source
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_SOURCE)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Source getSource() {
     return source;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SOURCE)
+  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSource(Source source) {
+  public void setSource(@javax.annotation.Nullable Source source) {
     this.source = source;
   }
 
 
-  public Receipt destination(Destination destination) {
+  public Receipt destination(@javax.annotation.Nullable Destination destination) {
     this.destination = destination;
     return this;
   }
@@ -216,21 +227,21 @@ public class Receipt {
    * @return destination
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Destination getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDestination(Destination destination) {
+  public void setDestination(@javax.annotation.Nullable Destination destination) {
     this.destination = destination;
   }
 
 
-  public Receipt transactionDetails(TransactionDetails transactionDetails) {
+  public Receipt transactionDetails(@javax.annotation.Nullable TransactionDetails transactionDetails) {
     this.transactionDetails = transactionDetails;
     return this;
   }
@@ -240,21 +251,21 @@ public class Receipt {
    * @return transactionDetails
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_TRANSACTION_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public TransactionDetails getTransactionDetails() {
     return transactionDetails;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TRANSACTION_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_DETAILS, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransactionDetails(TransactionDetails transactionDetails) {
+  public void setTransactionDetails(@javax.annotation.Nullable TransactionDetails transactionDetails) {
     this.transactionDetails = transactionDetails;
   }
 
 
-  public Receipt operationType(OperationType operationType) {
+  public Receipt operationType(@javax.annotation.Nullable OperationType operationType) {
     this.operationType = operationType;
     return this;
   }
@@ -264,21 +275,21 @@ public class Receipt {
    * @return operationType
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_OPERATION_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_TYPE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OperationType getOperationType() {
     return operationType;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_OPERATION_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_TYPE, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationType(OperationType operationType) {
+  public void setOperationType(@javax.annotation.Nullable OperationType operationType) {
     this.operationType = operationType;
   }
 
 
-  public Receipt tradeDetails(ReceiptTradeDetails tradeDetails) {
+  public Receipt tradeDetails(@javax.annotation.Nonnull ReceiptTradeDetails tradeDetails) {
     this.tradeDetails = tradeDetails;
     return this;
   }
@@ -288,21 +299,21 @@ public class Receipt {
    * @return tradeDetails
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TRADE_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_TRADE_DETAILS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ReceiptTradeDetails getTradeDetails() {
     return tradeDetails;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TRADE_DETAILS)
+  @JsonProperty(value = JSON_PROPERTY_TRADE_DETAILS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTradeDetails(ReceiptTradeDetails tradeDetails) {
+  public void setTradeDetails(@javax.annotation.Nonnull ReceiptTradeDetails tradeDetails) {
     this.tradeDetails = tradeDetails;
   }
 
 
-  public Receipt proof(ProofPolicy proof) {
+  public Receipt proof(@javax.annotation.Nullable ProofPolicy proof) {
     this.proof = proof;
     return this;
   }
@@ -312,16 +323,16 @@ public class Receipt {
    * @return proof
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_PROOF)
+  @JsonProperty(value = JSON_PROPERTY_PROOF, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ProofPolicy getProof() {
     return proof;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_PROOF)
+  @JsonProperty(value = JSON_PROPERTY_PROOF, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setProof(ProofPolicy proof) {
+  public void setProof(@javax.annotation.Nullable ProofPolicy proof) {
     this.proof = proof;
   }
 
@@ -418,7 +429,7 @@ public class Receipt {
 
     // add `id` to the URL query string
     if (getId() != null) {
-      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
     }
 
     // add `asset` to the URL query string
@@ -428,12 +439,12 @@ public class Receipt {
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format("%squantity%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getQuantity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
     }
 
     // add `timestamp` to the URL query string
     if (getTimestamp() != null) {
-      joiner.add(String.format("%stimestamp%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getTimestamp()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stimestamp%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
     }
 
     // add `source` to the URL query string
@@ -453,7 +464,7 @@ public class Receipt {
 
     // add `operationType` to the URL query string
     if (getOperationType() != null) {
-      joiner.add(String.format("%soperationType%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getOperationType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%soperationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationType()))));
     }
 
     // add `tradeDetails` to the URL query string

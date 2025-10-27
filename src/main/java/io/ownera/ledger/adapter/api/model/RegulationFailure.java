@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,13 +40,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   RegulationFailure.JSON_PROPERTY_FAILURE_TYPE,
   RegulationFailure.JSON_PROPERTY_ERRORS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class RegulationFailure {
   /**
    * Gets or Sets failureType
    */
   public enum FailureTypeEnum {
-    REGULATION_FAILURE("RegulationFailure");
+    REGULATION_FAILURE(String.valueOf("regulationFailure"));
 
     private String value;
 
@@ -75,15 +76,17 @@ public class RegulationFailure {
   }
 
   public static final String JSON_PROPERTY_FAILURE_TYPE = "failureType";
+  @javax.annotation.Nonnull
   private FailureTypeEnum failureType;
 
   public static final String JSON_PROPERTY_ERRORS = "errors";
+  @javax.annotation.Nonnull
   private List<RegulationError> errors = new ArrayList<>();
 
   public RegulationFailure() { 
   }
 
-  public RegulationFailure failureType(FailureTypeEnum failureType) {
+  public RegulationFailure failureType(@javax.annotation.Nonnull FailureTypeEnum failureType) {
     this.failureType = failureType;
     return this;
   }
@@ -93,21 +96,21 @@ public class RegulationFailure {
    * @return failureType
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FAILURE_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_FAILURE_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public FailureTypeEnum getFailureType() {
     return failureType;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FAILURE_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_FAILURE_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFailureType(FailureTypeEnum failureType) {
+  public void setFailureType(@javax.annotation.Nonnull FailureTypeEnum failureType) {
     this.failureType = failureType;
   }
 
 
-  public RegulationFailure errors(List<RegulationError> errors) {
+  public RegulationFailure errors(@javax.annotation.Nonnull List<RegulationError> errors) {
     this.errors = errors;
     return this;
   }
@@ -125,16 +128,16 @@ public class RegulationFailure {
    * @return errors
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ERRORS)
+  @JsonProperty(value = JSON_PROPERTY_ERRORS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<RegulationError> getErrors() {
     return errors;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ERRORS)
+  @JsonProperty(value = JSON_PROPERTY_ERRORS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setErrors(List<RegulationError> errors) {
+  public void setErrors(@javax.annotation.Nonnull List<RegulationError> errors) {
     this.errors = errors;
   }
 
@@ -215,15 +218,15 @@ public class RegulationFailure {
 
     // add `failureType` to the URL query string
     if (getFailureType() != null) {
-      joiner.add(String.format("%sfailureType%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getFailureType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sfailureType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFailureType()))));
     }
 
     // add `errors` to the URL query string
     if (getErrors() != null) {
       for (int i = 0; i < getErrors().size(); i++) {
         if (getErrors().get(i) != null) {
-          joiner.add(getErrors().get(i).toUrlQueryString(String.format("%serrors%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getErrors().get(i).toUrlQueryString(String.format(Locale.ROOT, "%serrors%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

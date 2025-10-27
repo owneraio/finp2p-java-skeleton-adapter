@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,18 +37,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   TransactionDetails.JSON_PROPERTY_TRANSACTION_ID,
   TransactionDetails.JSON_PROPERTY_OPERATION_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class TransactionDetails {
   public static final String JSON_PROPERTY_TRANSACTION_ID = "transactionId";
+  @javax.annotation.Nonnull
   private String transactionId;
 
   public static final String JSON_PROPERTY_OPERATION_ID = "operationId";
+  @javax.annotation.Nullable
   private String operationId;
 
   public TransactionDetails() { 
   }
 
-  public TransactionDetails transactionId(String transactionId) {
+  public TransactionDetails transactionId(@javax.annotation.Nonnull String transactionId) {
     this.transactionId = transactionId;
     return this;
   }
@@ -57,21 +60,21 @@ public class TransactionDetails {
    * @return transactionId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TRANSACTION_ID)
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTransactionId() {
     return transactionId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TRANSACTION_ID)
+  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTransactionId(String transactionId) {
+  public void setTransactionId(@javax.annotation.Nonnull String transactionId) {
     this.transactionId = transactionId;
   }
 
 
-  public TransactionDetails operationId(String operationId) {
+  public TransactionDetails operationId(@javax.annotation.Nullable String operationId) {
     this.operationId = operationId;
     return this;
   }
@@ -81,16 +84,16 @@ public class TransactionDetails {
    * @return operationId
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getOperationId() {
     return operationId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
+  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationId(String operationId) {
+  public void setOperationId(@javax.annotation.Nullable String operationId) {
     this.operationId = operationId;
   }
 
@@ -171,12 +174,12 @@ public class TransactionDetails {
 
     // add `transactionId` to the URL query string
     if (getTransactionId() != null) {
-      joiner.add(String.format("%stransactionId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getTransactionId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stransactionId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransactionId()))));
     }
 
     // add `operationId` to the URL query string
     if (getOperationId() != null) {
-      joiner.add(String.format("%soperationId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getOperationId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%soperationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationId()))));
     }
 
     return joiner.toString();

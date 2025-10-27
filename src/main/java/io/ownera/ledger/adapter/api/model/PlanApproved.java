@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -35,13 +36,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   PlanApproved.JSON_PROPERTY_STATUS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class PlanApproved {
   /**
    * Gets or Sets status
    */
   public enum StatusEnum {
-    APPROVED("approved");
+    APPROVED(String.valueOf("approved"));
 
     private String value;
 
@@ -71,12 +72,13 @@ public class PlanApproved {
   }
 
   public static final String JSON_PROPERTY_STATUS = "status";
+  @javax.annotation.Nonnull
   private StatusEnum status;
 
   public PlanApproved() { 
   }
 
-  public PlanApproved status(StatusEnum status) {
+  public PlanApproved status(@javax.annotation.Nonnull StatusEnum status) {
     this.status = status;
     return this;
   }
@@ -86,16 +88,16 @@ public class PlanApproved {
    * @return status
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public StatusEnum getStatus() {
     return status;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setStatus(StatusEnum status) {
+  public void setStatus(@javax.annotation.Nonnull StatusEnum status) {
     this.status = status;
   }
 
@@ -174,7 +176,7 @@ public class PlanApproved {
 
     // add `status` to the URL query string
     if (getStatus() != null) {
-      joiner.add(String.format("%sstatus%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getStatus()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
     }
 
     return joiner.toString();

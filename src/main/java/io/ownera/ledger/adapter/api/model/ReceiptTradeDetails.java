@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,21 +39,24 @@ import io.ownera.ledger.adapter.api.ApiClient;
   ReceiptTradeDetails.JSON_PROPERTY_INTENT_VERSION,
   ReceiptTradeDetails.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class ReceiptTradeDetails {
   public static final String JSON_PROPERTY_INTENT_ID = "intentId";
+  @javax.annotation.Nullable
   private String intentId;
 
   public static final String JSON_PROPERTY_INTENT_VERSION = "intentVersion";
+  @javax.annotation.Nullable
   private String intentVersion;
 
   public static final String JSON_PROPERTY_EXECUTION_CONTEXT = "executionContext";
+  @javax.annotation.Nullable
   private ReceiptExecutionContext executionContext;
 
   public ReceiptTradeDetails() { 
   }
 
-  public ReceiptTradeDetails intentId(String intentId) {
+  public ReceiptTradeDetails intentId(@javax.annotation.Nullable String intentId) {
     this.intentId = intentId;
     return this;
   }
@@ -62,21 +66,21 @@ public class ReceiptTradeDetails {
    * @return intentId
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_INTENT_ID)
+  @JsonProperty(value = JSON_PROPERTY_INTENT_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIntentId() {
     return intentId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_INTENT_ID)
+  @JsonProperty(value = JSON_PROPERTY_INTENT_ID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIntentId(String intentId) {
+  public void setIntentId(@javax.annotation.Nullable String intentId) {
     this.intentId = intentId;
   }
 
 
-  public ReceiptTradeDetails intentVersion(String intentVersion) {
+  public ReceiptTradeDetails intentVersion(@javax.annotation.Nullable String intentVersion) {
     this.intentVersion = intentVersion;
     return this;
   }
@@ -86,21 +90,21 @@ public class ReceiptTradeDetails {
    * @return intentVersion
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_INTENT_VERSION)
+  @JsonProperty(value = JSON_PROPERTY_INTENT_VERSION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIntentVersion() {
     return intentVersion;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_INTENT_VERSION)
+  @JsonProperty(value = JSON_PROPERTY_INTENT_VERSION, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIntentVersion(String intentVersion) {
+  public void setIntentVersion(@javax.annotation.Nullable String intentVersion) {
     this.intentVersion = intentVersion;
   }
 
 
-  public ReceiptTradeDetails executionContext(ReceiptExecutionContext executionContext) {
+  public ReceiptTradeDetails executionContext(@javax.annotation.Nullable ReceiptExecutionContext executionContext) {
     this.executionContext = executionContext;
     return this;
   }
@@ -110,16 +114,16 @@ public class ReceiptTradeDetails {
    * @return executionContext
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
+  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ReceiptExecutionContext getExecutionContext() {
     return executionContext;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
+  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExecutionContext(ReceiptExecutionContext executionContext) {
+  public void setExecutionContext(@javax.annotation.Nullable ReceiptExecutionContext executionContext) {
     this.executionContext = executionContext;
   }
 
@@ -202,12 +206,12 @@ public class ReceiptTradeDetails {
 
     // add `intentId` to the URL query string
     if (getIntentId() != null) {
-      joiner.add(String.format("%sintentId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getIntentId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sintentId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentId()))));
     }
 
     // add `intentVersion` to the URL query string
     if (getIntentVersion() != null) {
-      joiner.add(String.format("%sintentVersion%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getIntentVersion()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sintentVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentVersion()))));
     }
 
     // add `executionContext` to the URL query string

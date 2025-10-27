@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -45,33 +46,40 @@ import io.ownera.ledger.adapter.api.ApiClient;
   IssueAssetsRequest.JSON_PROPERTY_SIGNATURE,
   IssueAssetsRequest.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class IssueAssetsRequest {
   public static final String JSON_PROPERTY_NONCE = "nonce";
+  @javax.annotation.Nonnull
   private String nonce;
 
   public static final String JSON_PROPERTY_DESTINATION = "destination";
+  @javax.annotation.Nonnull
   private FinIdAccount destination;
 
   public static final String JSON_PROPERTY_QUANTITY = "quantity";
+  @javax.annotation.Nonnull
   private String quantity;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
+  @javax.annotation.Nonnull
   private Finp2pAsset asset;
 
   public static final String JSON_PROPERTY_SETTLEMENT_REF = "settlementRef";
+  @javax.annotation.Nonnull
   private String settlementRef;
 
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
+  @javax.annotation.Nonnull
   private Signature signature;
 
   public static final String JSON_PROPERTY_EXECUTION_CONTEXT = "executionContext";
+  @javax.annotation.Nullable
   private ExecutionContext executionContext;
 
   public IssueAssetsRequest() { 
   }
 
-  public IssueAssetsRequest nonce(String nonce) {
+  public IssueAssetsRequest nonce(@javax.annotation.Nonnull String nonce) {
     this.nonce = nonce;
     return this;
   }
@@ -81,21 +89,21 @@ public class IssueAssetsRequest {
    * @return nonce
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_NONCE)
+  @JsonProperty(value = JSON_PROPERTY_NONCE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getNonce() {
     return nonce;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_NONCE)
+  @JsonProperty(value = JSON_PROPERTY_NONCE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setNonce(String nonce) {
+  public void setNonce(@javax.annotation.Nonnull String nonce) {
     this.nonce = nonce;
   }
 
 
-  public IssueAssetsRequest destination(FinIdAccount destination) {
+  public IssueAssetsRequest destination(@javax.annotation.Nonnull FinIdAccount destination) {
     this.destination = destination;
     return this;
   }
@@ -105,21 +113,21 @@ public class IssueAssetsRequest {
    * @return destination
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public FinIdAccount getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DESTINATION)
+  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDestination(FinIdAccount destination) {
+  public void setDestination(@javax.annotation.Nonnull FinIdAccount destination) {
     this.destination = destination;
   }
 
 
-  public IssueAssetsRequest quantity(String quantity) {
+  public IssueAssetsRequest quantity(@javax.annotation.Nonnull String quantity) {
     this.quantity = quantity;
     return this;
   }
@@ -129,21 +137,21 @@ public class IssueAssetsRequest {
    * @return quantity
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_QUANTITY)
+  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getQuantity() {
     return quantity;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_QUANTITY)
+  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setQuantity(String quantity) {
+  public void setQuantity(@javax.annotation.Nonnull String quantity) {
     this.quantity = quantity;
   }
 
 
-  public IssueAssetsRequest asset(Finp2pAsset asset) {
+  public IssueAssetsRequest asset(@javax.annotation.Nonnull Finp2pAsset asset) {
     this.asset = asset;
     return this;
   }
@@ -153,21 +161,21 @@ public class IssueAssetsRequest {
    * @return asset
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Finp2pAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(Finp2pAsset asset) {
+  public void setAsset(@javax.annotation.Nonnull Finp2pAsset asset) {
     this.asset = asset;
   }
 
 
-  public IssueAssetsRequest settlementRef(String settlementRef) {
+  public IssueAssetsRequest settlementRef(@javax.annotation.Nonnull String settlementRef) {
     this.settlementRef = settlementRef;
     return this;
   }
@@ -177,21 +185,21 @@ public class IssueAssetsRequest {
    * @return settlementRef
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_SETTLEMENT_REF)
+  @JsonProperty(value = JSON_PROPERTY_SETTLEMENT_REF, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getSettlementRef() {
     return settlementRef;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SETTLEMENT_REF)
+  @JsonProperty(value = JSON_PROPERTY_SETTLEMENT_REF, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSettlementRef(String settlementRef) {
+  public void setSettlementRef(@javax.annotation.Nonnull String settlementRef) {
     this.settlementRef = settlementRef;
   }
 
 
-  public IssueAssetsRequest signature(Signature signature) {
+  public IssueAssetsRequest signature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
     return this;
   }
@@ -201,21 +209,21 @@ public class IssueAssetsRequest {
    * @return signature
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Signature getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSignature(Signature signature) {
+  public void setSignature(@javax.annotation.Nonnull Signature signature) {
     this.signature = signature;
   }
 
 
-  public IssueAssetsRequest executionContext(ExecutionContext executionContext) {
+  public IssueAssetsRequest executionContext(@javax.annotation.Nullable ExecutionContext executionContext) {
     this.executionContext = executionContext;
     return this;
   }
@@ -225,16 +233,16 @@ public class IssueAssetsRequest {
    * @return executionContext
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
+  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ExecutionContext getExecutionContext() {
     return executionContext;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
+  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExecutionContext(ExecutionContext executionContext) {
+  public void setExecutionContext(@javax.annotation.Nullable ExecutionContext executionContext) {
     this.executionContext = executionContext;
   }
 
@@ -325,7 +333,7 @@ public class IssueAssetsRequest {
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format("%snonce%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getNonce()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
     }
 
     // add `destination` to the URL query string
@@ -335,7 +343,7 @@ public class IssueAssetsRequest {
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format("%squantity%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getQuantity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
     }
 
     // add `asset` to the URL query string
@@ -345,7 +353,7 @@ public class IssueAssetsRequest {
 
     // add `settlementRef` to the URL query string
     if (getSettlementRef() != null) {
-      joiner.add(String.format("%ssettlementRef%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getSettlementRef()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%ssettlementRef%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSettlementRef()))));
     }
 
     // add `signature` to the URL query string

@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -13,45 +13,25 @@
 
 package io.ownera.ledger.adapter.api;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Pair {
-    private String name = "";
-    private String value = "";
+  private final String name;
+  private final String value;
 
-    public Pair (String name, String value) {
-        setName(name);
-        setValue(value);
-    }
+  public Pair(String name, String value) {
+    this.name = isValidString(name) ? name : "";
+    this.value = isValidString(value) ? value : "";
+  }
 
-    private void setName(String name) {
-        if (!isValidString(name)) {
-            return;
-        }
+  public String getName() {
+    return this.name;
+  }
 
-        this.name = name;
-    }
+  public String getValue() {
+    return this.value;
+  }
 
-    private void setValue(String value) {
-        if (!isValidString(value)) {
-            return;
-        }
-
-        this.value = value;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
-
-    private boolean isValidString(String arg) {
-        if (arg == null) {
-            return false;
-        }
-
-        return true;
-    }
+  private static boolean isValidString(String arg) {
+    return arg != null;
+  }
 }

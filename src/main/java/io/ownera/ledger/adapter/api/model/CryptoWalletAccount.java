@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,13 +37,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   CryptoWalletAccount.JSON_PROPERTY_TYPE,
   CryptoWalletAccount.JSON_PROPERTY_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class CryptoWalletAccount {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    CRYPTO_WALLET("cryptoWallet");
+    CRYPTO_WALLET(String.valueOf("cryptoWallet"));
 
     private String value;
 
@@ -72,15 +73,17 @@ public class CryptoWalletAccount {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
+  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_ADDRESS = "address";
+  @javax.annotation.Nonnull
   private String address;
 
   public CryptoWalletAccount() { 
   }
 
-  public CryptoWalletAccount type(TypeEnum type) {
+  public CryptoWalletAccount type(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -90,21 +93,21 @@ public class CryptoWalletAccount {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  public CryptoWalletAccount address(String address) {
+  public CryptoWalletAccount address(@javax.annotation.Nonnull String address) {
     this.address = address;
     return this;
   }
@@ -114,16 +117,16 @@ public class CryptoWalletAccount {
    * @return address
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ADDRESS)
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getAddress() {
     return address;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ADDRESS)
+  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAddress(String address) {
+  public void setAddress(@javax.annotation.Nonnull String address) {
     this.address = address;
   }
 
@@ -204,12 +207,12 @@ public class CryptoWalletAccount {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `address` to the URL query string
     if (getAddress() != null) {
-      joiner.add(String.format("%saddress%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%saddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
     }
 
     return joiner.toString();

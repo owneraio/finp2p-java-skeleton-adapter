@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,18 +40,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   HashGroup.JSON_PROPERTY_HASH,
   HashGroup.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class HashGroup {
   public static final String JSON_PROPERTY_HASH = "hash";
+  @javax.annotation.Nonnull
   private String hash;
 
   public static final String JSON_PROPERTY_FIELDS = "fields";
+  @javax.annotation.Nonnull
   private List<Field> fields = new ArrayList<>();
 
   public HashGroup() { 
   }
 
-  public HashGroup hash(String hash) {
+  public HashGroup hash(@javax.annotation.Nonnull String hash) {
     this.hash = hash;
     return this;
   }
@@ -60,21 +63,21 @@ public class HashGroup {
    * @return hash
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_HASH)
+  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getHash() {
     return hash;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_HASH)
+  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHash(String hash) {
+  public void setHash(@javax.annotation.Nonnull String hash) {
     this.hash = hash;
   }
 
 
-  public HashGroup fields(List<Field> fields) {
+  public HashGroup fields(@javax.annotation.Nonnull List<Field> fields) {
     this.fields = fields;
     return this;
   }
@@ -92,16 +95,16 @@ public class HashGroup {
    * @return fields
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FIELDS)
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public List<Field> getFields() {
     return fields;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FIELDS)
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFields(List<Field> fields) {
+  public void setFields(@javax.annotation.Nonnull List<Field> fields) {
     this.fields = fields;
   }
 
@@ -182,15 +185,15 @@ public class HashGroup {
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
     }
 
     // add `fields` to the URL query string
     if (getFields() != null) {
       for (int i = 0; i < getFields().size(); i++) {
         if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format("%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -36,13 +37,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   LedgerTokenId.JSON_PROPERTY_TYPE,
   LedgerTokenId.JSON_PROPERTY_TOKEN_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class LedgerTokenId {
   /**
    * the type of the identifier
    */
   public enum TypeEnum {
-    TOKEN_ID("tokenId");
+    TOKEN_ID(String.valueOf("tokenId"));
 
     private String value;
 
@@ -72,15 +73,17 @@ public class LedgerTokenId {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
+  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_TOKEN_ID = "tokenId";
+  @javax.annotation.Nonnull
   private String tokenId;
 
   public LedgerTokenId() { 
   }
 
-  public LedgerTokenId type(TypeEnum type) {
+  public LedgerTokenId type(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -90,21 +93,21 @@ public class LedgerTokenId {
    * @return type
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(TypeEnum type) {
+  public void setType(@javax.annotation.Nonnull TypeEnum type) {
     this.type = type;
   }
 
 
-  public LedgerTokenId tokenId(String tokenId) {
+  public LedgerTokenId tokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
     return this;
   }
@@ -114,16 +117,16 @@ public class LedgerTokenId {
    * @return tokenId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TOKEN_ID)
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getTokenId() {
     return tokenId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TOKEN_ID)
+  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTokenId(String tokenId) {
+  public void setTokenId(@javax.annotation.Nonnull String tokenId) {
     this.tokenId = tokenId;
   }
 
@@ -204,12 +207,12 @@ public class LedgerTokenId {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `tokenId` to the URL query string
     if (getTokenId() != null) {
-      joiner.add(String.format("%stokenId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getTokenId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%stokenId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenId()))));
     }
 
     return joiner.toString();

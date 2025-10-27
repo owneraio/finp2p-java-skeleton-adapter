@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,12 +19,13 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.SourceAccount;
+import io.ownera.ledger.adapter.api.model.FinIdAccount;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -37,18 +38,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   Source.JSON_PROPERTY_FIN_ID,
   Source.JSON_PROPERTY_ACCOUNT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Source {
   public static final String JSON_PROPERTY_FIN_ID = "finId";
+  @javax.annotation.Nonnull
   private String finId;
 
   public static final String JSON_PROPERTY_ACCOUNT = "account";
-  private SourceAccount account;
+  @javax.annotation.Nonnull
+  private FinIdAccount account;
 
   public Source() { 
   }
 
-  public Source finId(String finId) {
+  public Source finId(@javax.annotation.Nonnull String finId) {
     this.finId = finId;
     return this;
   }
@@ -58,21 +61,21 @@ public class Source {
    * @return finId
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getFinId() {
     return finId;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FIN_ID)
+  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFinId(String finId) {
+  public void setFinId(@javax.annotation.Nonnull String finId) {
     this.finId = finId;
   }
 
 
-  public Source account(SourceAccount account) {
+  public Source account(@javax.annotation.Nonnull FinIdAccount account) {
     this.account = account;
     return this;
   }
@@ -82,16 +85,16 @@ public class Source {
    * @return account
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public SourceAccount getAccount() {
+  public FinIdAccount getAccount() {
     return account;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(SourceAccount account) {
+  public void setAccount(@javax.annotation.Nonnull FinIdAccount account) {
     this.account = account;
   }
 
@@ -172,7 +175,7 @@ public class Source {
 
     // add `finId` to the URL query string
     if (getFinId() != null) {
-      joiner.add(String.format("%sfinId%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getFinId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
     }
 
     // add `account` to the URL query string

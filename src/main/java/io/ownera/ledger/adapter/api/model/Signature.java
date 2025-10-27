@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,21 +40,24 @@ import io.ownera.ledger.adapter.api.ApiClient;
   Signature.JSON_PROPERTY_TEMPLATE,
   Signature.JSON_PROPERTY_HASH_FUNC
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class Signature {
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
+  @javax.annotation.Nonnull
   private String signature;
 
   public static final String JSON_PROPERTY_TEMPLATE = "template";
+  @javax.annotation.Nonnull
   private SignatureTemplate template;
 
   public static final String JSON_PROPERTY_HASH_FUNC = "hashFunc";
+  @javax.annotation.Nonnull
   private HashFunction hashFunc;
 
   public Signature() { 
   }
 
-  public Signature signature(String signature) {
+  public Signature signature(@javax.annotation.Nonnull String signature) {
     this.signature = signature;
     return this;
   }
@@ -63,21 +67,21 @@ public class Signature {
    * @return signature
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_SIGNATURE)
+  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSignature(String signature) {
+  public void setSignature(@javax.annotation.Nonnull String signature) {
     this.signature = signature;
   }
 
 
-  public Signature template(SignatureTemplate template) {
+  public Signature template(@javax.annotation.Nonnull SignatureTemplate template) {
     this.template = template;
     return this;
   }
@@ -87,21 +91,21 @@ public class Signature {
    * @return template
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_TEMPLATE)
+  @JsonProperty(value = JSON_PROPERTY_TEMPLATE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public SignatureTemplate getTemplate() {
     return template;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_TEMPLATE)
+  @JsonProperty(value = JSON_PROPERTY_TEMPLATE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTemplate(SignatureTemplate template) {
+  public void setTemplate(@javax.annotation.Nonnull SignatureTemplate template) {
     this.template = template;
   }
 
 
-  public Signature hashFunc(HashFunction hashFunc) {
+  public Signature hashFunc(@javax.annotation.Nonnull HashFunction hashFunc) {
     this.hashFunc = hashFunc;
     return this;
   }
@@ -111,16 +115,16 @@ public class Signature {
    * @return hashFunc
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_HASH_FUNC)
+  @JsonProperty(value = JSON_PROPERTY_HASH_FUNC, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public HashFunction getHashFunc() {
     return hashFunc;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_HASH_FUNC)
+  @JsonProperty(value = JSON_PROPERTY_HASH_FUNC, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHashFunc(HashFunction hashFunc) {
+  public void setHashFunc(@javax.annotation.Nonnull HashFunction hashFunc) {
     this.hashFunc = hashFunc;
   }
 
@@ -203,7 +207,7 @@ public class Signature {
 
     // add `signature` to the URL query string
     if (getSignature() != null) {
-      joiner.add(String.format("%ssignature%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getSignature()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%ssignature%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSignature()))));
     }
 
     // add `template` to the URL query string
@@ -213,7 +217,7 @@ public class Signature {
 
     // add `hashFunc` to the URL query string
     if (getHashFunc() != null) {
-      joiner.add(String.format("%shashFunc%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getHashFunc()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%shashFunc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHashFunc()))));
     }
 
     return joiner.toString();

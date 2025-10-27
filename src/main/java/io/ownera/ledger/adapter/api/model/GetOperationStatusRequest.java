@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -35,15 +36,16 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   GetOperationStatusRequest.JSON_PROPERTY_CID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class GetOperationStatusRequest {
   public static final String JSON_PROPERTY_CID = "cid";
+  @javax.annotation.Nullable
   private String cid;
 
   public GetOperationStatusRequest() { 
   }
 
-  public GetOperationStatusRequest cid(String cid) {
+  public GetOperationStatusRequest cid(@javax.annotation.Nullable String cid) {
     this.cid = cid;
     return this;
   }
@@ -53,16 +55,16 @@ public class GetOperationStatusRequest {
    * @return cid
    */
   @javax.annotation.Nullable
-  @JsonProperty(JSON_PROPERTY_CID)
+  @JsonProperty(value = JSON_PROPERTY_CID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCid() {
     return cid;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_CID)
+  @JsonProperty(value = JSON_PROPERTY_CID, required = false)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCid(String cid) {
+  public void setCid(@javax.annotation.Nullable String cid) {
     this.cid = cid;
   }
 
@@ -141,7 +143,7 @@ public class GetOperationStatusRequest {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format("%scid%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getCid()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
     }
 
     return joiner.toString();

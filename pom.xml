@@ -85,6 +85,12 @@
             <artifactId>commons-codec</artifactId>
             <version>1.15</version> <!-- Use the latest version available -->
         </dependency>
+        <dependency>
+            <groupId>io.ownera</groupId>
+            <artifactId>finp2p-java-sdk</artifactId>
+            <version>v0.25.0</version>
+        </dependency>
+
     </dependencies>
 
 

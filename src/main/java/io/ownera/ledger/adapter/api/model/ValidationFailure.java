@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,13 +38,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   ValidationFailure.JSON_PROPERTY_CODE,
   ValidationFailure.JSON_PROPERTY_MESSAGE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class ValidationFailure {
   /**
    * Gets or Sets failureType
    */
   public enum FailureTypeEnum {
-    VALIDATION_FAILURE("ValidationFailure");
+    VALIDATION_FAILURE(String.valueOf("validationFailure"));
 
     private String value;
 
@@ -73,18 +74,21 @@ public class ValidationFailure {
   }
 
   public static final String JSON_PROPERTY_FAILURE_TYPE = "failureType";
+  @javax.annotation.Nonnull
   private FailureTypeEnum failureType;
 
   public static final String JSON_PROPERTY_CODE = "code";
+  @javax.annotation.Nonnull
   private Integer code;
 
   public static final String JSON_PROPERTY_MESSAGE = "message";
+  @javax.annotation.Nonnull
   private String message;
 
   public ValidationFailure() { 
   }
 
-  public ValidationFailure failureType(FailureTypeEnum failureType) {
+  public ValidationFailure failureType(@javax.annotation.Nonnull FailureTypeEnum failureType) {
     this.failureType = failureType;
     return this;
   }
@@ -94,21 +98,21 @@ public class ValidationFailure {
    * @return failureType
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_FAILURE_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_FAILURE_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public FailureTypeEnum getFailureType() {
     return failureType;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_FAILURE_TYPE)
+  @JsonProperty(value = JSON_PROPERTY_FAILURE_TYPE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFailureType(FailureTypeEnum failureType) {
+  public void setFailureType(@javax.annotation.Nonnull FailureTypeEnum failureType) {
     this.failureType = failureType;
   }
 
 
-  public ValidationFailure code(Integer code) {
+  public ValidationFailure code(@javax.annotation.Nonnull Integer code) {
     this.code = code;
     return this;
   }
@@ -118,21 +122,21 @@ public class ValidationFailure {
    * @return code
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_CODE)
+  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getCode() {
     return code;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_CODE)
+  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(Integer code) {
+  public void setCode(@javax.annotation.Nonnull Integer code) {
     this.code = code;
   }
 
 
-  public ValidationFailure message(String message) {
+  public ValidationFailure message(@javax.annotation.Nonnull String message) {
     this.message = message;
     return this;
   }
@@ -142,16 +146,16 @@ public class ValidationFailure {
    * @return message
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_MESSAGE)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getMessage() {
     return message;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_MESSAGE)
+  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessage(String message) {
+  public void setMessage(@javax.annotation.Nonnull String message) {
     this.message = message;
   }
 
@@ -234,17 +238,17 @@ public class ValidationFailure {
 
     // add `failureType` to the URL query string
     if (getFailureType() != null) {
-      joiner.add(String.format("%sfailureType%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getFailureType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sfailureType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFailureType()))));
     }
 
     // add `code` to the URL query string
     if (getCode() != null) {
-      joiner.add(String.format("%scode%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
     }
 
     // add `message` to the URL query string
     if (getMessage() != null) {
-      joiner.add(String.format("%smessage%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getMessage()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
     }
 
     return joiner.toString();

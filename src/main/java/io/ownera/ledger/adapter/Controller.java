@@ -124,7 +124,7 @@ public class Controller {
         try {
             String balance = ledgerService.getBalance(
                     request.getAsset().getFinp2pAsset().getResourceId(),
-                    request.getOwner().getAccount().getFinIdAccount().getFinId()
+                    request.getOwner().getAccount().getFinId()
             );
             GetAssetBalanceResponse response = new GetAssetBalanceResponse()
                     .asset(request.getAsset())

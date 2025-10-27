@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,6 +19,7 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -35,15 +36,16 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   PayoutInstruction.JSON_PROPERTY_DESCRIPTION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class PayoutInstruction {
   public static final String JSON_PROPERTY_DESCRIPTION = "description";
+  @javax.annotation.Nonnull
   private String description;
 
   public PayoutInstruction() { 
   }
 
-  public PayoutInstruction description(String description) {
+  public PayoutInstruction description(@javax.annotation.Nonnull String description) {
     this.description = description;
     return this;
   }
@@ -53,16 +55,16 @@ public class PayoutInstruction {
    * @return description
    */
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getDescription() {
     return description;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
+  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDescription(String description) {
+  public void setDescription(@javax.annotation.Nonnull String description) {
     this.description = description;
   }
 
@@ -141,7 +143,7 @@ public class PayoutInstruction {
 
     // add `description` to the URL query string
     if (getDescription() != null) {
-      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, URLEncoder.encode(ApiClient.valueToString(getDescription()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(String.format(Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
     }
 
     return joiner.toString();

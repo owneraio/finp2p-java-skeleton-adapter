@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -19,11 +19,13 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Locale;
 
 /**
  * Gets or Sets operationType
@@ -77,7 +79,7 @@ public enum OperationType {
       prefix = "";
     }
 
-    return String.format("%s=%s", prefix, this.toString());
+    return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
   }
 
 }
