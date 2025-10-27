@@ -12,6 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ownera.java.sdk.version>v0.25.1</ownera.java.sdk.version>
     </properties>
 
     <parent>
@@ -63,7 +64,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.15.2</version>
+            <version>2.20.0</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
@@ -88,11 +89,19 @@
         <dependency>
             <groupId>io.ownera</groupId>
             <artifactId>finp2p-java-sdk</artifactId>
-            <version>v0.25.0</version>
+            <version>${ownera.java.sdk.version}</version>
         </dependency>
 
     </dependencies>
 
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>Ownera.io Github Repository</name>
+            <url>https://maven.pkg.github.com/owneraio/finp2p-java-sdk</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

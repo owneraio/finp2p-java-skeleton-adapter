@@ -108,28 +108,33 @@ public class Mappers {
     }
 
     public static OperationStatus operationStatus(ServiceOperationStatus opStatus) {
-        OperationStatus status = new OperationStatus();
         if (opStatus.isCompleted) {
             if (opStatus.error != null) {
-                status.setType(OperationStatus.TypeEnum.RECEIPT);
-                status.setOperation(new OperationStatusOperation(receiptOperationFailed(opStatus.errorCode, opStatus.error)));
+                OperationStatusReceipt receipt = new OperationStatusReceipt();
+                receipt.setType(OperationStatusReceipt.TypeEnum.RECEIPT);
+                receipt.setOperation(receiptOperationFailed(opStatus.errorCode, opStatus.error));
+                return new OperationStatus(receipt);
             } else {
                 if (opStatus.result instanceof ServiceAssetResult) {
-                    status.setType(OperationStatus.TypeEnum.CREATE_ASSET);
+                    OperationStatusCreateAsset receipt = new OperationStatusCreateAsset();
+                    receipt.setType(OperationStatusCreateAsset.TypeEnum.CREATE_ASSET);
                     ServiceAssetResult assetResult = (ServiceAssetResult) opStatus.result;
-                    status.setOperation(new OperationStatusOperation(createAssetOperationCompleted(assetResult)));
-
+                    receipt.setOperation(createAssetOperationCompleted(assetResult));
+                    return new OperationStatus(receipt);
                 } else if (opStatus.result instanceof ServiceTokenResult) {
-                    status.setType(OperationStatus.TypeEnum.RECEIPT);
+                    OperationStatusReceipt receipt = new OperationStatusReceipt();
+                    receipt.setType(OperationStatusReceipt.TypeEnum.RECEIPT);
                     ServiceTokenResult tokenResult = (ServiceTokenResult) opStatus.result;
-                    status.setOperation(new OperationStatusOperation(receiptOperationCompleted(tokenResult)));
+                    receipt.setOperation(receiptOperationCompleted(tokenResult));
+                    return new OperationStatus(receipt);
                 }
             }
-        } else {
-            status.setType(OperationStatus.TypeEnum.RECEIPT);
-            status.setOperation(new OperationStatusOperation(receiptOperationDelayed(opStatus.correlationId)));
         }
-        return status;
+
+        OperationStatusReceipt receipt = new OperationStatusReceipt();
+        receipt.setType(OperationStatusReceipt.TypeEnum.RECEIPT);
+        receipt.setOperation(receiptOperationDelayed(opStatus.correlationId));
+        return new OperationStatus(receipt);
     }
 
 
@@ -138,9 +143,9 @@ public class Mappers {
         if (receipt.sourceFinId != null && !receipt.sourceFinId.isEmpty()) {
             source = new Source()
                     .finId(receipt.sourceFinId)
-                    .account(new SourceAccount(new FinIdAccount()
+                    .account(new FinIdAccount()
                             .type(FinIdAccount.TypeEnum.FIN_ID)
-                            .finId(receipt.sourceFinId)));
+                            .finId(receipt.sourceFinId));
         }
         Destination destination = null;
         if (receipt.destinationFinId != null && !receipt.destinationFinId.isEmpty()) {
