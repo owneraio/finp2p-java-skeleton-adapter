@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
+import io.reactivex.annotations.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,6 +28,59 @@ public class Mappers {
 
     public static Asset fromAPI(APIFinp2pAsset asset) {
         return new Asset(asset.getResourceId(), AssetType.FINP2P);
+    }
+
+    public static AssetBind fromAPI(@Nullable APILedgerTokenId tokenId) {
+        if (tokenId == null) {
+            return null;
+        }
+        return new AssetBind(new TokenIdentifier(tokenId.getTokenId()));
+    }
+
+    public static AssetDenomination fromAPI(@Nullable APIAssetDenomination denomination) {
+        if (denomination == null) {
+            return null;
+        }
+        return new AssetDenomination(fromAPI(denomination.getType()), denomination.getCode());
+    }
+
+    public static AssetDenominationType fromAPI(APIAssetDenominationType type) {
+        switch (type) {
+            case FIAT:
+                return AssetDenominationType.FIAT;
+            case CRYPTOCURRENCY:
+                return AssetDenominationType.CRYPTOCURRENCY;
+            default:
+                throw new MappingException("Unsupported asset denomination type: " + type);
+        }
+    }
+
+    public static AssetIdentifier fromAPI(@Nullable APIAssetIdentifier identifier) {
+        if (identifier == null) {
+            return null;
+        }
+        return new AssetIdentifier(fromAPI(identifier.getAssetIdentifierType()), identifier.getAssetIdentifierValue());
+    }
+
+    public static AssetIdentifierType fromAPI(APIAssetIdentifierType type) {
+        switch (type) {
+            case ISIN:
+                return AssetIdentifierType.ISIN;
+            case CUSIP:
+                return AssetIdentifierType.CUSIP;
+            case SEDOL:
+                return AssetIdentifierType.SEDOL;
+            case DTI:
+                return AssetIdentifierType.DTI;
+            case CMU:
+                return AssetIdentifierType.CMU;
+            case FIGI:
+                return AssetIdentifierType.FIGI;
+            case CUSTOM:
+                return AssetIdentifierType.CUSTOM;
+            default:
+                throw new MappingException("Unsupported asset identifier type: " + type);
+        }
     }
 
 
@@ -59,7 +113,7 @@ public class Mappers {
         return new Source(account.getFinId(), new FinIdAccount(account.getFinId()));
     }
 
-    public static Destination fromAPI(@javax.annotation.Nullable APIDestination account) {
+    public static Destination fromAPI(@Nullable APIDestination account) {
         if (account == null) {
             return null;
         }
@@ -86,7 +140,7 @@ public class Mappers {
         return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
     }
 
-    public static ExecutionContext fromAPI(@javax.annotation.Nullable APIExecutionContext ctx) {
+    public static ExecutionContext fromAPI(@Nullable APIExecutionContext ctx) {
         if (ctx == null) {
             return null;
         }
@@ -285,7 +339,7 @@ public class Mappers {
                 .methodInstruction(toAPI(method.methodInstruction));
     }
 
-    private static APIPaymentMethodMethodInstruction toAPI(@javax.annotation.Nullable PaymentMethodInstruction instruction) {
+    private static APIPaymentMethodMethodInstruction toAPI(@Nullable PaymentMethodInstruction instruction) {
         if (instruction == null) {
             return null;
         }
@@ -433,7 +487,7 @@ public class Mappers {
         }
     }
 
-    private static APISource toAPI(@javax.annotation.Nullable Source source) {
+    private static APISource toAPI(@Nullable Source source) {
         if (source == null) {
             return null;
         }
@@ -446,7 +500,7 @@ public class Mappers {
         return apiSource;
     }
 
-    private static APIDestination toAPI(@javax.annotation.Nullable Destination destination) {
+    private static APIDestination toAPI(@Nullable Destination destination) {
         if (destination == null) {
             return null;
         }
@@ -491,7 +545,7 @@ public class Mappers {
                 .resourceId(asset.assetId));
     }
 
-    private static APITransactionDetails toAPI(@javax.annotation.Nullable TransactionDetails details) {
+    private static APITransactionDetails toAPI(@Nullable TransactionDetails details) {
         if (details == null) {
             return null;
         }
@@ -511,7 +565,7 @@ public class Mappers {
 
     }
 
-    private static APIProofPolicy toAPI(@javax.annotation.Nullable ProofPolicy policy) {
+    private static APIProofPolicy toAPI(@Nullable ProofPolicy policy) {
         if (policy == null) {
             return null;
         }
@@ -538,7 +592,7 @@ public class Mappers {
 
     }
 
-    public static Signature fromAPI(@javax.annotation.Nullable APISignature signature) {
+    public static Signature fromAPI(@Nullable APISignature signature) {
         if (signature == null) {
             return null;
         }
@@ -629,7 +683,7 @@ public class Mappers {
                 .value(field.value);
     }
 
-    public static HashFunction fromAPI(@javax.annotation.Nullable APIHashFunction hashFunction) {
+    public static HashFunction fromAPI(@Nullable APIHashFunction hashFunction) {
         if (hashFunction == null) {
             return null;
         }
@@ -643,7 +697,7 @@ public class Mappers {
         }
     }
 
-    public static APIHashFunction toAPI(@javax.annotation.Nullable HashFunction hashFunction) {
+    public static APIHashFunction toAPI(@Nullable HashFunction hashFunction) {
         if (hashFunction == null) {
             return null;
         }

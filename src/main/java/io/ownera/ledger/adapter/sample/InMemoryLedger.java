@@ -2,103 +2,221 @@ package io.ownera.ledger.adapter.sample;
 
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Profile("in-memory")
-public class InMemoryLedger implements TokenService, EscrowService, CommonService, PlanApprovalService {
+public class InMemoryLedger implements TokenService, EscrowService, CommonService {
 
-    private final Map<String, Map<String, Integer>> holdingMap = new HashMap<>();
-    private final Map<String, Receipt> recieptMap = new HashMap<>();
+    private final static Logger logger = LoggerFactory.getLogger(InMemoryLedger.class);
+
+    private final Storage storage = new Storage();
+    private final Map<String, Transaction> transactions = new HashMap<>();
+
 
     @Override
-    public AssetCreationStatus createAsset(String idempotencyKey, Asset asset) throws TokenServiceException {
-        holdingMap.put(asset.assetId, new HashMap<>());
-        return new SuccessfulAssetCreation(new AssetCreationResult(asset.assetId, null));
+    public AssetCreationStatus createAsset(String idempotencyKey, Asset asset,
+                                           @Nullable AssetBind assetBind, @Nullable Object assetMetadata,
+                                           @Nullable String assetName, @Nullable String issuerId,
+                                           @Nullable AssetDenomination assetDenomination, @Nullable AssetIdentifier assetIdentifier) throws TokenServiceException {
+        logger.info("Create asset operation: asset={}, assetBind={}, assetMetadata={}, assetName={}, issuerId={}, assetDenomination={}, assetIdentifier={}",
+                asset, assetBind, assetMetadata, assetName, issuerId, assetDenomination, assetIdentifier);
+        String tokenId;
+        if (assetBind == null || assetBind.tokenIdentifier == null) {
+            tokenId = UUID.randomUUID().toString();
+            storage.createAsset(asset.assetId, asset);
+        } else {
+            tokenId = assetBind.tokenIdentifier.tokenId;
+        }
+
+        return new SuccessfulAssetCreation(new AssetCreationResult(tokenId, null));
     }
 
     @Override
-    public ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount, ExecutionContext exCtx) throws TokenServiceException {
-        int currentBalance = holdingMap.get(asset.assetId).getOrDefault(to.finId, 0);
-        holdingMap.get(asset.assetId).put(to.finId, currentBalance + Integer.parseInt(amount));
-
-        Receipt receipt = Receipt.newIssueReceipt(asset.assetId, to.finId, amount, "", exCtx);
-        recieptMap.put(receipt.id, receipt);
-        return new SuccessReceiptStatus(receipt);
+    public ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount, @Nullable ExecutionContext exCtx) throws TokenServiceException {
+        logger.info("Issue operation: asset={}, amount={}, to={}, exCtx={}",
+                asset, amount, to, exCtx);
+        storage.credit(to.finId, amount, asset.assetId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                null,
+                to.destination(),
+                amount,
+                asset,
+                exCtx,
+                OperationType.ISSUE,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
     public ReceiptOperation transfer(String idempotencyKey, String nonce,
-                                     Source source, Destination destination, Asset asset, String quantity, Signature signature, ExecutionContext exCtx) throws TokenServiceException {
-        int currentBalance = holdingMap.get(asset.assetId).getOrDefault(source.finId, 0);
-        int amount = Integer.parseInt(quantity);
-        holdingMap.get(asset.assetId).put(source.finId, currentBalance - amount);
-        holdingMap.get(asset.assetId).put(destination.finId, currentBalance + amount);
+                                     Source source, Destination destination, Asset asset, String quantity,
+                                     Signature signature, @Nullable ExecutionContext exCtx) throws TokenServiceException {
+        logger.info("Transfer operation: asset={}, quantity={}, exCtx={}",
+                asset, quantity, exCtx);
 
-        Receipt receipt = Receipt.newTransferReceipt(asset.assetId, source.finId, destination.finId, quantity, "", exCtx);
-        recieptMap.put(receipt.id, receipt);
-        return new SuccessReceiptStatus(receipt);
+        storage.move(source.finId, destination.finId, quantity, asset.assetId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                (FinIdAccount) source.account,
+                destination,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.TRANSFER,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
-    public ReceiptOperation redeem(String idempotencyKey, String nonce, FinIdAccount source, Asset asset, String quantity, String operationId, Signature signature, ExecutionContext exCtx) throws TokenServiceException {
-        int currentBalance = holdingMap.get(asset.assetId).getOrDefault(source.finId, 0);
-        int amount = Integer.parseInt(quantity);
-        holdingMap.get(asset.assetId).put(source.finId, currentBalance - amount);
-
-        Receipt receipt = Receipt.newRedeemReceipt(asset.assetId, source.finId, quantity, operationId, exCtx);
-        recieptMap.put(receipt.id, receipt);
-        return new SuccessReceiptStatus(receipt);
+    public ReceiptOperation redeem(String idempotencyKey, String nonce, FinIdAccount source, Asset asset, String quantity,
+                                   @Nullable String operationId, Signature signature, @Nullable ExecutionContext exCtx) throws TokenServiceException {
+        logger.info("Redeem operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        storage.debit(source.finId, quantity, asset.assetId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                source,
+                null,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.REDEEM,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
     public String getBalance(String assetId, String finId) throws TokenServiceException {
-        int currentBalance = holdingMap.get(assetId).getOrDefault(finId, 0);
-        return String.format("%d", currentBalance);
+        return storage.getBalance(finId, assetId);
     }
 
     @Override
     public Balance balance(String assetId, String finId) throws TokenServiceException {
-        int currentBalance = holdingMap.get(assetId).getOrDefault(finId, 0);
-        String balance = String.format("%d", currentBalance);
+        String balance = storage.getBalance(finId, assetId);
         return new Balance(balance, balance, "0");
     }
 
     @Override
     public ReceiptOperation getReceipt(String id) {
-        Receipt receipt = recieptMap.get(id);
-        if (receipt != null) {
-            return new SuccessReceiptStatus(receipt);
+        Transaction tx = transactions.get(id);
+        if (tx == null) {
+            throw new TokenServiceException("Transaction not found");
         }
-        return null;
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
     public OperationStatus operationStatus(String cid) {
-        return null;
+        Transaction tx = transactions.get(cid);
+        if (tx == null) {
+            throw new TokenServiceException("Transaction not found");
+        }
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
-    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, Destination destination, Asset asset, String quantity, Signature signature, String operationId, ExecutionContext exCtx) {
-        return null;
+    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, @Nullable Destination destination,
+                                 Asset asset, String quantity, Signature signature, String operationId, @Nullable ExecutionContext exCtx) {
+        logger.info("Hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        storage.saveHoldOperation(operationId, source.finId, quantity);
+        storage.debit(source.finId, quantity, asset.assetId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                (FinIdAccount) source.account,
+                destination,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.HOLD,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
-    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
-        return null;
+    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, Asset asset, String quantity,
+                                    String operationId, @Nullable ExecutionContext exCtx) {
+        logger.info("Release hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        HoldOperation hold = this.storage.getHoldOperation(operationId);
+        if (hold == null) {
+            throw new TokenServiceException("unknown operation: " + operationId);
+        }
+        if (!source.finId.equals(hold.finId)) {
+            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
+        }
+        this.storage.credit(destination.finId, quantity, asset.assetId);
+        this.storage.removeHoldOperation(operationId);
+        FinIdAccount holdSource = new FinIdAccount(hold.finId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                holdSource,
+                destination,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.RELEASE,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
     @Override
-    public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
-        return null;
+    public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset, String quantity, String operationId,
+                                     @Nullable ExecutionContext exCtx) {
+        logger.info("Rollback hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        HoldOperation hold = this.storage.getHoldOperation(operationId);
+        if (hold == null) {
+            throw new TokenServiceException("unknown operation: " + operationId);
+        }
+        if (!source.finId.equals(hold.finId)) {
+            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
+        }
+        this.storage.credit(hold.finId, quantity, asset.assetId);
+        this.storage.removeHoldOperation(operationId);
+        FinIdAccount holdSource = new FinIdAccount(hold.finId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                holdSource,
+                null,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.RELEASE,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        return new SuccessReceiptStatus(tx.toReceipt());
     }
 
-    @Override
-    public PlanApprovalStatus approvePlan(String idempotencyKey, String planId) {
-        return new ApprovedPlan();
+
+    private void registerTransaction(Transaction tx) {
+        this.transactions.put(tx.id, tx);
     }
 }

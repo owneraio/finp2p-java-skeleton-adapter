@@ -55,8 +55,16 @@ public class Controller {
             @RequestBody APICreateAssetRequest request
     ) {
         logger.info("Create asset: {}", request);
-        Asset asset = fromAPI(request.getAsset());
-        AssetCreationStatus status = tokenService.createAsset(idempotencyKey, asset);
+        AssetCreationStatus status = tokenService.createAsset(
+                idempotencyKey,
+                fromAPI(request.getAsset()),
+                fromAPI(request.getLedgerAssetBinding()),
+                request.getMetadata(),
+                request.getName(),
+                request.getIssuerId(),
+                fromAPI(request.getDenomination()),
+                fromAPI(request.getAssetIdentifier())
+        );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
