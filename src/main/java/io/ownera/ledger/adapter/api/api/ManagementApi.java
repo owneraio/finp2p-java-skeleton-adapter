@@ -18,8 +18,8 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.CreateAssetRequest;
-import io.ownera.ledger.adapter.api.model.CreateAssetResponse;
+import io.ownera.ledger.adapter.api.model.APICreateAssetRequest;
+import io.ownera.ledger.adapter.api.model.APICreateAssetResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class ManagementApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -157,25 +157,25 @@ public class ManagementApi {
    * Create asset
    * Create a new asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param createAssetRequest  (optional)
-   * @return CreateAssetResponse
+   * @param apICreateAssetRequest  (optional)
+   * @return APICreateAssetResponse
    * @throws ApiException if fails to make API call
    */
-  public CreateAssetResponse createAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable CreateAssetRequest createAssetRequest) throws ApiException {
-    return createAsset(idempotencyKey, createAssetRequest, null);
+  public APICreateAssetResponse createAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APICreateAssetRequest apICreateAssetRequest) throws ApiException {
+    return createAsset(idempotencyKey, apICreateAssetRequest, null);
   }
 
   /**
    * Create asset
    * Create a new asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param createAssetRequest  (optional)
+   * @param apICreateAssetRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return CreateAssetResponse
+   * @return APICreateAssetResponse
    * @throws ApiException if fails to make API call
    */
-  public CreateAssetResponse createAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable CreateAssetRequest createAssetRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<CreateAssetResponse> localVarResponse = createAssetWithHttpInfo(idempotencyKey, createAssetRequest, headers);
+  public APICreateAssetResponse createAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APICreateAssetRequest apICreateAssetRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APICreateAssetResponse> localVarResponse = createAssetWithHttpInfo(idempotencyKey, apICreateAssetRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -183,25 +183,25 @@ public class ManagementApi {
    * Create asset
    * Create a new asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param createAssetRequest  (optional)
-   * @return ApiResponse&lt;CreateAssetResponse&gt;
+   * @param apICreateAssetRequest  (optional)
+   * @return ApiResponse&lt;APICreateAssetResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<CreateAssetResponse> createAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable CreateAssetRequest createAssetRequest) throws ApiException {
-    return createAssetWithHttpInfo(idempotencyKey, createAssetRequest, null);
+  public ApiResponse<APICreateAssetResponse> createAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APICreateAssetRequest apICreateAssetRequest) throws ApiException {
+    return createAssetWithHttpInfo(idempotencyKey, apICreateAssetRequest, null);
   }
 
   /**
    * Create asset
    * Create a new asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param createAssetRequest  (optional)
+   * @param apICreateAssetRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;CreateAssetResponse&gt;
+   * @return ApiResponse&lt;APICreateAssetResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<CreateAssetResponse> createAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable CreateAssetRequest createAssetRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = createAssetRequestBuilder(idempotencyKey, createAssetRequest, headers);
+  public ApiResponse<APICreateAssetResponse> createAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APICreateAssetRequest apICreateAssetRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = createAssetRequestBuilder(idempotencyKey, apICreateAssetRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -214,7 +214,7 @@ public class ManagementApi {
           throw getApiException("createAsset", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<CreateAssetResponse>(
+          return new ApiResponse<APICreateAssetResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -224,11 +224,11 @@ public class ManagementApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        CreateAssetResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<CreateAssetResponse>() {});
+        APICreateAssetResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APICreateAssetResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<CreateAssetResponse>(
+        return new ApiResponse<APICreateAssetResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -244,7 +244,7 @@ public class ManagementApi {
     }
   }
 
-  private HttpRequest.Builder createAssetRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable CreateAssetRequest createAssetRequest, Map<String, String> headers) throws ApiException {
+  private HttpRequest.Builder createAssetRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APICreateAssetRequest apICreateAssetRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling createAsset");
@@ -263,7 +263,7 @@ public class ManagementApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(createAssetRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apICreateAssetRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);

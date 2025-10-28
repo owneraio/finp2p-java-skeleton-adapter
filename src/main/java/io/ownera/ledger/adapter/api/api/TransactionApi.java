@@ -18,8 +18,8 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.AssetBalanceInfoRequest;
-import io.ownera.ledger.adapter.api.model.AssetBalanceInfoResponse;
+import io.ownera.ledger.adapter.api.model.APIAssetBalanceInfoRequest;
+import io.ownera.ledger.adapter.api.model.APIAssetBalanceInfoResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class TransactionApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -156,48 +156,48 @@ public class TransactionApi {
   /**
    * Get asset balance information
    * Get asset balance information for finId
-   * @param assetBalanceInfoRequest  (required)
-   * @return AssetBalanceInfoResponse
+   * @param apIAssetBalanceInfoRequest  (required)
+   * @return APIAssetBalanceInfoResponse
    * @throws ApiException if fails to make API call
    */
-  public AssetBalanceInfoResponse getAssetBalanceInfo(@javax.annotation.Nonnull AssetBalanceInfoRequest assetBalanceInfoRequest) throws ApiException {
-    return getAssetBalanceInfo(assetBalanceInfoRequest, null);
+  public APIAssetBalanceInfoResponse getAssetBalanceInfo(@javax.annotation.Nonnull APIAssetBalanceInfoRequest apIAssetBalanceInfoRequest) throws ApiException {
+    return getAssetBalanceInfo(apIAssetBalanceInfoRequest, null);
   }
 
   /**
    * Get asset balance information
    * Get asset balance information for finId
-   * @param assetBalanceInfoRequest  (required)
+   * @param apIAssetBalanceInfoRequest  (required)
    * @param headers Optional headers to include in the request
-   * @return AssetBalanceInfoResponse
+   * @return APIAssetBalanceInfoResponse
    * @throws ApiException if fails to make API call
    */
-  public AssetBalanceInfoResponse getAssetBalanceInfo(@javax.annotation.Nonnull AssetBalanceInfoRequest assetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<AssetBalanceInfoResponse> localVarResponse = getAssetBalanceInfoWithHttpInfo(assetBalanceInfoRequest, headers);
+  public APIAssetBalanceInfoResponse getAssetBalanceInfo(@javax.annotation.Nonnull APIAssetBalanceInfoRequest apIAssetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIAssetBalanceInfoResponse> localVarResponse = getAssetBalanceInfoWithHttpInfo(apIAssetBalanceInfoRequest, headers);
     return localVarResponse.getData();
   }
 
   /**
    * Get asset balance information
    * Get asset balance information for finId
-   * @param assetBalanceInfoRequest  (required)
-   * @return ApiResponse&lt;AssetBalanceInfoResponse&gt;
+   * @param apIAssetBalanceInfoRequest  (required)
+   * @return ApiResponse&lt;APIAssetBalanceInfoResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<AssetBalanceInfoResponse> getAssetBalanceInfoWithHttpInfo(@javax.annotation.Nonnull AssetBalanceInfoRequest assetBalanceInfoRequest) throws ApiException {
-    return getAssetBalanceInfoWithHttpInfo(assetBalanceInfoRequest, null);
+  public ApiResponse<APIAssetBalanceInfoResponse> getAssetBalanceInfoWithHttpInfo(@javax.annotation.Nonnull APIAssetBalanceInfoRequest apIAssetBalanceInfoRequest) throws ApiException {
+    return getAssetBalanceInfoWithHttpInfo(apIAssetBalanceInfoRequest, null);
   }
 
   /**
    * Get asset balance information
    * Get asset balance information for finId
-   * @param assetBalanceInfoRequest  (required)
+   * @param apIAssetBalanceInfoRequest  (required)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;AssetBalanceInfoResponse&gt;
+   * @return ApiResponse&lt;APIAssetBalanceInfoResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<AssetBalanceInfoResponse> getAssetBalanceInfoWithHttpInfo(@javax.annotation.Nonnull AssetBalanceInfoRequest assetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAssetBalanceInfoRequestBuilder(assetBalanceInfoRequest, headers);
+  public ApiResponse<APIAssetBalanceInfoResponse> getAssetBalanceInfoWithHttpInfo(@javax.annotation.Nonnull APIAssetBalanceInfoRequest apIAssetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAssetBalanceInfoRequestBuilder(apIAssetBalanceInfoRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -210,7 +210,7 @@ public class TransactionApi {
           throw getApiException("getAssetBalanceInfo", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<AssetBalanceInfoResponse>(
+          return new ApiResponse<APIAssetBalanceInfoResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -220,11 +220,11 @@ public class TransactionApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        AssetBalanceInfoResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<AssetBalanceInfoResponse>() {});
+        APIAssetBalanceInfoResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIAssetBalanceInfoResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<AssetBalanceInfoResponse>(
+        return new ApiResponse<APIAssetBalanceInfoResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -240,10 +240,10 @@ public class TransactionApi {
     }
   }
 
-  private HttpRequest.Builder getAssetBalanceInfoRequestBuilder(@javax.annotation.Nonnull AssetBalanceInfoRequest assetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
-    // verify the required parameter 'assetBalanceInfoRequest' is set
-    if (assetBalanceInfoRequest == null) {
-      throw new ApiException(400, "Missing the required parameter 'assetBalanceInfoRequest' when calling getAssetBalanceInfo");
+  private HttpRequest.Builder getAssetBalanceInfoRequestBuilder(@javax.annotation.Nonnull APIAssetBalanceInfoRequest apIAssetBalanceInfoRequest, Map<String, String> headers) throws ApiException {
+    // verify the required parameter 'apIAssetBalanceInfoRequest' is set
+    if (apIAssetBalanceInfoRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'apIAssetBalanceInfoRequest' when calling getAssetBalanceInfo");
     }
 
     HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
@@ -256,7 +256,7 @@ public class TransactionApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(assetBalanceInfoRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIAssetBalanceInfoRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);

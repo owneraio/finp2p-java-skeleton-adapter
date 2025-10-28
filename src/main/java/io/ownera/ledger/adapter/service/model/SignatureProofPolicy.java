@@ -1,16 +1,13 @@
 package io.ownera.ledger.adapter.service.model;
 
-import io.ownera.finp2p.common.HashAlgorithm;
-import io.ownera.finp2p.common.SignatureTemplate;
-
 public class SignatureProofPolicy implements ProofPolicy {
-    public final HashAlgorithm hashAlgorithm;
-    public final SignatureTemplate signatureTemplate;
+    public final HashFunction hashFunction;
+    public final SignatureTemplate template;
     public final String signature;
 
-    public SignatureProofPolicy(HashAlgorithm hashAlgorithm, SignatureTemplate signatureTemplate, String signature) {
-        this.hashAlgorithm = hashAlgorithm;
-        this.signatureTemplate = signatureTemplate;
+    public SignatureProofPolicy(HashFunction hashFunction, SignatureTemplate template, String signature) {
+        this.hashFunction = hashFunction;
+        this.template = template;
         this.signature = signature;
     }
 }

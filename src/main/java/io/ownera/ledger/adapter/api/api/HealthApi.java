@@ -18,8 +18,8 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.GetHealth200Response;
-import io.ownera.ledger.adapter.api.model.GetHealth503Response;
+import io.ownera.ledger.adapter.api.model.APIGetHealth200Response;
+import io.ownera.ledger.adapter.api.model.APIGetHealth503Response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class HealthApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -156,10 +156,10 @@ public class HealthApi {
   /**
    * Health check
    * Returns the health status of the service.
-   * @return GetHealth200Response
+   * @return APIGetHealth200Response
    * @throws ApiException if fails to make API call
    */
-  public GetHealth200Response getHealth() throws ApiException {
+  public APIGetHealth200Response getHealth() throws ApiException {
     return getHealth(null);
   }
 
@@ -167,21 +167,21 @@ public class HealthApi {
    * Health check
    * Returns the health status of the service.
    * @param headers Optional headers to include in the request
-   * @return GetHealth200Response
+   * @return APIGetHealth200Response
    * @throws ApiException if fails to make API call
    */
-  public GetHealth200Response getHealth(Map<String, String> headers) throws ApiException {
-    ApiResponse<GetHealth200Response> localVarResponse = getHealthWithHttpInfo(headers);
+  public APIGetHealth200Response getHealth(Map<String, String> headers) throws ApiException {
+    ApiResponse<APIGetHealth200Response> localVarResponse = getHealthWithHttpInfo(headers);
     return localVarResponse.getData();
   }
 
   /**
    * Health check
    * Returns the health status of the service.
-   * @return ApiResponse&lt;GetHealth200Response&gt;
+   * @return ApiResponse&lt;APIGetHealth200Response&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<GetHealth200Response> getHealthWithHttpInfo() throws ApiException {
+  public ApiResponse<APIGetHealth200Response> getHealthWithHttpInfo() throws ApiException {
     return getHealthWithHttpInfo(null);
   }
 
@@ -189,10 +189,10 @@ public class HealthApi {
    * Health check
    * Returns the health status of the service.
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetHealth200Response&gt;
+   * @return ApiResponse&lt;APIGetHealth200Response&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<GetHealth200Response> getHealthWithHttpInfo(Map<String, String> headers) throws ApiException {
+  public ApiResponse<APIGetHealth200Response> getHealthWithHttpInfo(Map<String, String> headers) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getHealthRequestBuilder(headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -206,7 +206,7 @@ public class HealthApi {
           throw getApiException("getHealth", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<GetHealth200Response>(
+          return new ApiResponse<APIGetHealth200Response>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -216,11 +216,11 @@ public class HealthApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetHealth200Response responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetHealth200Response>() {});
+        APIGetHealth200Response responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIGetHealth200Response>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<GetHealth200Response>(
+        return new ApiResponse<APIGetHealth200Response>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue

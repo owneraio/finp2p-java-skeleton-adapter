@@ -1,10 +1,11 @@
 package io.ownera.ledger.adapter;
 
+import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.api.model.*;
-import io.ownera.ledger.adapter.service.LedgerService;
-import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.AssetCreationStatus;
-import io.ownera.ledger.adapter.service.model.ServiceTokenResult;
+import io.ownera.ledger.adapter.service.model.OperationStatus;
+import io.ownera.ledger.adapter.service.model.PlanApprovalStatus;
+import io.ownera.ledger.adapter.service.model.ReceiptOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,18 +18,47 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ExecutionException;
 
 import static io.ownera.ledger.adapter.Mappers.*;
+import static io.ownera.ledger.adapter.Mappers.toAPI;
+import static io.ownera.ledger.adapter.Mappers.toAPI;
 
 @RestController
 @RequestMapping("/api")
 public class Controller {
 
-    private final LedgerService ledgerService;
+    private final EscrowService escrowService;
+    private final TokenService tokenService;
+    private final PaymentService paymentService;
+    private final PlanApprovalService planApprovalService;
+    private final CommonService commonService;
 
-    public Controller(LedgerService ledgerService) {
-        this.ledgerService = ledgerService;
+    public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
+                      PlanApprovalService planApprovalService, CommonService commonService) {
+        this.escrowService = escrowService;
+        this.tokenService = tokenService;
+        this.paymentService = paymentService;
+        this.planApprovalService = planApprovalService;
+        this.commonService = commonService;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
+
+
+    @PostMapping(value = "/plan/approve", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIApproveExecutionPlanResponse> approvePlan(
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestBody APIApproveExecutionPlanRequest request
+    ) {
+        String planId = request.getExecutionPlan().getId();
+        logger.info("Approve plan: {}", planId);
+        try {
+            PlanApprovalStatus status = planApprovalService.approvePlan(idempotencyKey, planId);
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
+        } catch (TokenServiceException e) {
+            logger.error("Cant start the flow", e);
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body(createAssetResponseFailed(1, "Cant start the flow: " + e.getMessage()));
+        }
+    }
 
     @PostMapping(value = "/assets/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateAssetResponse> createAsset(
@@ -37,9 +67,9 @@ public class Controller {
     ) {
         logger.info("Create asset: {}", request);
         try {
-            ServiceOperationResult<AssetCreationStatus> result = ledgerService.createAsset(idempotencyKey,
-                    request.getAsset().getFinp2pAsset().getResourceId());
-            return ResponseEntity.status(HttpStatus.OK).body(createAssetResponse(result));
+            Asset asset = fromAPI(request.getAsset());
+            AssetCreationStatus status = tokenService.createAsset(idempotencyKey, asset);
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
         } catch (TokenServiceException e) {
             logger.error("Cant start the flow", e);
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
@@ -48,13 +78,13 @@ public class Controller {
     }
 
     @PostMapping(value = "/assets/issue", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReceiptOperation> issue(
+    public ResponseEntity<APIReceiptOperation> issue(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @RequestBody IssueAssetsRequest request
+            @RequestBody APIIssueAssetsRequest request
     ) {
         logger.info("Issue token: {}", request);
         try {
-            ServiceOperationResult<ServiceTokenResult> result = ledgerService.issueAssets(
+           ReceiptOperation result = tokenService.issue(
                     idempotencyKey,
                     request.getNonce(),
                     request.getAsset().getResourceId(),
@@ -71,15 +101,15 @@ public class Controller {
     }
 
     @PostMapping(value = "/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReceiptOperation> transfer(
+    public ResponseEntity<APIReceiptOperation> transfer(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @RequestBody TransferAssetRequest request
+            @RequestBody APITransferAssetRequest request
     ) {
         logger.info("Transfer token: {}", request);
 
         String assetId = request.getAsset().getFinp2pAsset().getResourceId();
         try {
-            ServiceOperationResult<ServiceTokenResult> result = ledgerService.transferAssets(idempotencyKey,
+            ServiceOperationResult<ServiceTokenResult> result = tokenService.transfer(idempotencyKey,
                     request.getNonce(),
                     assetId, request.getSource().getFinId(),
                     request.getDestination().getFinId(),
@@ -95,13 +125,13 @@ public class Controller {
     }
 
     @PostMapping(value = "/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReceiptOperation> redeem(
+    public ResponseEntity<APIReceiptOperation> redeem(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @RequestBody RedeemAssetsRequest request
+            @RequestBody APIRedeemAssetsRequest request
     ) {
         logger.info("Redeem token: {}", request);
         try {
-            ServiceOperationResult<ServiceTokenResult> result = ledgerService.redeemAssets(
+            ServiceOperationResult<ServiceTokenResult> result = tokenService.redeem(
                     idempotencyKey,
                     request.getNonce(),
                     request.getAsset().getResourceId(),
@@ -118,9 +148,9 @@ public class Controller {
     }
 
     @PostMapping(value = "/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GetAssetBalanceResponse> getBalance(@RequestBody GetAssetBalanceRequest request) {
+    public ResponseEntity<APIGetAssetBalanceResponse> getBalance(@RequestBody APIGetAssetBalanceRequest request) {
         try {
-            String balance = ledgerService.getBalance(
+            String balance = tokenService.getBalance(
                     request.getAsset().getFinp2pAsset().getResourceId(),
                     request.getOwner().getAccount().getFinId()
             );
@@ -134,13 +164,13 @@ public class Controller {
         }
     }
 
-    @GetMapping(value = "/assets/receipts/{id}",  consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Receipt> getReceipt(
+    @GetMapping(value = "/assets/receipts/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIGetReceiptResponse> getReceipt(
             @PathVariable("id") String transactionId
     ) {
         try {
-            ServiceTokenResult tokenReceipt = ledgerService.getTokenReceipt(transactionId);
-            return ResponseEntity.status(HttpStatus.OK).body(receipt(tokenReceipt));
+            ReceiptOperation receipt = commonService.getReceipt(transactionId);
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(receipt));
 
         } catch (TokenServiceException e) {
             logger.error("Cant obtain receipt", e);
@@ -148,11 +178,11 @@ public class Controller {
         }
     }
 
-    @GetMapping(value = "/operations/status/{id}",  consumes = MediaType.APPLICATION_JSON_VALUE)
-    public final ResponseEntity<OperationStatus> getOperationStatus(@PathVariable("id") String correlationId) {
+    @GetMapping(value = "/operations/status/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public final ResponseEntity<APIOperationStatus> getOperationStatus(@PathVariable("id") String correlationId) {
         try {
-            ServiceOperationStatus status = ledgerService.getOperationStatus(correlationId);
-            return ResponseEntity.status(HttpStatus.OK).body(operationStatus(status));
+            OperationStatus status = commonService.operationStatus(correlationId);
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
         } catch (TokenServiceException e) {
             logger.error("Cant obtain status", e);
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();

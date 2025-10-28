@@ -18,11 +18,11 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.GetAssetBalanceRequest;
-import io.ownera.ledger.adapter.api.model.GetAssetBalanceResponse;
-import io.ownera.ledger.adapter.api.model.GetReceiptResponse;
-import io.ownera.ledger.adapter.api.model.TransferAssetRequest;
-import io.ownera.ledger.adapter.api.model.TransferAssetResponse;
+import io.ownera.ledger.adapter.api.model.APIGetAssetBalanceRequest;
+import io.ownera.ledger.adapter.api.model.APIGetAssetBalanceResponse;
+import io.ownera.ledger.adapter.api.model.APIGetReceiptResponse;
+import io.ownera.ledger.adapter.api.model.APITransferAssetRequest;
+import io.ownera.ledger.adapter.api.model.APITransferAssetResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +50,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class TransactionsApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -159,56 +159,56 @@ public class TransactionsApi {
   /**
    * Get asset balance
    * Get asset balance for specified owner
-   * @param getAssetBalanceRequest  (optional)
-   * @return GetAssetBalanceResponse
+   * @param apIGetAssetBalanceRequest  (optional)
+   * @return APIGetAssetBalanceResponse
    * @throws ApiException if fails to make API call
    * @deprecated
    */
   @Deprecated
-  public GetAssetBalanceResponse getAssetBalance(@javax.annotation.Nullable GetAssetBalanceRequest getAssetBalanceRequest) throws ApiException {
-    return getAssetBalance(getAssetBalanceRequest, null);
+  public APIGetAssetBalanceResponse getAssetBalance(@javax.annotation.Nullable APIGetAssetBalanceRequest apIGetAssetBalanceRequest) throws ApiException {
+    return getAssetBalance(apIGetAssetBalanceRequest, null);
   }
 
   /**
    * Get asset balance
    * Get asset balance for specified owner
-   * @param getAssetBalanceRequest  (optional)
+   * @param apIGetAssetBalanceRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return GetAssetBalanceResponse
+   * @return APIGetAssetBalanceResponse
    * @throws ApiException if fails to make API call
    * @deprecated
    */
   @Deprecated
-  public GetAssetBalanceResponse getAssetBalance(@javax.annotation.Nullable GetAssetBalanceRequest getAssetBalanceRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetAssetBalanceResponse> localVarResponse = getAssetBalanceWithHttpInfo(getAssetBalanceRequest, headers);
+  public APIGetAssetBalanceResponse getAssetBalance(@javax.annotation.Nullable APIGetAssetBalanceRequest apIGetAssetBalanceRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIGetAssetBalanceResponse> localVarResponse = getAssetBalanceWithHttpInfo(apIGetAssetBalanceRequest, headers);
     return localVarResponse.getData();
   }
 
   /**
    * Get asset balance
    * Get asset balance for specified owner
-   * @param getAssetBalanceRequest  (optional)
-   * @return ApiResponse&lt;GetAssetBalanceResponse&gt;
+   * @param apIGetAssetBalanceRequest  (optional)
+   * @return ApiResponse&lt;APIGetAssetBalanceResponse&gt;
    * @throws ApiException if fails to make API call
    * @deprecated
    */
   @Deprecated
-  public ApiResponse<GetAssetBalanceResponse> getAssetBalanceWithHttpInfo(@javax.annotation.Nullable GetAssetBalanceRequest getAssetBalanceRequest) throws ApiException {
-    return getAssetBalanceWithHttpInfo(getAssetBalanceRequest, null);
+  public ApiResponse<APIGetAssetBalanceResponse> getAssetBalanceWithHttpInfo(@javax.annotation.Nullable APIGetAssetBalanceRequest apIGetAssetBalanceRequest) throws ApiException {
+    return getAssetBalanceWithHttpInfo(apIGetAssetBalanceRequest, null);
   }
 
   /**
    * Get asset balance
    * Get asset balance for specified owner
-   * @param getAssetBalanceRequest  (optional)
+   * @param apIGetAssetBalanceRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetAssetBalanceResponse&gt;
+   * @return ApiResponse&lt;APIGetAssetBalanceResponse&gt;
    * @throws ApiException if fails to make API call
    * @deprecated
    */
   @Deprecated
-  public ApiResponse<GetAssetBalanceResponse> getAssetBalanceWithHttpInfo(@javax.annotation.Nullable GetAssetBalanceRequest getAssetBalanceRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = getAssetBalanceRequestBuilder(getAssetBalanceRequest, headers);
+  public ApiResponse<APIGetAssetBalanceResponse> getAssetBalanceWithHttpInfo(@javax.annotation.Nullable APIGetAssetBalanceRequest apIGetAssetBalanceRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = getAssetBalanceRequestBuilder(apIGetAssetBalanceRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -221,7 +221,7 @@ public class TransactionsApi {
           throw getApiException("getAssetBalance", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<GetAssetBalanceResponse>(
+          return new ApiResponse<APIGetAssetBalanceResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -231,11 +231,11 @@ public class TransactionsApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetAssetBalanceResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetAssetBalanceResponse>() {});
+        APIGetAssetBalanceResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIGetAssetBalanceResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<GetAssetBalanceResponse>(
+        return new ApiResponse<APIGetAssetBalanceResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -251,7 +251,7 @@ public class TransactionsApi {
     }
   }
 
-  private HttpRequest.Builder getAssetBalanceRequestBuilder(@javax.annotation.Nullable GetAssetBalanceRequest getAssetBalanceRequest, Map<String, String> headers) throws ApiException {
+  private HttpRequest.Builder getAssetBalanceRequestBuilder(@javax.annotation.Nullable APIGetAssetBalanceRequest apIGetAssetBalanceRequest, Map<String, String> headers) throws ApiException {
 
     HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -263,7 +263,7 @@ public class TransactionsApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(getAssetBalanceRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIGetAssetBalanceRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);
@@ -283,10 +283,10 @@ public class TransactionsApi {
    * Get Receipt
    * Get asset transaction receipt
    * @param transactionId ID of the asset transaction (required)
-   * @return GetReceiptResponse
+   * @return APIGetReceiptResponse
    * @throws ApiException if fails to make API call
    */
-  public GetReceiptResponse getReceipt(@javax.annotation.Nonnull String transactionId) throws ApiException {
+  public APIGetReceiptResponse getReceipt(@javax.annotation.Nonnull String transactionId) throws ApiException {
     return getReceipt(transactionId, null);
   }
 
@@ -295,11 +295,11 @@ public class TransactionsApi {
    * Get asset transaction receipt
    * @param transactionId ID of the asset transaction (required)
    * @param headers Optional headers to include in the request
-   * @return GetReceiptResponse
+   * @return APIGetReceiptResponse
    * @throws ApiException if fails to make API call
    */
-  public GetReceiptResponse getReceipt(@javax.annotation.Nonnull String transactionId, Map<String, String> headers) throws ApiException {
-    ApiResponse<GetReceiptResponse> localVarResponse = getReceiptWithHttpInfo(transactionId, headers);
+  public APIGetReceiptResponse getReceipt(@javax.annotation.Nonnull String transactionId, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIGetReceiptResponse> localVarResponse = getReceiptWithHttpInfo(transactionId, headers);
     return localVarResponse.getData();
   }
 
@@ -307,10 +307,10 @@ public class TransactionsApi {
    * Get Receipt
    * Get asset transaction receipt
    * @param transactionId ID of the asset transaction (required)
-   * @return ApiResponse&lt;GetReceiptResponse&gt;
+   * @return ApiResponse&lt;APIGetReceiptResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<GetReceiptResponse> getReceiptWithHttpInfo(@javax.annotation.Nonnull String transactionId) throws ApiException {
+  public ApiResponse<APIGetReceiptResponse> getReceiptWithHttpInfo(@javax.annotation.Nonnull String transactionId) throws ApiException {
     return getReceiptWithHttpInfo(transactionId, null);
   }
 
@@ -319,10 +319,10 @@ public class TransactionsApi {
    * Get asset transaction receipt
    * @param transactionId ID of the asset transaction (required)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;GetReceiptResponse&gt;
+   * @return ApiResponse&lt;APIGetReceiptResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<GetReceiptResponse> getReceiptWithHttpInfo(@javax.annotation.Nonnull String transactionId, Map<String, String> headers) throws ApiException {
+  public ApiResponse<APIGetReceiptResponse> getReceiptWithHttpInfo(@javax.annotation.Nonnull String transactionId, Map<String, String> headers) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getReceiptRequestBuilder(transactionId, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -336,7 +336,7 @@ public class TransactionsApi {
           throw getApiException("getReceipt", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<GetReceiptResponse>(
+          return new ApiResponse<APIGetReceiptResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -346,11 +346,11 @@ public class TransactionsApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        GetReceiptResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<GetReceiptResponse>() {});
+        APIGetReceiptResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIGetReceiptResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<GetReceiptResponse>(
+        return new ApiResponse<APIGetReceiptResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -397,25 +397,25 @@ public class TransactionsApi {
    * Asset Token Transfer
    * Transfer existing asset token to a new owner. Transfer of ownership is done by eliminating existing tokens owned by the sender and creating new tokens with the new owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param transferAssetRequest  (optional)
-   * @return TransferAssetResponse
+   * @param apITransferAssetRequest  (optional)
+   * @return APITransferAssetResponse
    * @throws ApiException if fails to make API call
    */
-  public TransferAssetResponse transferAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable TransferAssetRequest transferAssetRequest) throws ApiException {
-    return transferAsset(idempotencyKey, transferAssetRequest, null);
+  public APITransferAssetResponse transferAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APITransferAssetRequest apITransferAssetRequest) throws ApiException {
+    return transferAsset(idempotencyKey, apITransferAssetRequest, null);
   }
 
   /**
    * Asset Token Transfer
    * Transfer existing asset token to a new owner. Transfer of ownership is done by eliminating existing tokens owned by the sender and creating new tokens with the new owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param transferAssetRequest  (optional)
+   * @param apITransferAssetRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return TransferAssetResponse
+   * @return APITransferAssetResponse
    * @throws ApiException if fails to make API call
    */
-  public TransferAssetResponse transferAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable TransferAssetRequest transferAssetRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<TransferAssetResponse> localVarResponse = transferAssetWithHttpInfo(idempotencyKey, transferAssetRequest, headers);
+  public APITransferAssetResponse transferAsset(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APITransferAssetRequest apITransferAssetRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APITransferAssetResponse> localVarResponse = transferAssetWithHttpInfo(idempotencyKey, apITransferAssetRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -423,25 +423,25 @@ public class TransactionsApi {
    * Asset Token Transfer
    * Transfer existing asset token to a new owner. Transfer of ownership is done by eliminating existing tokens owned by the sender and creating new tokens with the new owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param transferAssetRequest  (optional)
-   * @return ApiResponse&lt;TransferAssetResponse&gt;
+   * @param apITransferAssetRequest  (optional)
+   * @return ApiResponse&lt;APITransferAssetResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<TransferAssetResponse> transferAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable TransferAssetRequest transferAssetRequest) throws ApiException {
-    return transferAssetWithHttpInfo(idempotencyKey, transferAssetRequest, null);
+  public ApiResponse<APITransferAssetResponse> transferAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APITransferAssetRequest apITransferAssetRequest) throws ApiException {
+    return transferAssetWithHttpInfo(idempotencyKey, apITransferAssetRequest, null);
   }
 
   /**
    * Asset Token Transfer
    * Transfer existing asset token to a new owner. Transfer of ownership is done by eliminating existing tokens owned by the sender and creating new tokens with the new owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param transferAssetRequest  (optional)
+   * @param apITransferAssetRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;TransferAssetResponse&gt;
+   * @return ApiResponse&lt;APITransferAssetResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<TransferAssetResponse> transferAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable TransferAssetRequest transferAssetRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = transferAssetRequestBuilder(idempotencyKey, transferAssetRequest, headers);
+  public ApiResponse<APITransferAssetResponse> transferAssetWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APITransferAssetRequest apITransferAssetRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = transferAssetRequestBuilder(idempotencyKey, apITransferAssetRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -454,7 +454,7 @@ public class TransactionsApi {
           throw getApiException("transferAsset", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<TransferAssetResponse>(
+          return new ApiResponse<APITransferAssetResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -464,11 +464,11 @@ public class TransactionsApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        TransferAssetResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<TransferAssetResponse>() {});
+        APITransferAssetResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APITransferAssetResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<TransferAssetResponse>(
+        return new ApiResponse<APITransferAssetResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -484,7 +484,7 @@ public class TransactionsApi {
     }
   }
 
-  private HttpRequest.Builder transferAssetRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable TransferAssetRequest transferAssetRequest, Map<String, String> headers) throws ApiException {
+  private HttpRequest.Builder transferAssetRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APITransferAssetRequest apITransferAssetRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling transferAsset");
@@ -503,7 +503,7 @@ public class TransactionsApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(transferAssetRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apITransferAssetRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);

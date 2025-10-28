@@ -18,10 +18,10 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.IssueAssetsRequest;
-import io.ownera.ledger.adapter.api.model.IssueAssetsResponse;
-import io.ownera.ledger.adapter.api.model.RedeemAssetsRequest;
-import io.ownera.ledger.adapter.api.model.RedeemAssetsResponse;
+import io.ownera.ledger.adapter.api.model.APIIssueAssetsRequest;
+import io.ownera.ledger.adapter.api.model.APIIssueAssetsResponse;
+import io.ownera.ledger.adapter.api.model.APIRedeemAssetsRequest;
+import io.ownera.ledger.adapter.api.model.APIRedeemAssetsResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class IssuanceApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -159,25 +159,25 @@ public class IssuanceApi {
    * Issue asset token
    * Issue specified amount of asset tokens for the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param issueAssetsRequest  (optional)
-   * @return IssueAssetsResponse
+   * @param apIIssueAssetsRequest  (optional)
+   * @return APIIssueAssetsResponse
    * @throws ApiException if fails to make API call
    */
-  public IssueAssetsResponse issueAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable IssueAssetsRequest issueAssetsRequest) throws ApiException {
-    return issueAssets(idempotencyKey, issueAssetsRequest, null);
+  public APIIssueAssetsResponse issueAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIIssueAssetsRequest apIIssueAssetsRequest) throws ApiException {
+    return issueAssets(idempotencyKey, apIIssueAssetsRequest, null);
   }
 
   /**
    * Issue asset token
    * Issue specified amount of asset tokens for the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param issueAssetsRequest  (optional)
+   * @param apIIssueAssetsRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return IssueAssetsResponse
+   * @return APIIssueAssetsResponse
    * @throws ApiException if fails to make API call
    */
-  public IssueAssetsResponse issueAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable IssueAssetsRequest issueAssetsRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<IssueAssetsResponse> localVarResponse = issueAssetsWithHttpInfo(idempotencyKey, issueAssetsRequest, headers);
+  public APIIssueAssetsResponse issueAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIIssueAssetsRequest apIIssueAssetsRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIIssueAssetsResponse> localVarResponse = issueAssetsWithHttpInfo(idempotencyKey, apIIssueAssetsRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -185,25 +185,25 @@ public class IssuanceApi {
    * Issue asset token
    * Issue specified amount of asset tokens for the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param issueAssetsRequest  (optional)
-   * @return ApiResponse&lt;IssueAssetsResponse&gt;
+   * @param apIIssueAssetsRequest  (optional)
+   * @return ApiResponse&lt;APIIssueAssetsResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<IssueAssetsResponse> issueAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable IssueAssetsRequest issueAssetsRequest) throws ApiException {
-    return issueAssetsWithHttpInfo(idempotencyKey, issueAssetsRequest, null);
+  public ApiResponse<APIIssueAssetsResponse> issueAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIIssueAssetsRequest apIIssueAssetsRequest) throws ApiException {
+    return issueAssetsWithHttpInfo(idempotencyKey, apIIssueAssetsRequest, null);
   }
 
   /**
    * Issue asset token
    * Issue specified amount of asset tokens for the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param issueAssetsRequest  (optional)
+   * @param apIIssueAssetsRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;IssueAssetsResponse&gt;
+   * @return ApiResponse&lt;APIIssueAssetsResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<IssueAssetsResponse> issueAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable IssueAssetsRequest issueAssetsRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = issueAssetsRequestBuilder(idempotencyKey, issueAssetsRequest, headers);
+  public ApiResponse<APIIssueAssetsResponse> issueAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIIssueAssetsRequest apIIssueAssetsRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = issueAssetsRequestBuilder(idempotencyKey, apIIssueAssetsRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -216,7 +216,7 @@ public class IssuanceApi {
           throw getApiException("issueAssets", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<IssueAssetsResponse>(
+          return new ApiResponse<APIIssueAssetsResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -226,11 +226,11 @@ public class IssuanceApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        IssueAssetsResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<IssueAssetsResponse>() {});
+        APIIssueAssetsResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIIssueAssetsResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<IssueAssetsResponse>(
+        return new ApiResponse<APIIssueAssetsResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -246,7 +246,7 @@ public class IssuanceApi {
     }
   }
 
-  private HttpRequest.Builder issueAssetsRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable IssueAssetsRequest issueAssetsRequest, Map<String, String> headers) throws ApiException {
+  private HttpRequest.Builder issueAssetsRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIIssueAssetsRequest apIIssueAssetsRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling issueAssets");
@@ -265,7 +265,7 @@ public class IssuanceApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(issueAssetsRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIIssueAssetsRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);
@@ -285,25 +285,25 @@ public class IssuanceApi {
    * Asset Token Redeem
    * Redeem existing asset token for new owner. Redeem of ownership is done by eliminating existing tokens owned by the owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param redeemAssetsRequest  (optional)
-   * @return RedeemAssetsResponse
+   * @param apIRedeemAssetsRequest  (optional)
+   * @return APIRedeemAssetsResponse
    * @throws ApiException if fails to make API call
    */
-  public RedeemAssetsResponse redeemAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable RedeemAssetsRequest redeemAssetsRequest) throws ApiException {
-    return redeemAssets(idempotencyKey, redeemAssetsRequest, null);
+  public APIRedeemAssetsResponse redeemAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRedeemAssetsRequest apIRedeemAssetsRequest) throws ApiException {
+    return redeemAssets(idempotencyKey, apIRedeemAssetsRequest, null);
   }
 
   /**
    * Asset Token Redeem
    * Redeem existing asset token for new owner. Redeem of ownership is done by eliminating existing tokens owned by the owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param redeemAssetsRequest  (optional)
+   * @param apIRedeemAssetsRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return RedeemAssetsResponse
+   * @return APIRedeemAssetsResponse
    * @throws ApiException if fails to make API call
    */
-  public RedeemAssetsResponse redeemAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable RedeemAssetsRequest redeemAssetsRequest, Map<String, String> headers) throws ApiException {
-    ApiResponse<RedeemAssetsResponse> localVarResponse = redeemAssetsWithHttpInfo(idempotencyKey, redeemAssetsRequest, headers);
+  public APIRedeemAssetsResponse redeemAssets(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRedeemAssetsRequest apIRedeemAssetsRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIRedeemAssetsResponse> localVarResponse = redeemAssetsWithHttpInfo(idempotencyKey, apIRedeemAssetsRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -311,25 +311,25 @@ public class IssuanceApi {
    * Asset Token Redeem
    * Redeem existing asset token for new owner. Redeem of ownership is done by eliminating existing tokens owned by the owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param redeemAssetsRequest  (optional)
-   * @return ApiResponse&lt;RedeemAssetsResponse&gt;
+   * @param apIRedeemAssetsRequest  (optional)
+   * @return ApiResponse&lt;APIRedeemAssetsResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RedeemAssetsResponse> redeemAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable RedeemAssetsRequest redeemAssetsRequest) throws ApiException {
-    return redeemAssetsWithHttpInfo(idempotencyKey, redeemAssetsRequest, null);
+  public ApiResponse<APIRedeemAssetsResponse> redeemAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRedeemAssetsRequest apIRedeemAssetsRequest) throws ApiException {
+    return redeemAssetsWithHttpInfo(idempotencyKey, apIRedeemAssetsRequest, null);
   }
 
   /**
    * Asset Token Redeem
    * Redeem existing asset token for new owner. Redeem of ownership is done by eliminating existing tokens owned by the owner.
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param redeemAssetsRequest  (optional)
+   * @param apIRedeemAssetsRequest  (optional)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;RedeemAssetsResponse&gt;
+   * @return ApiResponse&lt;APIRedeemAssetsResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RedeemAssetsResponse> redeemAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable RedeemAssetsRequest redeemAssetsRequest, Map<String, String> headers) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = redeemAssetsRequestBuilder(idempotencyKey, redeemAssetsRequest, headers);
+  public ApiResponse<APIRedeemAssetsResponse> redeemAssetsWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRedeemAssetsRequest apIRedeemAssetsRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = redeemAssetsRequestBuilder(idempotencyKey, apIRedeemAssetsRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -342,7 +342,7 @@ public class IssuanceApi {
           throw getApiException("redeemAssets", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<RedeemAssetsResponse>(
+          return new ApiResponse<APIRedeemAssetsResponse>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -352,11 +352,11 @@ public class IssuanceApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        RedeemAssetsResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<RedeemAssetsResponse>() {});
+        APIRedeemAssetsResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIRedeemAssetsResponse>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<RedeemAssetsResponse>(
+        return new ApiResponse<APIRedeemAssetsResponse>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
@@ -372,7 +372,7 @@ public class IssuanceApi {
     }
   }
 
-  private HttpRequest.Builder redeemAssetsRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable RedeemAssetsRequest redeemAssetsRequest, Map<String, String> headers) throws ApiException {
+  private HttpRequest.Builder redeemAssetsRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRedeemAssetsRequest apIRedeemAssetsRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling redeemAssets");
@@ -391,7 +391,7 @@ public class IssuanceApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(redeemAssetsRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIRedeemAssetsRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);

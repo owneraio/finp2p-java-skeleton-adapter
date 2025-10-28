@@ -18,7 +18,7 @@ import io.ownera.ledger.adapter.api.ApiResponse;
 import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.OperationStatus;
+import io.ownera.ledger.adapter.api.model.APIOperationStatus;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-27T09:27:05.154160+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class OperationsApi {
   /**
    * Utility class for extending HttpRequest.Builder functionality.
@@ -156,10 +156,10 @@ public class OperationsApi {
    * Get Operation Status
    * Get the operation status by an operation correlation id
    * @param cid correlation id of an operation (required)
-   * @return OperationStatus
+   * @return APIOperationStatus
    * @throws ApiException if fails to make API call
    */
-  public OperationStatus getOperation(@javax.annotation.Nonnull String cid) throws ApiException {
+  public APIOperationStatus getOperation(@javax.annotation.Nonnull String cid) throws ApiException {
     return getOperation(cid, null);
   }
 
@@ -168,11 +168,11 @@ public class OperationsApi {
    * Get the operation status by an operation correlation id
    * @param cid correlation id of an operation (required)
    * @param headers Optional headers to include in the request
-   * @return OperationStatus
+   * @return APIOperationStatus
    * @throws ApiException if fails to make API call
    */
-  public OperationStatus getOperation(@javax.annotation.Nonnull String cid, Map<String, String> headers) throws ApiException {
-    ApiResponse<OperationStatus> localVarResponse = getOperationWithHttpInfo(cid, headers);
+  public APIOperationStatus getOperation(@javax.annotation.Nonnull String cid, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIOperationStatus> localVarResponse = getOperationWithHttpInfo(cid, headers);
     return localVarResponse.getData();
   }
 
@@ -180,10 +180,10 @@ public class OperationsApi {
    * Get Operation Status
    * Get the operation status by an operation correlation id
    * @param cid correlation id of an operation (required)
-   * @return ApiResponse&lt;OperationStatus&gt;
+   * @return ApiResponse&lt;APIOperationStatus&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<OperationStatus> getOperationWithHttpInfo(@javax.annotation.Nonnull String cid) throws ApiException {
+  public ApiResponse<APIOperationStatus> getOperationWithHttpInfo(@javax.annotation.Nonnull String cid) throws ApiException {
     return getOperationWithHttpInfo(cid, null);
   }
 
@@ -192,10 +192,10 @@ public class OperationsApi {
    * Get the operation status by an operation correlation id
    * @param cid correlation id of an operation (required)
    * @param headers Optional headers to include in the request
-   * @return ApiResponse&lt;OperationStatus&gt;
+   * @return ApiResponse&lt;APIOperationStatus&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<OperationStatus> getOperationWithHttpInfo(@javax.annotation.Nonnull String cid, Map<String, String> headers) throws ApiException {
+  public ApiResponse<APIOperationStatus> getOperationWithHttpInfo(@javax.annotation.Nonnull String cid, Map<String, String> headers) throws ApiException {
     HttpRequest.Builder localVarRequestBuilder = getOperationRequestBuilder(cid, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
@@ -209,7 +209,7 @@ public class OperationsApi {
           throw getApiException("getOperation", localVarResponse);
         }
         if (localVarResponse.body() == null) {
-          return new ApiResponse<OperationStatus>(
+          return new ApiResponse<APIOperationStatus>(
               localVarResponse.statusCode(),
               localVarResponse.headers().map(),
               null
@@ -219,11 +219,11 @@ public class OperationsApi {
         
         
         String responseBody = new String(localVarResponse.body().readAllBytes());
-        OperationStatus responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<OperationStatus>() {});
+        APIOperationStatus responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIOperationStatus>() {});
         
         localVarResponse.body().close();
 
-        return new ApiResponse<OperationStatus>(
+        return new ApiResponse<APIOperationStatus>(
             localVarResponse.statusCode(),
             localVarResponse.headers().map(),
             responseValue
