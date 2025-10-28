@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter.sample;
 
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
+import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +21,11 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
 
     private final Storage storage = new Storage();
     private final Map<String, Transaction> transactions = new HashMap<>();
+    private final @Nullable ProofProvider proofProvider;
 
+    public InMemoryLedger(@Nullable ProofProvider proofProvider) {
+        this.proofProvider = proofProvider;
+    }
 
     @Override
     public AssetCreationStatus createAsset(String idempotencyKey, Asset asset,
@@ -80,7 +85,11 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
                 System.currentTimeMillis()
         );
         registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
     }
 
     @Override
@@ -101,8 +110,107 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
                 System.currentTimeMillis()
         );
         registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
     }
+
+    @Override
+    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, @Nullable Destination destination,
+                                 Asset asset, String quantity, Signature signature, String operationId, @Nullable ExecutionContext exCtx) {
+        logger.info("Hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        storage.saveHoldOperation(operationId, source.finId, quantity);
+        storage.debit(source.finId, quantity, asset.assetId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                (FinIdAccount) source.account,
+                destination,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.HOLD,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
+    }
+
+    @Override
+    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, Asset asset, String quantity,
+                                    String operationId, @Nullable ExecutionContext exCtx) {
+        logger.info("Release hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        HoldOperation hold = this.storage.getHoldOperation(operationId);
+        if (hold == null) {
+            throw new TokenServiceException("unknown operation: " + operationId);
+        }
+        if (!source.finId.equals(hold.finId)) {
+            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
+        }
+        this.storage.credit(destination.finId, quantity, asset.assetId);
+        this.storage.removeHoldOperation(operationId);
+        FinIdAccount holdSource = new FinIdAccount(hold.finId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                holdSource,
+                destination,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.RELEASE,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
+    }
+
+    @Override
+    public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset, String quantity, String operationId,
+                                     @Nullable ExecutionContext exCtx) {
+        logger.info("Rollback hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
+                asset, quantity, operationId, exCtx);
+        HoldOperation hold = this.storage.getHoldOperation(operationId);
+        if (hold == null) {
+            throw new TokenServiceException("unknown operation: " + operationId);
+        }
+        if (!source.finId.equals(hold.finId)) {
+            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
+        }
+        this.storage.credit(hold.finId, quantity, asset.assetId);
+        this.storage.removeHoldOperation(operationId);
+        FinIdAccount holdSource = new FinIdAccount(hold.finId);
+        Transaction tx = new Transaction(
+                UUID.randomUUID().toString(),
+                holdSource,
+                null,
+                quantity,
+                asset,
+                exCtx,
+                OperationType.RELEASE,
+                null,
+                System.currentTimeMillis()
+        );
+        registerTransaction(tx);
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
+    }
+
 
     @Override
     public String getBalance(String assetId, String finId) throws TokenServiceException {
@@ -133,87 +241,6 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         return new SuccessReceiptStatus(tx.toReceipt());
     }
 
-    @Override
-    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, @Nullable Destination destination,
-                                 Asset asset, String quantity, Signature signature, String operationId, @Nullable ExecutionContext exCtx) {
-        logger.info("Hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
-                asset, quantity, operationId, exCtx);
-        storage.saveHoldOperation(operationId, source.finId, quantity);
-        storage.debit(source.finId, quantity, asset.assetId);
-        Transaction tx = new Transaction(
-                UUID.randomUUID().toString(),
-                (FinIdAccount) source.account,
-                destination,
-                quantity,
-                asset,
-                exCtx,
-                OperationType.HOLD,
-                null,
-                System.currentTimeMillis()
-        );
-        registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
-    }
-
-    @Override
-    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, Asset asset, String quantity,
-                                    String operationId, @Nullable ExecutionContext exCtx) {
-        logger.info("Release hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
-                asset, quantity, operationId, exCtx);
-        HoldOperation hold = this.storage.getHoldOperation(operationId);
-        if (hold == null) {
-            throw new TokenServiceException("unknown operation: " + operationId);
-        }
-        if (!source.finId.equals(hold.finId)) {
-            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
-        }
-        this.storage.credit(destination.finId, quantity, asset.assetId);
-        this.storage.removeHoldOperation(operationId);
-        FinIdAccount holdSource = new FinIdAccount(hold.finId);
-        Transaction tx = new Transaction(
-                UUID.randomUUID().toString(),
-                holdSource,
-                destination,
-                quantity,
-                asset,
-                exCtx,
-                OperationType.RELEASE,
-                null,
-                System.currentTimeMillis()
-        );
-        registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
-    }
-
-    @Override
-    public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset, String quantity, String operationId,
-                                     @Nullable ExecutionContext exCtx) {
-        logger.info("Rollback hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
-                asset, quantity, operationId, exCtx);
-        HoldOperation hold = this.storage.getHoldOperation(operationId);
-        if (hold == null) {
-            throw new TokenServiceException("unknown operation: " + operationId);
-        }
-        if (!source.finId.equals(hold.finId)) {
-            throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
-        }
-        this.storage.credit(hold.finId, quantity, asset.assetId);
-        this.storage.removeHoldOperation(operationId);
-        FinIdAccount holdSource = new FinIdAccount(hold.finId);
-        Transaction tx = new Transaction(
-                UUID.randomUUID().toString(),
-                holdSource,
-                null,
-                quantity,
-                asset,
-                exCtx,
-                OperationType.RELEASE,
-                null,
-                System.currentTimeMillis()
-        );
-        registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
-    }
 
 
     private void registerTransaction(Transaction tx) {

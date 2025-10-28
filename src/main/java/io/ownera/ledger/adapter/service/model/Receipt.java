@@ -12,7 +12,7 @@ public class Receipt {
     public final String quantity;
     public final TransactionDetails transactionDetails;
     public final TradeDetails tradeDetails;
-    public final ProofPolicy proof;
+    public ProofPolicy proof;
     public final long timestamp;
 
     public Receipt(String id, OperationType operationType, Asset asset, Source source, Destination destination, String quantity,
@@ -28,6 +28,7 @@ public class Receipt {
         this.proof = proof;
         this.timestamp = timestamp;
     }
+
 
     public static Receipt newIssueReceipt(String assetId, String finId, String quantity, String operationId,ExecutionContext exCtx) {
         String txId = UUID.randomUUID().toString();
