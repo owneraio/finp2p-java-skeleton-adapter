@@ -140,32 +140,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
                 log.log(Level.FINER, "Input data does not match schema 'Integer'", e);
             }
 
-            // deserialize Map<String, APIEIP712TypedValue>
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (Map<String, APIEIP712TypedValue>.class.equals(Integer.class) || Map<String, APIEIP712TypedValue>.class.equals(Long.class) || Map<String, APIEIP712TypedValue>.class.equals(Float.class) || Map<String, APIEIP712TypedValue>.class.equals(Double.class) || Map<String, APIEIP712TypedValue>.class.equals(Boolean.class) || Map<String, APIEIP712TypedValue>.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((Map<String, APIEIP712TypedValue>.class.equals(Integer.class) || Map<String, APIEIP712TypedValue>.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((Map<String, APIEIP712TypedValue>.class.equals(Float.class) || Map<String, APIEIP712TypedValue>.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (Map<String, APIEIP712TypedValue>.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (Map<String, APIEIP712TypedValue>.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                    }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(Map<String, APIEIP712TypedValue>.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'Map<String, APIEIP712TypedValue>'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'Map<String, APIEIP712TypedValue>'", e);
-            }
-
             // deserialize String
             try {
                 boolean attemptParsing = true;
@@ -239,7 +213,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
     static {
         schemas.put("Boolean", Boolean.class);
         schemas.put("Integer", Integer.class);
-        schemas.put("Map<String, APIEIP712TypedValue>", Map<String, APIEIP712TypedValue>.class);
         schemas.put("String", String.class);
         JSON.registerDescendants(APIEIP712TypedValue.class, Collections.unmodifiableMap(schemas));
     }
@@ -269,10 +242,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
             return;
         }
 
-        if (JSON.isInstanceOf(Map<String, APIEIP712TypedValue>.class, instance, new HashSet<Class<?>>())) {
-            super.setActualInstance(instance);
-            return;
-        }
 
         if (JSON.isInstanceOf(String.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
@@ -313,17 +282,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
      */
     public Integer getInteger() throws ClassCastException {
         return (Integer)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `Map<String, APIEIP712TypedValue>`. If the actual instance is not `Map<String, APIEIP712TypedValue>`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `Map<String, APIEIP712TypedValue>`
-     * @throws ClassCastException if the instance is not `Map<String, APIEIP712TypedValue>`
-     */
-    public Map<String, APIEIP712TypedValue> getMap<String, APIEIP712TypedValue>() throws ClassCastException {
-        return (Map<String, APIEIP712TypedValue>)super.getActualInstance();
     }
 
     /**
@@ -386,17 +344,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
     if (getActualInstance() instanceof Boolean) {
         if (getActualInstance() != null) {
           joiner.add(String.format(Locale.ROOT, "%sone_of_2%s=%s", prefix, suffix, ApiClient.urlEncode(String.valueOf(getActualInstance()))));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof Map<String, APIEIP712TypedValue>) {
-        if (getActualInstance() != null) {
-          for (String _key : ((Map<String, APIEIP712TypedValue>)getActualInstance()).keySet()) {
-            if (((Map<String, APIEIP712TypedValue>)getActualInstance()).get(_key) != null) {
-              joiner.add(((APIEIP712TypedValue)getActualInstance()).get(_key).toUrlQueryString(String.format(Locale.ROOT, "%sone_of_4%s%s", prefix, suffix,
-                  "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
-            }
-          }
         }
         return joiner.toString();
     }

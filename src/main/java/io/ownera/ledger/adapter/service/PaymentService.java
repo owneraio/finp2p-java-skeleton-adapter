@@ -1,7 +1,5 @@
 package io.ownera.ledger.adapter.service;
 
-import io.ownera.ledger.adapter.api.model.DepositOperation;
-import io.ownera.ledger.adapter.api.model.ReceiptOperation;
 import io.ownera.ledger.adapter.service.model.*;
 
 public interface PaymentService {

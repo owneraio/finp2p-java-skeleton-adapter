@@ -1,6 +1,5 @@
 package io.ownera.ledger.adapter.service;
 
-import io.ownera.finp2p.signing.eip712.models.Asset;
 import io.ownera.ledger.adapter.service.model.*;
 
 public interface EscrowService {

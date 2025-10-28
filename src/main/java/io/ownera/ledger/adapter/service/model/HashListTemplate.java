@@ -2,7 +2,7 @@ package io.ownera.ledger.adapter.service.model;
 
 import java.util.List;
 
-public class HashListTemplate {
+public class HashListTemplate implements SignatureTemplate {
     public final List<HashGroup> hashGroups;
     public final String hash;
 

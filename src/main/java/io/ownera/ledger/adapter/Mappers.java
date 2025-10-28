@@ -7,11 +7,194 @@ import static java.util.stream.Collectors.toList;
 
 public class Mappers {
 
-    public static APIApproveExecutionPlanResponse toAPI(PlanApprovalStatus status) {
+    public static Asset fromAPI(APIAsset asset) {
+        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
+            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
+            return new Asset(finp2pAsset.getResourceId(), AssetType.FINP2P);
 
+        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
+            APIFiatAsset finp2pAsset = (APIFiatAsset) asset.getActualInstance();
+            return new Asset(finp2pAsset.getCode(), AssetType.FIAT);
+
+        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
+            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
+            return new Asset(cryptoAsset.getCode(), AssetType.CRYPTOCURRENCY);
+
+        } else {
+            throw new MappingException("Unsupported asset type: " + asset.getActualInstance().getClass().getName());
+        }
     }
 
-    public static APICreateAssetResponse toAPI(AssetCreationStatus status) {
+    public static Asset fromAPI(APIFinp2pAsset asset) {
+        return new Asset(asset.getResourceId(), AssetType.FINP2P);
+    }
+
+
+    public static DepositAsset fromAPI(APIDepositAsset asset) {
+        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
+            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
+            return new DepositAsset(finp2pAsset.getResourceId(), DepositAssetType.FINP2P);
+
+        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
+            APIFiatAsset finp2pAsset = (APIFiatAsset) asset.getActualInstance();
+            return new DepositAsset(finp2pAsset.getCode(), DepositAssetType.FIAT);
+
+        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
+            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
+            return new DepositAsset(cryptoAsset.getCode(), DepositAssetType.CRYPTOCURRENCY);
+
+        } else if (asset.getActualInstance() instanceof APICustomAsset) {
+            return new DepositAsset("", DepositAssetType.CUSTOM);
+
+        } else {
+            throw new MappingException("Unsupported asset type: " + asset.getActualInstance().getClass().getName());
+        }
+    }
+
+    public static FinIdAccount fromAPI(APIFinIdAccount account) {
+        return new FinIdAccount(account.getFinId());
+    }
+
+    public static Source fromAPI(APISource account) {
+        return new Source(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    public static Destination fromAPI(@javax.annotation.Nullable APIDestination account) {
+        if (account == null) {
+            return null;
+        }
+        return new Destination(account.getFinId(), fromAPI(account.getAccount()));
+    }
+
+    public static DestinationAccount fromAPI(APIDestinationAccount account) {
+        if (account.getActualInstance() instanceof FinIdAccount) {
+            APIFinIdAccount finIdAccount = (APIFinIdAccount) account.getActualInstance();
+            return fromAPI(finIdAccount);
+
+        } else if (account.getActualInstance() instanceof APICryptoWalletAccount) {
+            APICryptoWalletAccount cryptoWalletAccount = (APICryptoWalletAccount) account.getActualInstance();
+            return new CryptocurrencyWallet(cryptoWalletAccount.getAddress());
+        } else if (account.getActualInstance() instanceof APIFiatAccount) {
+            APIFiatAccount fiatAccount = (APIFiatAccount) account.getActualInstance();
+            return new IbanIdentifier(fiatAccount.getCode());
+        } else {
+            throw new MappingException("Unsupported destination account type: " + account.getActualInstance().getClass().getName());
+        }
+    }
+
+    public static Destination destinationFromAPI(APIFinIdAccount account) {
+        return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    public static ExecutionContext fromAPI(@javax.annotation.Nullable APIExecutionContext ctx) {
+        if (ctx == null) {
+            return null;
+        }
+        return new ExecutionContext(ctx.getExecutionPlanId(), ctx.getInstructionSequenceNumber());
+    }
+
+    public static APIExecutionPlanApprovalOperation toAPI(PlanApprovalStatus status) {
+        if (status instanceof PendingPlan) {
+            PendingPlan pending = (PendingPlan) status;
+            return new APIExecutionPlanApprovalOperation()
+                    .cid(pending.correlationId)
+                    .isCompleted(false);
+
+        } else if (status instanceof RejectedPlan) {
+            RejectedPlan rejected = (RejectedPlan) status;
+            return new APIExecutionPlanApprovalOperation()
+                    .cid("")
+                    .isCompleted(true)
+                    .approval(new APIPlanApprovalResponseApproval(
+                                    new APIPlanRejected()
+                                            .status(APIPlanRejected.StatusEnum.REJECTED)
+                                            .failure(new APIPlanRejectedFailure(
+                                                            new APIValidationFailure()
+                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATION_FAILURE)
+                                                                    .code(rejected.details.code)
+                                                                    .message(rejected.details.message)
+                                                    )
+                                            )
+                            )
+                    );
+        } else if (status instanceof ApprovedPlan) {
+            return new APIExecutionPlanApprovalOperation()
+                    .cid("")
+                    .isCompleted(true)
+                    .approval(new APIPlanApprovalResponseApproval(
+                            new APIPlanApproved()
+                                    .status(APIPlanApproved.StatusEnum.APPROVED)
+                    ));
+        } else {
+            throw new MappingException("Unsupported plan approval status: " + status.getClass().getName());
+        }
+    }
+
+    public static APIApproveExecutionPlanResponse toAPIResponse(PlanApprovalStatus status) {
+        if (status instanceof PendingPlan) {
+            PendingPlan pending = (PendingPlan) status;
+            return new APIApproveExecutionPlanResponse()
+                    .cid(pending.correlationId)
+                    .isCompleted(false);
+
+        } else if (status instanceof RejectedPlan) {
+            RejectedPlan rejected = (RejectedPlan) status;
+            return new APIApproveExecutionPlanResponse()
+                    .cid("")
+                    .isCompleted(true)
+                    .approval(new APIPlanApprovalResponseApproval(
+                                    new APIPlanRejected()
+                                            .status(APIPlanRejected.StatusEnum.REJECTED)
+                                            .failure(new APIPlanRejectedFailure(
+                                                            new APIValidationFailure()
+                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATION_FAILURE)
+                                                                    .code(rejected.details.code)
+                                                                    .message(rejected.details.message)
+                                                    )
+                                            )
+                            )
+                    );
+        } else if (status instanceof ApprovedPlan) {
+            return new APIApproveExecutionPlanResponse()
+                    .cid("")
+                    .isCompleted(true)
+                    .approval(new APIPlanApprovalResponseApproval(
+                            new APIPlanApproved()
+                                    .status(APIPlanApproved.StatusEnum.APPROVED)
+                    ));
+        } else {
+            throw new MappingException("Unsupported plan approval status: " + status.getClass().getName());
+        }
+    }
+
+    public static APICreateAssetOperation toAPI(AssetCreationStatus status) {
+        APICreateAssetOperation operation = new APICreateAssetOperation();
+        if (status instanceof PendingAssetCreation) {
+            PendingAssetCreation pending = (PendingAssetCreation) status;
+            operation.isCompleted(false);
+            operation.cid(pending.correlationId);
+
+        } else if (status instanceof FailedAssetCreation) {
+            FailedAssetCreation failed = (FailedAssetCreation) status;
+            operation.isCompleted(true);
+            operation.error(new APICreateAssetOperationErrorInformation()
+                    .message(failed.details.message)
+                    .code(failed.details.code));
+
+        } else if (status instanceof SuccessfulAssetCreation) {
+            SuccessfulAssetCreation success = (SuccessfulAssetCreation) status;
+            operation.response(new APIAssetCreateResponse()
+                    .ledgerAssetInfo(new APILedgerAssetInfo()
+                            .ledgerTokenId(new APILedgerTokenId()
+                                    .tokenId(success.result.tokenId)
+                            )
+                    ));
+
+        }
+        return operation;
+    }
+
+    public static APICreateAssetResponse toAPIResponse(AssetCreationStatus status) {
         APICreateAssetResponse response = new APICreateAssetResponse();
         if (status instanceof PendingAssetCreation) {
             PendingAssetCreation pending = (PendingAssetCreation) status;
@@ -39,37 +222,162 @@ public class Mappers {
     }
 
 
-    public static APIOperationStatus toAPI(OperationStatus opStatus) {
-        if (opStatus.isCompleted) {
-            if (opStatus.error != null) {
-                APIOperationStatusReceipt receipt = new APIOperationStatusReceipt();
-                receipt.setType(APIOperationStatusReceipt.TypeEnum.RECEIPT);
-                receipt.setOperation(receiptOperationFailed(opStatus.errorCode, opStatus.error));
-                return new OperationStatus(receipt);
-            } else {
-                if (opStatus.result instanceof AssetCreationStatus) {
-                    APIOperationStatusCreateAsset receipt = new OperationStatusCreateAsset();
-                    receipt.setType(OperationStatusCreateAsset.TypeEnum.CREATE_ASSET);
-                    AssetCreationStatus assetResult = (AssetCreationStatus) opStatus.result;
-                    receipt.setOperation(createAssetOperationCompleted(assetResult));
-                    return new OperationStatus(receipt);
-                } else if (opStatus.result instanceof ServiceTokenResult) {
-                    OperationStatusReceipt receipt = new OperationStatusReceipt();
-                    receipt.setType(OperationStatusReceipt.TypeEnum.RECEIPT);
-                    ServiceTokenResult tokenResult = (ServiceTokenResult) opStatus.result;
-                    receipt.setOperation(receiptOperationCompleted(tokenResult));
-                    return new OperationStatus(receipt);
-                }
-            }
-        }
+    public static APIDepositOperation toAPI(DepositOperation status) {
+        APIDepositOperation operation = new APIDepositOperation();
+        if (status instanceof PendingDepositOperation) {
+            PendingDepositOperation pending = (PendingDepositOperation) status;
+            operation.isCompleted(false);
+            operation.cid(pending.correlationId);
 
-        OperationStatusReceipt receipt = new OperationStatusReceipt();
-        receipt.setType(OperationStatusReceipt.TypeEnum.RECEIPT);
-        receipt.setOperation(receiptOperationDelayed(opStatus.correlationId));
-        return new OperationStatus(receipt);
+        } else if (status instanceof FailedDepositOperation) {
+            FailedDepositOperation failed = (FailedDepositOperation) status;
+            operation.isCompleted(true);
+            operation.error(new APICreateAssetOperationErrorInformation()
+                    .message(failed.details.message)
+                    .code(failed.details.code));
+
+        } else if (status instanceof SuccessfulDepositOperation) {
+            SuccessfulDepositOperation success = (SuccessfulDepositOperation) status;
+            DepositInstruction instr = success.depositInstruction;
+            operation.response(new APIDepositInstruction()
+                    .account(toAPI(instr.destination))
+                    .description(instr.description)
+                    .paymentOptions(instr.paymentOptions.stream().map(Mappers::toAPI).collect(toList()))
+                    .details(instr.details)
+                    .operationId(instr.operationId)
+            );
+        }
+        return operation;
     }
 
-    public static APIGetReceiptResponse toAPI(ReceiptOperation op) {
+    public static APIDepositInstructionResponse toAPIResponse(DepositOperation status) {
+        APIDepositInstructionResponse response = new APIDepositInstructionResponse();
+        if (status instanceof PendingDepositOperation) {
+            PendingDepositOperation pending = (PendingDepositOperation) status;
+            response.isCompleted(false);
+            response.cid(pending.correlationId);
+
+        } else if (status instanceof FailedDepositOperation) {
+            FailedDepositOperation failed = (FailedDepositOperation) status;
+            response.isCompleted(true);
+            response.error(new APICreateAssetOperationErrorInformation()
+                    .message(failed.details.message)
+                    .code(failed.details.code));
+
+        } else if (status instanceof SuccessfulDepositOperation) {
+            SuccessfulDepositOperation success = (SuccessfulDepositOperation) status;
+            DepositInstruction instr = success.depositInstruction;
+            response.response(new APIDepositInstruction()
+                    .account(toAPI(instr.destination))
+                    .description(instr.description)
+                    .paymentOptions(instr.paymentOptions.stream().map(Mappers::toAPI).collect(toList()))
+                    .details(instr.details)
+                    .operationId(instr.operationId)
+            );
+        }
+        return response;
+    }
+
+    private static APIPaymentMethod toAPI(PaymentMethod method) {
+        return new APIPaymentMethod()
+                .description(method.description)
+                .currency(method.currency)
+                .methodInstruction(toAPI(method.methodInstruction));
+    }
+
+    private static APIPaymentMethodMethodInstruction toAPI(@javax.annotation.Nullable PaymentMethodInstruction instruction) {
+        if (instruction == null) {
+            return null;
+        }
+        if (instruction instanceof WireTransfer) {
+            WireTransfer wt = (WireTransfer) instruction;
+            return new APIPaymentMethodMethodInstruction(
+                    new APIWireTransfer()
+                            .type(APIWireTransfer.TypeEnum.WIRE_TRANSFER)
+            );
+
+        } else if (instruction instanceof WireTransferUsa) {
+            WireTransferUsa wtu = (WireTransferUsa) instruction;
+            return new APIPaymentMethodMethodInstruction(
+                    new APIWireTransferUSA()
+                            .type(APIWireTransferUSA.TypeEnum.WIRE_TRANSFER_USA)
+            );
+
+        } else if (instruction instanceof CryptoTransfer) {
+            CryptoTransfer ct = (CryptoTransfer) instruction;
+            return new APIPaymentMethodMethodInstruction(
+                    new APICryptoTransfer()
+                            .type(APICryptoTransfer.TypeEnum.CRYPTO_TRANSFER)
+            );
+
+        } else if (instruction instanceof PaymentInstruction) {
+            PaymentInstruction pi = (PaymentInstruction) instruction;
+            return new APIPaymentMethodMethodInstruction(
+                    new APIPaymentInstructions()
+                            .type(APIPaymentInstructions.TypeEnum.PAYMENT_INSTRUCTIONS)
+                            .instruction(pi.instruction)
+            );
+
+        } else {
+            throw new MappingException("Unsupported payment method instruction type: " + instruction.getClass().getName());
+        }
+    }
+
+    public static APIOperationStatus toAPI(OperationStatus opStatus) {
+        if (opStatus instanceof AssetCreationStatus) {
+            AssetCreationStatus assetCreationStatus = (AssetCreationStatus) opStatus;
+            return new APIOperationStatus(new APIOperationStatusCreateAsset()
+                    .type(APIOperationStatusCreateAsset.TypeEnum.CREATE_ASSET)
+                    .operation(toAPI(assetCreationStatus))
+            );
+        } else if (opStatus instanceof DepositOperation) {
+            DepositOperation depositOperation = (DepositOperation) opStatus;
+            return new APIOperationStatus(new APIOperationStatusDeposit()
+                    .type(APIOperationStatusDeposit.TypeEnum.DEPOSIT)
+                    .operation(toAPI(depositOperation))
+            );
+        } else if (opStatus instanceof PlanApprovalStatus) {
+            PlanApprovalStatus planApprovalStatus = (PlanApprovalStatus) opStatus;
+            return new APIOperationStatus(new APIOperationStatusApproval()
+                    .type(APIOperationStatusApproval.TypeEnum.APPROVAL)
+                    .operation(toAPI(planApprovalStatus))
+            );
+        } else if (opStatus instanceof ReceiptOperation) {
+            ReceiptOperation receiptOperation = (ReceiptOperation) opStatus;
+            return new APIOperationStatus(new APIOperationStatusReceipt()
+                    .type(APIOperationStatusReceipt.TypeEnum.RECEIPT)
+                    .operation(toAPI(receiptOperation))
+            );
+        } else {
+            throw new MappingException("Unsupported operation status type: " + opStatus.getClass().getName());
+        }
+    }
+
+    public static APIReceiptOperation toAPI(ReceiptOperation op) {
+        APIReceiptOperation operation = new APIReceiptOperation();
+        if (op instanceof SuccessReceiptStatus) {
+            SuccessReceiptStatus success = (SuccessReceiptStatus) op;
+            operation.cid("");
+            operation.isCompleted(true);
+            operation.response((toAPI(success.receipt)));
+
+        } else if (op instanceof FailedReceiptStatus) {
+            FailedReceiptStatus failed = (FailedReceiptStatus) op;
+            operation.cid("");
+            operation.isCompleted(true);
+            operation.error(new APIReceiptOperationErrorInformation()
+                    .code(failed.details.code)
+                    .message(failed.details.message));
+
+        } else if (op instanceof PendingReceiptStatus) {
+            PendingReceiptStatus pending = (PendingReceiptStatus) op;
+            operation.cid(pending.correlationId);
+            operation.isCompleted(false);
+        }
+        return operation;
+    }
+
+    public static APIGetReceiptResponse toAPIGetReceiptResponse(ReceiptOperation op) {
         APIGetReceiptResponse response = new APIGetReceiptResponse();
         if (op instanceof SuccessReceiptStatus) {
             SuccessReceiptStatus success = (SuccessReceiptStatus) op;
@@ -105,8 +413,7 @@ public class Mappers {
                 .transactionDetails(toAPI(receipt.transactionDetails))
                 .tradeDetails(toAPI(receipt.tradeDetails))
                 .proof(toAPI(receipt.proof))
-                .timestamp(receipt.timestamp)
-                ;
+                .timestamp(receipt.timestamp);
     }
 
     private static APIOperationType toAPI(OperationType type) {
@@ -126,7 +433,7 @@ public class Mappers {
         }
     }
 
-    private static APISource toAPI(Source source) {
+    private static APISource toAPI(@javax.annotation.Nullable Source source) {
         if (source == null) {
             return null;
         }
@@ -134,14 +441,12 @@ public class Mappers {
                 .finId(source.finId);
         if (source.account instanceof FinIdAccount) {
             FinIdAccount finIdAccount = (FinIdAccount) source.account;
-            apiSource.account(new APIFinIdAccount()
-                    .type(APIFinIdAccount.TypeEnum.FIN_ID)
-                    .finId(finIdAccount.finId));
+            apiSource.account(toAPI(finIdAccount));
         }
         return apiSource;
     }
 
-    private static APIDestination toAPI(Destination destination) {
+    private static APIDestination toAPI(@javax.annotation.Nullable Destination destination) {
         if (destination == null) {
             return null;
         }
@@ -149,11 +454,35 @@ public class Mappers {
                 .finId(destination.finId);
         if (destination.account instanceof FinIdAccount) {
             FinIdAccount finIdAccount = (FinIdAccount) destination.account;
-            apiDestination.account(new APIDestinationAccount()
-                    .type(APIFinIdAccount.TypeEnum.FIN_ID)
-                    .finId(finIdAccount.finId));
+            apiDestination.account(new APIDestinationAccount(toAPI(finIdAccount)));
+
+        } else if (destination.account instanceof CryptocurrencyWallet) {
+            CryptocurrencyWallet cryptocurrencyWallet = (CryptocurrencyWallet) destination.account;
+            apiDestination.account(new APIDestinationAccount(toAPI(cryptocurrencyWallet)));
+        } else if (destination.account instanceof IbanIdentifier) {
+            IbanIdentifier ibanIdentifier = (IbanIdentifier) destination.account;
+            apiDestination.account(new APIDestinationAccount(toAPI(ibanIdentifier)));
         }
+
         return apiDestination;
+    }
+
+    private static APIFinIdAccount toAPI(FinIdAccount account) {
+        return new APIFinIdAccount()
+                .type(APIFinIdAccount.TypeEnum.FIN_ID)
+                .finId(account.finId);
+    }
+
+    private static APICryptoWalletAccount toAPI(CryptocurrencyWallet account) {
+        return new APICryptoWalletAccount()
+                .type(APICryptoWalletAccount.TypeEnum.CRYPTO_WALLET)
+                .address(account.address);
+    }
+
+    private static APIFiatAccount toAPI(IbanIdentifier account) {
+        return new APIFiatAccount()
+                .type(APIFiatAccount.TypeEnum.FIAT_ACCOUNT)
+                .code(account.code);
     }
 
     private static APIAsset toAPI(Asset asset) {
@@ -166,7 +495,7 @@ public class Mappers {
         if (details == null) {
             return null;
         }
-        return new APITransacti.onDetails()
+        return new APITransactionDetails()
                 .transactionId(details.transactionId)
                 .operationId(details.operationId);
 
@@ -177,7 +506,8 @@ public class Mappers {
             return null;
         }
         return new APIReceiptTradeDetails()
-                .executionContext();
+                .executionContext(new APIReceiptExecutionContext()
+                        .executionPlanId(details.executionContext.planId));
 
     }
 
@@ -208,7 +538,10 @@ public class Mappers {
 
     }
 
-    public static Signature fromAPI(APISignature signature) {
+    public static Signature fromAPI(@javax.annotation.Nullable APISignature signature) {
+        if (signature == null) {
+            return null;
+        }
         return new Signature(
                 signature.getSignature(),
                 fromAPI(signature.getTemplate()),
@@ -218,14 +551,14 @@ public class Mappers {
 
 
     public static SignatureTemplate fromAPI(APISignatureTemplate signatureTemplate) {
-        signatureTemplate.getSchemaType()
-
-        APIHashListTemplate hashListTemplate = signatureTemplate.getAPIHashListTemplate();
-        return new SignatureTemplate(
-                hashListTemplate.getHashGroups().stream()
-                        .map(Mappers::fromAPI).collect(toList()),
-                hashListTemplate.getHash()
-        );
+        if (signatureTemplate.getActualInstance() instanceof APIHashListTemplate) {
+            APIHashListTemplate hashListTemplate = (APIHashListTemplate) signatureTemplate.getActualInstance();
+            return fromAPI(hashListTemplate);
+        } else if (signatureTemplate.getActualInstance() instanceof APIEIP712Template) {
+            return fromAPI((APIEIP712Template) signatureTemplate.getActualInstance());
+        } else {
+            throw new MappingException("Unsupported signature template type: " + signatureTemplate.getActualInstance().getClass().getName());
+        }
     }
 
     public static APISignatureTemplate toAPI(SignatureTemplate signatureTemplate) {
@@ -240,6 +573,18 @@ public class Mappers {
             throw new MappingException("Unsupported signature template type: " + signatureTemplate.getClass().getName());
         }
     }
+
+    public static HashListTemplate fromAPI(APIHashListTemplate template) {
+        return new HashListTemplate(
+                template.getHashGroups().stream().map(Mappers::fromAPI).collect(toList()),
+                template.getHash()
+        );
+    }
+
+    public static EIP712Template fromAPI(APIEIP712Template template) {
+        return new EIP712Template();
+    }
+
 
     public static APIHashListTemplate toAPI(HashListTemplate template) {
         return new APIHashListTemplate()
@@ -312,10 +657,5 @@ public class Mappers {
         }
     }
 
-
-//
-//    public static Asset fromAPI(APIAsset asset) {
-//
-//    }
 
 }

@@ -83,17 +83,17 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
     }
 
     @Override
-    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, Destination destination, io.ownera.finp2p.signing.eip712.models.Asset asset, String quantity, Signature signature, String operationId, ExecutionContext exCtx) {
+    public ReceiptOperation hold(String idempotencyKey, String nonce, Source source, Destination destination, Asset asset, String quantity, Signature signature, String operationId, ExecutionContext exCtx) {
         return null;
     }
 
     @Override
-    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, io.ownera.finp2p.signing.eip712.models.Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
+    public ReceiptOperation release(String idempotencyKey, Source source, Destination destination, Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
         return null;
     }
 
     @Override
-    public ReceiptOperation rollback(String idempotencyKey, Source source, io.ownera.finp2p.signing.eip712.models.Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
+    public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset, String quantity, String operationId, ExecutionContext exCtx) {
         return null;
     }
 

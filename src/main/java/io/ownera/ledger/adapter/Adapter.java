@@ -1,6 +1,7 @@
 package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.sample.InMemoryLedger;
+import io.ownera.ledger.adapter.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +16,7 @@ public class Adapter {
     private final static Logger logger = LoggerFactory.getLogger(Adapter.class);
 
     @Bean
-    public LedgerService getLedgerService() {
+    public TokenService getLedgerService() {
         return new InMemoryLedger();
     }
 
