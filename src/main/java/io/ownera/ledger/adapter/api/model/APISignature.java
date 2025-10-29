@@ -40,7 +40,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APISignature.JSON_PROPERTY_TEMPLATE,
   APISignature.JSON_PROPERTY_HASH_FUNC
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APISignature {
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
   @javax.annotation.Nonnull

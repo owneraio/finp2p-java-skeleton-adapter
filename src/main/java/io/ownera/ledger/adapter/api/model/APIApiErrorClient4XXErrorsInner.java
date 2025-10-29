@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 @JsonDeserialize(using = APIApiErrorClient4XXErrorsInner.APIApiErrorClient4XXErrorsInnerDeserializer.class)
 @JsonSerialize(using = APIApiErrorClient4XXErrorsInner.APIApiErrorClient4XXErrorsInnerSerializer.class)
 public class APIApiErrorClient4XXErrorsInner extends AbstractOpenApiSchema {

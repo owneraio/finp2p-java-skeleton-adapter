@@ -39,7 +39,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIOperationBase.JSON_PROPERTY_IS_COMPLETED,
   APIOperationBase.JSON_PROPERTY_OPERATION_METADATA
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APIOperationBase {
   public static final String JSON_PROPERTY_CID = "cid";
   @javax.annotation.Nonnull

@@ -44,7 +44,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIWireTransfer.JSON_PROPERTY_POSTAL_CODE,
   APIWireTransfer.JSON_PROPERTY_COUNTRY
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APIWireTransfer {
   /**
    * Gets or Sets type

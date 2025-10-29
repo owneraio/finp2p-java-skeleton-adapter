@@ -1,8 +1,10 @@
 package io.ownera.ledger.adapter;
 
 import io.ownera.finp2p.FinP2PSDK;
+import io.ownera.ledger.adapter.sample.AutoPlanApprovalService;
+import io.ownera.ledger.adapter.sample.CollateralService;
 import io.ownera.ledger.adapter.sample.InMemoryLedger;
-import io.ownera.ledger.adapter.service.TokenService;
+import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +33,37 @@ public class Adapter {
     private String ossUrl;
 
     @Bean
-    public TokenService tokenService() {
+    public InMemoryLedger inMemoryLedger() {
         logger.info("Initializing TokenService with ORG_ID: {}", orgId);
 
         FinP2PSDK finP2PSDK = new FinP2PSDK(orgId , finApiUrl, ossUrl);
         ProofProvider proofProvider = new ProofProvider(orgId, finP2PSDK, signerPrivateKey);
         return new InMemoryLedger(proofProvider);
+    }
+
+    @Bean
+    public TokenService tokenService(InMemoryLedger ledger) {
+        return ledger;
+    }
+
+    @Bean
+    public EscrowService escrowService(InMemoryLedger ledger) {
+        return ledger;
+    }
+
+    @Bean
+    public PaymentService paymentService(InMemoryLedger ledger) {
+        return new CollateralService();
+    }
+
+    @Bean
+    public PlanApprovalService planApprovalService() {
+        return new AutoPlanApprovalService();
+    }
+
+    @Bean
+    public CommonService commonService(InMemoryLedger ledger) {
+        return ledger;
     }
 
     public static void main(String[] args) {

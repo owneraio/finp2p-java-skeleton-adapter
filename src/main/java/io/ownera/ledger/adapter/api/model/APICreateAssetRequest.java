@@ -48,7 +48,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICreateAssetRequest.JSON_PROPERTY_DENOMINATION,
   APICreateAssetRequest.JSON_PROPERTY_ASSET_IDENTIFIER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APICreateAssetRequest {
   public static final String JSON_PROPERTY_METADATA = "metadata";
   @javax.annotation.Nullable

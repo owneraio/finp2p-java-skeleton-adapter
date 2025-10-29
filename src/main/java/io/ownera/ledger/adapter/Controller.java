@@ -40,7 +40,7 @@ public class Controller {
 
     @PostMapping(value = "/plan/approve", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIApproveExecutionPlanResponse> approvePlan(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIApproveExecutionPlanRequest request
     ) {
         String planId = request.getExecutionPlan().getId();
@@ -51,7 +51,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APICreateAssetResponse> createAsset(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APICreateAssetRequest request
     ) {
         logger.info("Create asset: {}", request);
@@ -70,7 +70,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/issue", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> issue(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIIssueAssetsRequest request
     ) {
         logger.info("Issue assets: {}", request);
@@ -86,7 +86,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> transfer(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APITransferAssetRequest request
     ) {
         logger.info("Transfer assets: {}", request);
@@ -106,7 +106,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> redeem(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRedeemAssetsRequest request
     ) {
         logger.info("Redeem assets: {}", request);
@@ -126,7 +126,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/hold", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> hold(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIHoldOperationRequest request
     ) {
         logger.info("Hold assets: {}", request);
@@ -146,7 +146,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/release", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> release(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIReleaseOperationRequest request
     ) {
         logger.info("Release assets: {}", request);
@@ -164,7 +164,7 @@ public class Controller {
 
     @PostMapping(value = "/assets/rollback", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> rollback(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRollbackOperationRequest request
     ) {
         logger.info("Rollback assets: {}", request);
@@ -207,7 +207,7 @@ public class Controller {
 
     @PostMapping(value = "/payments/depositInstruction", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIDepositInstructionResponse> depositInstruction(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIDepositInstructionRequest request
     ) {
         logger.info("Deposit instruction: {}", request);

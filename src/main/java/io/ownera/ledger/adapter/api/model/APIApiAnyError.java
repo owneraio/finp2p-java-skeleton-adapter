@@ -41,7 +41,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIApiAnyError.JSON_PROPERTY_STATUS,
   APIApiAnyError.JSON_PROPERTY_ERRORS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APIApiAnyError {
   /**
    * Gets or Sets type

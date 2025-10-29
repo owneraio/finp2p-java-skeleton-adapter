@@ -37,7 +37,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   APIExecutionPlanProposalRequest.JSON_PROPERTY_EXECUTION_PLAN
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APIExecutionPlanProposalRequest {
   public static final String JSON_PROPERTY_EXECUTION_PLAN = "executionPlan";
   @javax.annotation.Nonnull

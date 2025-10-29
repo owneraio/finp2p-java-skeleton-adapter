@@ -46,7 +46,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIIssueAssetsRequest.JSON_PROPERTY_SIGNATURE,
   APIIssueAssetsRequest.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-28T10:24:19.848612+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class APIIssueAssetsRequest {
   public static final String JSON_PROPERTY_NONCE = "nonce";
   @javax.annotation.Nonnull

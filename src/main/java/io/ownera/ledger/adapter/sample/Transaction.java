@@ -30,7 +30,12 @@ public class Transaction {
     }
 
     public Receipt toReceipt() {
-        return new Receipt(id, OperationType.TRANSFER, asset, source.source(), destination, quantity,
+        Source src = null;
+        if (source != null) {
+            src = source.source();
+        }
+
+        return new Receipt(id, OperationType.TRANSFER, asset, src, destination, quantity,
                 new TransactionDetails(id, operationId), new TradeDetails(executionContext), null, timestamp);
     }
 

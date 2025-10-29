@@ -231,12 +231,15 @@ public class Mappers {
         } else if (status instanceof FailedAssetCreation) {
             FailedAssetCreation failed = (FailedAssetCreation) status;
             operation.isCompleted(true);
+            operation.cid("");
             operation.error(new APICreateAssetOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
         } else if (status instanceof SuccessfulAssetCreation) {
             SuccessfulAssetCreation success = (SuccessfulAssetCreation) status;
+            operation.isCompleted(true);
+            operation.cid("");
             operation.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
                             .ledgerTokenId(new APILedgerTokenId()
@@ -258,12 +261,15 @@ public class Mappers {
         } else if (status instanceof FailedAssetCreation) {
             FailedAssetCreation failed = (FailedAssetCreation) status;
             response.isCompleted(true);
+            response.setCid("");
             response.error(new APICreateAssetOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
         } else if (status instanceof SuccessfulAssetCreation) {
             SuccessfulAssetCreation success = (SuccessfulAssetCreation) status;
+            response.setIsCompleted(true);
+            response.setCid("");
             response.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
                             .ledgerTokenId(new APILedgerTokenId()
@@ -314,6 +320,7 @@ public class Mappers {
         } else if (status instanceof FailedDepositOperation) {
             FailedDepositOperation failed = (FailedDepositOperation) status;
             response.isCompleted(true);
+            response.cid("");
             response.error(new APICreateAssetOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
@@ -321,6 +328,8 @@ public class Mappers {
         } else if (status instanceof SuccessfulDepositOperation) {
             SuccessfulDepositOperation success = (SuccessfulDepositOperation) status;
             DepositInstruction instr = success.depositInstruction;
+            response.isCompleted(true);
+            response.cid("");
             response.response(new APIDepositInstruction()
                     .account(toAPI(instr.destination))
                     .description(instr.description)
@@ -559,9 +568,12 @@ public class Mappers {
         if (details == null) {
             return null;
         }
-        return new APIReceiptTradeDetails()
-                .executionContext(new APIReceiptExecutionContext()
-                        .executionPlanId(details.executionContext.planId));
+        APIReceiptTradeDetails apiDetails = new APIReceiptTradeDetails();
+        if (details.executionContext != null) {
+            apiDetails.setExecutionContext(new APIReceiptExecutionContext()
+                    .executionPlanId(details.executionContext.planId));
+        }
+        return apiDetails;
 
     }
 

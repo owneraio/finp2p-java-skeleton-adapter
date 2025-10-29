@@ -1353,8 +1353,8 @@ components:
           $ref: '#/components/schemas/EIP712Domain'
         message:
           type: object
-          additionalProperties:
-            $ref: '#/components/schemas/EIP712TypedValue'
+#          additionalProperties:
+#            $ref: '#/components/schemas/EIP712TypedValue'
         types:
           $ref: '#/components/schemas/EIP712Types'
         primaryType:
