@@ -1,10 +1,22 @@
 package io.ownera.ledger.adapter;
 
+import io.ownera.finp2p.finapi.model.AccountInformation;
+import io.ownera.finp2p.finapi.model.AccountInformationAccount;
+import io.ownera.finp2p.finapi.model.Transaction;
+import io.ownera.finp2p.signing.eip712.EIP712;
+import io.ownera.finp2p.signing.eip712.Message;
+import io.ownera.finp2p.signing.eip712.models.Domain;
+import io.ownera.finp2p.signing.eip712.models.TypeField;
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.reactivex.annotations.Nullable;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class Mappers {
 
@@ -667,9 +679,65 @@ public class Mappers {
     }
 
     public static EIP712Template fromAPI(APIEIP712Template template) {
-        return new EIP712Template();
+        Message message;
+        try {
+            message = EIP712.parseMessage(template.getMessage(), template.getPrimaryType());
+        } catch (IOException e) {
+            throw new MappingException("Failed to parse EIP712 message: " + e.getMessage());
+        }
+        return new EIP712Template(
+                template.getPrimaryType(),
+                fromAPI(template.getDomain()),
+                message,
+                fromAPI(template.getTypes()),
+                template.getHash()
+        );
     }
 
+    private static Domain fromAPI(APIEIP712Domain domain) {
+        return new Domain(
+                domain.getVerifyingContract(),
+                domain.getName(),
+                domain.getVerifyingContract(),
+                domain.getVersion()
+        );
+    }
+
+    private static APIEIP712Domain toAPI(Domain domain) {
+        return new APIEIP712Domain()
+                .name(domain.getName())
+                .version(domain.getVersion())
+                .chainId(Integer.parseInt(domain.getChainId()))
+                .verifyingContract(domain.getVerifyingContract());
+    }
+
+
+    private static Map<String, List<TypeField>> fromAPI(APIEIP712Types types) {
+        return types.getDefinitions().stream().collect(
+                toMap(APIEIP712TypeDefinition::getName,
+                        d ->
+                                d.getFields().stream().map(Mappers::fromAPI).collect(toList())
+                )
+        );
+    }
+
+    private static APIEIP712Types toAPI(Map<String, List<TypeField>> types) {
+        return new APIEIP712Types().definitions(
+                types.entrySet().stream().map(e -> new APIEIP712TypeDefinition()
+                        .name(e.getKey())
+                        .fields(e.getValue().stream().map(Mappers::toAPI).collect(toList()))).collect(toList())
+        );
+    }
+
+    private static TypeField fromAPI(APIEIP712FieldDefinition d) {
+        return new TypeField(d.getName(), d.getType());
+    }
+
+    private static APIEIP712FieldDefinition toAPI(TypeField d) {
+        return new APIEIP712FieldDefinition()
+                .name(d.getName())
+                .type(d.getType());
+    }
 
     public static APIHashListTemplate toAPI(HashListTemplate template) {
         return new APIHashListTemplate()
@@ -680,7 +748,12 @@ public class Mappers {
 
     public static APIEIP712Template toAPI(EIP712Template template) {
         return new APIEIP712Template()
-                .type(APIEIP712Template.TypeEnum.EIP712);
+                .type(APIEIP712Template.TypeEnum.EIP712)
+                .primaryType(template.primaryType)
+                .domain(toAPI(template.domain))
+                .message(template.message)
+                .types(toAPI(template.types))
+                .hash(template.hash);
     }
 
 
@@ -741,6 +814,8 @@ public class Mappers {
                 throw new MappingException("Unsupported hash function: " + hashFunction);
         }
     }
+
+
 
 
 }
