@@ -1,6 +1,5 @@
 package io.ownera.ledger.adapter;
 
-import io.ownera.finp2p.FinP2PSDK;
 import io.ownera.ledger.adapter.sample.AutoPlanApprovalService;
 import io.ownera.ledger.adapter.sample.CollateralService;
 import io.ownera.ledger.adapter.sample.InMemoryLedger;
@@ -36,8 +35,9 @@ public class Adapter {
     public InMemoryLedger inMemoryLedger() {
         logger.info("Initializing TokenService with ORG_ID: {}", orgId);
 
-        FinP2PSDK finP2PSDK = new FinP2PSDK(orgId , finApiUrl, ossUrl);
-        ProofProvider proofProvider = new ProofProvider(orgId, finP2PSDK, signerPrivateKey);
+//        FinP2PSDK finP2PSDK = new FinP2PSDK(orgId , finApiUrl, ossUrl);
+//        ProofProvider proofProvider = new ProofProvider(orgId, finP2PSDK, signerPrivateKey);
+        ProofProvider proofProvider = null;
         return new InMemoryLedger(proofProvider);
     }
 

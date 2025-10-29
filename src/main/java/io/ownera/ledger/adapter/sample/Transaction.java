@@ -35,7 +35,7 @@ public class Transaction {
             src = source.source();
         }
 
-        return new Receipt(id, OperationType.TRANSFER, asset, src, destination, quantity,
+        return new Receipt(id, operationType, asset, src, destination, quantity,
                 new TransactionDetails(id, operationId), new TradeDetails(executionContext), null, timestamp);
     }
 

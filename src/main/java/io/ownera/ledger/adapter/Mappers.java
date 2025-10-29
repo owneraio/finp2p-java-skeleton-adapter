@@ -121,7 +121,7 @@ public class Mappers {
     }
 
     public static DestinationAccount fromAPI(APIDestinationAccount account) {
-        if (account.getActualInstance() instanceof FinIdAccount) {
+        if (account.getActualInstance() instanceof APIFinIdAccount) {
             APIFinIdAccount finIdAccount = (APIFinIdAccount) account.getActualInstance();
             return fromAPI(finIdAccount);
 
@@ -281,6 +281,15 @@ public class Mappers {
         return response;
     }
 
+    public static APICreateAssetResponse failedAssetOperation(int code, String message) {
+        APICreateAssetResponse response = new APICreateAssetResponse();
+        response.setIsCompleted(true);
+        response.setCid("");
+        response.error(new APICreateAssetOperationErrorInformation()
+                .message(message)
+                .code(code));
+        return response;
+    }
 
     public static APIDepositOperation toAPI(DepositOperation status) {
         APIDepositOperation operation = new APIDepositOperation();
@@ -437,6 +446,16 @@ public class Mappers {
             operation.cid(pending.correlationId);
             operation.isCompleted(false);
         }
+        return operation;
+    }
+
+    public static APIReceiptOperation failedTokenOperation(int code, String message) {
+        APIReceiptOperation operation = new APIReceiptOperation();
+        operation.cid("");
+        operation.isCompleted(true);
+        operation.error(new APIReceiptOperationErrorInformation()
+                .code(code)
+                .message(message));
         return operation;
     }
 

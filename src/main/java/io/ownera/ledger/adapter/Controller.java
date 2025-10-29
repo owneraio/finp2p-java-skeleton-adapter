@@ -55,17 +55,21 @@ public class Controller {
             @RequestBody APICreateAssetRequest request
     ) {
         logger.info("Create asset: {}", request);
-        AssetCreationStatus status = tokenService.createAsset(
-                idempotencyKey,
-                fromAPI(request.getAsset()),
-                fromAPI(request.getLedgerAssetBinding()),
-                request.getMetadata(),
-                request.getName(),
-                request.getIssuerId(),
-                fromAPI(request.getDenomination()),
-                fromAPI(request.getAssetIdentifier())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
+        try {
+            AssetCreationStatus status = tokenService.createAsset(
+                    idempotencyKey,
+                    fromAPI(request.getAsset()),
+                    fromAPI(request.getLedgerAssetBinding()),
+                    request.getMetadata(),
+                    request.getName(),
+                    request.getIssuerId(),
+                    fromAPI(request.getDenomination()),
+                    fromAPI(request.getAssetIdentifier())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedAssetOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/issue", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -74,14 +78,18 @@ public class Controller {
             @RequestBody APIIssueAssetsRequest request
     ) {
         logger.info("Issue assets: {}", request);
-        ReceiptOperation rcptOp = tokenService.issue(
-                idempotencyKey,
-                fromAPI(request.getAsset()),
-                fromAPI(request.getDestination()),
-                request.getQuantity(),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = tokenService.issue(
+                    idempotencyKey,
+                    fromAPI(request.getAsset()),
+                    fromAPI(request.getDestination()),
+                    request.getQuantity(),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -91,17 +99,21 @@ public class Controller {
     ) {
         logger.info("Transfer assets: {}", request);
 
-        ReceiptOperation rcptOp = tokenService.transfer(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                fromAPI(request.getSignature()),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = tokenService.transfer(
+                    idempotencyKey,
+                    request.getNonce(),
+                    fromAPI(request.getSource()),
+                    fromAPI(request.getDestination()),
+                    fromAPI(request.getAsset()),
+                    request.getQuantity(),
+                    fromAPI(request.getSignature()),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -110,17 +122,21 @@ public class Controller {
             @RequestBody APIRedeemAssetsRequest request
     ) {
         logger.info("Redeem assets: {}", request);
-        ReceiptOperation rcptOp = tokenService.redeem(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getSignature()),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = tokenService.redeem(
+                    idempotencyKey,
+                    request.getNonce(),
+                    fromAPI(request.getSource()),
+                    fromAPI(request.getAsset()),
+                    request.getQuantity(),
+                    request.getOperationId(),
+                    fromAPI(request.getSignature()),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
 
@@ -130,18 +146,22 @@ public class Controller {
             @RequestBody APIHoldOperationRequest request
     ) {
         logger.info("Hold assets: {}", request);
-        ReceiptOperation rcptOp = escrowService.hold(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                fromAPI(request.getSignature()),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = escrowService.hold(
+                    idempotencyKey,
+                    request.getNonce(),
+                    fromAPI(request.getSource()),
+                    fromAPI(request.getDestination()),
+                    fromAPI(request.getAsset()),
+                    request.getQuantity(),
+                    fromAPI(request.getSignature()),
+                    request.getOperationId(),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/release", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -150,16 +170,20 @@ public class Controller {
             @RequestBody APIReleaseOperationRequest request
     ) {
         logger.info("Release assets: {}", request);
-        ReceiptOperation rcptOp = escrowService.release(
-                idempotencyKey,
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = escrowService.release(
+                    idempotencyKey,
+                    fromAPI(request.getSource()),
+                    fromAPI(request.getDestination()),
+                    fromAPI(request.getAsset()),
+                    request.getQuantity(),
+                    request.getOperationId(),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/rollback", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -168,15 +192,19 @@ public class Controller {
             @RequestBody APIRollbackOperationRequest request
     ) {
         logger.info("Rollback assets: {}", request);
-        ReceiptOperation rcptOp = escrowService.rollback(
-                idempotencyKey,
-                fromAPI(request.getSource()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        try {
+            ReceiptOperation rcptOp = escrowService.rollback(
+                    idempotencyKey,
+                    fromAPI(request.getSource()),
+                    fromAPI(request.getAsset()),
+                    request.getQuantity(),
+                    request.getOperationId(),
+                    fromAPI(request.getExecutionContext())
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
+        } catch (TokenServiceException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)

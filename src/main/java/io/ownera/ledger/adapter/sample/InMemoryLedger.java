@@ -62,7 +62,11 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
                 System.currentTimeMillis()
         );
         registerTransaction(tx);
-        return new SuccessReceiptStatus(tx.toReceipt());
+        Receipt receipt = tx.toReceipt();
+        if (proofProvider != null) {
+            proofProvider.provideLedgerProof(receipt);
+        }
+        return new SuccessReceiptStatus(receipt);
     }
 
     @Override
