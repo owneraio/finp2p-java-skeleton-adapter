@@ -1,6 +1,6 @@
 /*
  * Ledger Adapter Specification
- * This is the API specification for the Ledger Adapter with whom the FinP2P node will interact in order to execute and query the underlying implementation.
+ * This is the API specification for the Ledger Adapter with whom the FinP2P Router will interact in order to execute and query the underlying implementation.
  *
  * The version of the OpenAPI document: x.x.x
  * Contact: support@ownera.io
@@ -15,14 +15,15 @@ package io.ownera.ledger.adapter.api.api;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.ApiException;
 import io.ownera.ledger.adapter.api.ApiResponse;
+import io.ownera.ledger.adapter.api.Configuration;
 import io.ownera.ledger.adapter.api.Pair;
 
-import io.ownera.ledger.adapter.api.model.HoldOperationRequest;
-import io.ownera.ledger.adapter.api.model.HoldOperationResponse;
-import io.ownera.ledger.adapter.api.model.ReleaseOperationRequest;
-import io.ownera.ledger.adapter.api.model.ReleaseOperationResponse;
-import io.ownera.ledger.adapter.api.model.RollbackOperationRequest;
-import io.ownera.ledger.adapter.api.model.RollbackOperationResponse;
+import io.ownera.ledger.adapter.api.model.APIHoldOperationRequest;
+import io.ownera.ledger.adapter.api.model.APIHoldOperationResponse;
+import io.ownera.ledger.adapter.api.model.APIReleaseOperationRequest;
+import io.ownera.ledger.adapter.api.model.APIReleaseOperationResponse;
+import io.ownera.ledger.adapter.api.model.APIRollbackOperationRequest;
+import io.ownera.ledger.adapter.api.model.APIRollbackOperationResponse;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,10 +48,31 @@ import java.util.StringJoiner;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Locale;
 import java.util.function.Consumer;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2024-10-23T11:29:49.092442+03:00[Asia/Jerusalem]", comments = "Generator version: 7.9.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
 public class EscrowApi {
+  /**
+   * Utility class for extending HttpRequest.Builder functionality.
+   */
+  private static class HttpRequestBuilderExtensions {
+    /**
+     * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific headers.
+     *
+     * @param builder the HttpRequest.Builder to which headers will be added
+     * @param headers a map of header names and values to add; may be null
+     * @return the same HttpRequest.Builder instance with the additional headers set
+     */
+    static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                builder.header(entry.getKey(), entry.getValue());
+            }
+        }
+        return builder;
+    }
+  }
   private final HttpClient memberVarHttpClient;
   private final ObjectMapper memberVarObjectMapper;
   private final String memberVarBaseUri;
@@ -60,7 +82,7 @@ public class EscrowApi {
   private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
 
   public EscrowApi() {
-    this(new ApiClient());
+    this(Configuration.getDefaultApiClient());
   }
 
   public EscrowApi(ApiClient apiClient) {
@@ -72,6 +94,7 @@ public class EscrowApi {
     memberVarResponseInterceptor = apiClient.getResponseInterceptor();
     memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
   }
+
 
   protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
     String body = response.body() == null ? null : new String(response.body().readAllBytes());
@@ -87,15 +110,76 @@ public class EscrowApi {
   }
 
   /**
+   * Download file from the given response.
+   *
+   * @param response Response
+   * @return File
+   * @throws ApiException If fail to read file content from response and write to disk
+   */
+  public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+    try {
+      File file = prepareDownloadFile(response);
+      java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+      return file;
+    } catch (IOException e) {
+      throw new ApiException(e);
+    }
+  }
+
+  /**
+   * <p>Prepare the file for download from the response.</p>
+   *
+   * @param response a {@link java.net.http.HttpResponse} object.
+   * @return a {@link java.io.File} object.
+   * @throws java.io.IOException if any.
+   */
+  private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+    String filename = null;
+    java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+    if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+      // Get filename from the Content-Disposition header.
+      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+      java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+      if (matcher.find())
+        filename = matcher.group(1);
+    }
+    File file = null;
+    if (filename != null) {
+      java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+      java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+      file = filePath.toFile();
+      tempDir.toFile().deleteOnExit();   // best effort cleanup
+      file.deleteOnExit(); // best effort cleanup
+    } else {
+      file = java.nio.file.Files.createTempFile("download-", "").toFile();
+      file.deleteOnExit(); // best effort cleanup
+    }
+    return file;
+  }
+
+  /**
    * Hold Asset
    * Hold the owner asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param holdOperationRequest  (optional)
-   * @return HoldOperationResponse
+   * @param apIHoldOperationRequest  (optional)
+   * @return APIHoldOperationResponse
    * @throws ApiException if fails to make API call
    */
-  public HoldOperationResponse holdOperation(String idempotencyKey, HoldOperationRequest holdOperationRequest) throws ApiException {
-    ApiResponse<HoldOperationResponse> localVarResponse = holdOperationWithHttpInfo(idempotencyKey, holdOperationRequest);
+  public APIHoldOperationResponse holdOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIHoldOperationRequest apIHoldOperationRequest) throws ApiException {
+    return holdOperation(idempotencyKey, apIHoldOperationRequest, null);
+  }
+
+  /**
+   * Hold Asset
+   * Hold the owner asset
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIHoldOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return APIHoldOperationResponse
+   * @throws ApiException if fails to make API call
+   */
+  public APIHoldOperationResponse holdOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIHoldOperationRequest apIHoldOperationRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIHoldOperationResponse> localVarResponse = holdOperationWithHttpInfo(idempotencyKey, apIHoldOperationRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -103,12 +187,25 @@ public class EscrowApi {
    * Hold Asset
    * Hold the owner asset
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param holdOperationRequest  (optional)
-   * @return ApiResponse&lt;HoldOperationResponse&gt;
+   * @param apIHoldOperationRequest  (optional)
+   * @return ApiResponse&lt;APIHoldOperationResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<HoldOperationResponse> holdOperationWithHttpInfo(String idempotencyKey, HoldOperationRequest holdOperationRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = holdOperationRequestBuilder(idempotencyKey, holdOperationRequest);
+  public ApiResponse<APIHoldOperationResponse> holdOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIHoldOperationRequest apIHoldOperationRequest) throws ApiException {
+    return holdOperationWithHttpInfo(idempotencyKey, apIHoldOperationRequest, null);
+  }
+
+  /**
+   * Hold Asset
+   * Hold the owner asset
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIHoldOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;APIHoldOperationResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<APIHoldOperationResponse> holdOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIHoldOperationRequest apIHoldOperationRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = holdOperationRequestBuilder(idempotencyKey, apIHoldOperationRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -120,10 +217,25 @@ public class EscrowApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("holdOperation", localVarResponse);
         }
-        return new ApiResponse<HoldOperationResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<HoldOperationResponse>() {}) // closes the InputStream
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<APIHoldOperationResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        APIHoldOperationResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIHoldOperationResponse>() {});
+        
+        localVarResponse.body().close();
+
+        return new ApiResponse<APIHoldOperationResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -136,7 +248,7 @@ public class EscrowApi {
     }
   }
 
-  private HttpRequest.Builder holdOperationRequestBuilder(String idempotencyKey, HoldOperationRequest holdOperationRequest) throws ApiException {
+  private HttpRequest.Builder holdOperationRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIHoldOperationRequest apIHoldOperationRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling holdOperation");
@@ -155,7 +267,7 @@ public class EscrowApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(holdOperationRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIHoldOperationRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);
@@ -163,6 +275,8 @@ public class EscrowApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }
@@ -173,12 +287,25 @@ public class EscrowApi {
    * Release Asset
    * Release held assets
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param releaseOperationRequest  (optional)
-   * @return ReleaseOperationResponse
+   * @param apIReleaseOperationRequest  (optional)
+   * @return APIReleaseOperationResponse
    * @throws ApiException if fails to make API call
    */
-  public ReleaseOperationResponse releaseOperation(String idempotencyKey, ReleaseOperationRequest releaseOperationRequest) throws ApiException {
-    ApiResponse<ReleaseOperationResponse> localVarResponse = releaseOperationWithHttpInfo(idempotencyKey, releaseOperationRequest);
+  public APIReleaseOperationResponse releaseOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIReleaseOperationRequest apIReleaseOperationRequest) throws ApiException {
+    return releaseOperation(idempotencyKey, apIReleaseOperationRequest, null);
+  }
+
+  /**
+   * Release Asset
+   * Release held assets
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIReleaseOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return APIReleaseOperationResponse
+   * @throws ApiException if fails to make API call
+   */
+  public APIReleaseOperationResponse releaseOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIReleaseOperationRequest apIReleaseOperationRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIReleaseOperationResponse> localVarResponse = releaseOperationWithHttpInfo(idempotencyKey, apIReleaseOperationRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -186,12 +313,25 @@ public class EscrowApi {
    * Release Asset
    * Release held assets
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param releaseOperationRequest  (optional)
-   * @return ApiResponse&lt;ReleaseOperationResponse&gt;
+   * @param apIReleaseOperationRequest  (optional)
+   * @return ApiResponse&lt;APIReleaseOperationResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ReleaseOperationResponse> releaseOperationWithHttpInfo(String idempotencyKey, ReleaseOperationRequest releaseOperationRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = releaseOperationRequestBuilder(idempotencyKey, releaseOperationRequest);
+  public ApiResponse<APIReleaseOperationResponse> releaseOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIReleaseOperationRequest apIReleaseOperationRequest) throws ApiException {
+    return releaseOperationWithHttpInfo(idempotencyKey, apIReleaseOperationRequest, null);
+  }
+
+  /**
+   * Release Asset
+   * Release held assets
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIReleaseOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;APIReleaseOperationResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<APIReleaseOperationResponse> releaseOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIReleaseOperationRequest apIReleaseOperationRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = releaseOperationRequestBuilder(idempotencyKey, apIReleaseOperationRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -203,10 +343,25 @@ public class EscrowApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("releaseOperation", localVarResponse);
         }
-        return new ApiResponse<ReleaseOperationResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<ReleaseOperationResponse>() {}) // closes the InputStream
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<APIReleaseOperationResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        APIReleaseOperationResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIReleaseOperationResponse>() {});
+        
+        localVarResponse.body().close();
+
+        return new ApiResponse<APIReleaseOperationResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -219,7 +374,7 @@ public class EscrowApi {
     }
   }
 
-  private HttpRequest.Builder releaseOperationRequestBuilder(String idempotencyKey, ReleaseOperationRequest releaseOperationRequest) throws ApiException {
+  private HttpRequest.Builder releaseOperationRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIReleaseOperationRequest apIReleaseOperationRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling releaseOperation");
@@ -238,7 +393,7 @@ public class EscrowApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(releaseOperationRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIReleaseOperationRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);
@@ -246,6 +401,8 @@ public class EscrowApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }
@@ -256,12 +413,25 @@ public class EscrowApi {
    * Rollback held asset
    * Release back held asset to the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param rollbackOperationRequest  (optional)
-   * @return RollbackOperationResponse
+   * @param apIRollbackOperationRequest  (optional)
+   * @return APIRollbackOperationResponse
    * @throws ApiException if fails to make API call
    */
-  public RollbackOperationResponse rollbackOperation(String idempotencyKey, RollbackOperationRequest rollbackOperationRequest) throws ApiException {
-    ApiResponse<RollbackOperationResponse> localVarResponse = rollbackOperationWithHttpInfo(idempotencyKey, rollbackOperationRequest);
+  public APIRollbackOperationResponse rollbackOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRollbackOperationRequest apIRollbackOperationRequest) throws ApiException {
+    return rollbackOperation(idempotencyKey, apIRollbackOperationRequest, null);
+  }
+
+  /**
+   * Rollback held asset
+   * Release back held asset to the owner
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIRollbackOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return APIRollbackOperationResponse
+   * @throws ApiException if fails to make API call
+   */
+  public APIRollbackOperationResponse rollbackOperation(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRollbackOperationRequest apIRollbackOperationRequest, Map<String, String> headers) throws ApiException {
+    ApiResponse<APIRollbackOperationResponse> localVarResponse = rollbackOperationWithHttpInfo(idempotencyKey, apIRollbackOperationRequest, headers);
     return localVarResponse.getData();
   }
 
@@ -269,12 +439,25 @@ public class EscrowApi {
    * Rollback held asset
    * Release back held asset to the owner
    * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
-   * @param rollbackOperationRequest  (optional)
-   * @return ApiResponse&lt;RollbackOperationResponse&gt;
+   * @param apIRollbackOperationRequest  (optional)
+   * @return ApiResponse&lt;APIRollbackOperationResponse&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RollbackOperationResponse> rollbackOperationWithHttpInfo(String idempotencyKey, RollbackOperationRequest rollbackOperationRequest) throws ApiException {
-    HttpRequest.Builder localVarRequestBuilder = rollbackOperationRequestBuilder(idempotencyKey, rollbackOperationRequest);
+  public ApiResponse<APIRollbackOperationResponse> rollbackOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRollbackOperationRequest apIRollbackOperationRequest) throws ApiException {
+    return rollbackOperationWithHttpInfo(idempotencyKey, apIRollbackOperationRequest, null);
+  }
+
+  /**
+   * Rollback held asset
+   * Release back held asset to the owner
+   * @param idempotencyKey hex encoding of a 32-byte payload consisting of 24 random bytes + 8-byte epoch timestamp (seconds) (required)
+   * @param apIRollbackOperationRequest  (optional)
+   * @param headers Optional headers to include in the request
+   * @return ApiResponse&lt;APIRollbackOperationResponse&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<APIRollbackOperationResponse> rollbackOperationWithHttpInfo(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRollbackOperationRequest apIRollbackOperationRequest, Map<String, String> headers) throws ApiException {
+    HttpRequest.Builder localVarRequestBuilder = rollbackOperationRequestBuilder(idempotencyKey, apIRollbackOperationRequest, headers);
     try {
       HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(
           localVarRequestBuilder.build(),
@@ -286,10 +469,25 @@ public class EscrowApi {
         if (localVarResponse.statusCode()/ 100 != 2) {
           throw getApiException("rollbackOperation", localVarResponse);
         }
-        return new ApiResponse<RollbackOperationResponse>(
-          localVarResponse.statusCode(),
-          localVarResponse.headers().map(),
-          localVarResponse.body() == null ? null : memberVarObjectMapper.readValue(localVarResponse.body(), new TypeReference<RollbackOperationResponse>() {}) // closes the InputStream
+        if (localVarResponse.body() == null) {
+          return new ApiResponse<APIRollbackOperationResponse>(
+              localVarResponse.statusCode(),
+              localVarResponse.headers().map(),
+              null
+          );
+        }
+
+        
+        
+        String responseBody = new String(localVarResponse.body().readAllBytes());
+        APIRollbackOperationResponse responseValue = responseBody.isBlank()? null: memberVarObjectMapper.readValue(responseBody, new TypeReference<APIRollbackOperationResponse>() {});
+        
+        localVarResponse.body().close();
+
+        return new ApiResponse<APIRollbackOperationResponse>(
+            localVarResponse.statusCode(),
+            localVarResponse.headers().map(),
+            responseValue
         );
       } finally {
       }
@@ -302,7 +500,7 @@ public class EscrowApi {
     }
   }
 
-  private HttpRequest.Builder rollbackOperationRequestBuilder(String idempotencyKey, RollbackOperationRequest rollbackOperationRequest) throws ApiException {
+  private HttpRequest.Builder rollbackOperationRequestBuilder(@javax.annotation.Nonnull String idempotencyKey, @javax.annotation.Nullable APIRollbackOperationRequest apIRollbackOperationRequest, Map<String, String> headers) throws ApiException {
     // verify the required parameter 'idempotencyKey' is set
     if (idempotencyKey == null) {
       throw new ApiException(400, "Missing the required parameter 'idempotencyKey' when calling rollbackOperation");
@@ -321,7 +519,7 @@ public class EscrowApi {
     localVarRequestBuilder.header("Accept", "application/json");
 
     try {
-      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(rollbackOperationRequest);
+      byte[] localVarPostBody = memberVarObjectMapper.writeValueAsBytes(apIRollbackOperationRequest);
       localVarRequestBuilder.method("POST", HttpRequest.BodyPublishers.ofByteArray(localVarPostBody));
     } catch (IOException e) {
       throw new ApiException(e);
@@ -329,6 +527,8 @@ public class EscrowApi {
     if (memberVarReadTimeout != null) {
       localVarRequestBuilder.timeout(memberVarReadTimeout);
     }
+    // Add custom headers if provided
+    localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
     if (memberVarInterceptor != null) {
       memberVarInterceptor.accept(localVarRequestBuilder);
     }

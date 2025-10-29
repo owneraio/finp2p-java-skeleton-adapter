@@ -14,3 +14,5 @@ OUT_FOLDER="target/generated-sources"
   --package-name "$JAVA_PACKAGE" \
   --api-package "$JAVA_PACKAGE.api" \
   --model-package "$JAVA_PACKAGE.model" \
+  --model-name-prefix "API" \
+  --additional-properties=skipFormModel=false,additionalProperties=false
