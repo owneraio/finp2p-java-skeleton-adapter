@@ -3,7 +3,9 @@ package io.ownera.ledger.adapter.service.proof;
 import io.ownera.finp2p.FinP2PSDK;
 import io.ownera.finp2p.oss.GraphqlException;
 import io.ownera.finp2p.oss.models.OssAsset;
+import io.ownera.finp2p.oss.models.Proof;
 import io.ownera.finp2p.signing.SignatureUtils;
+import io.ownera.finp2p.signing.eip712.EIP712;
 import io.ownera.ledger.adapter.service.model.*;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -17,7 +19,6 @@ import java.util.Optional;
 
 import static io.ownera.finp2p.signing.SignatureUtils.sign;
 import static io.ownera.finp2p.signing.SignatureUtils.toFinId;
-import static io.ownera.ledger.adapter.service.proof.Mapper.toEIP712;
 
 public class ProofProvider {
 
@@ -38,32 +39,37 @@ public class ProofProvider {
             return;
         }
         Asset a = receipt.asset;
-        AssetProofPolicy policy = null;
+        Proof policy;
         try {
             policy = getAssetProofPolicy(a.assetId, a.assetType, orgId);
         } catch (GraphqlException e) {
-            throw new ProofProviderException("Failed to retrieve asset proof policy", e);
+            throw new ProofProviderException("Failed to retrieve asset proof policy" + e.getMessage());
         }
-        if (policy instanceof NoAssetProofPolicy) {
+        if (policy instanceof io.ownera.finp2p.oss.models.NoProofPolicy) {
             receipt.proof = new NoProofPolicy();
-        } else if (policy instanceof SignatureAssetProofPolicy) {
-            SignatureAssetProofPolicy proofPolicy = ((SignatureAssetProofPolicy) policy);
-            if (!proofPolicy.signatureTemplate.equals("EIP712")) {
-                throw new ProofProviderException("Unsupported signature template: " + proofPolicy.signatureTemplate);
+        } else if (policy instanceof io.ownera.finp2p.oss.models.SignatureProofPolicy) {
+            io.ownera.finp2p.oss.models.SignatureProofPolicy proofPolicy = ((io.ownera.finp2p.oss.models.SignatureProofPolicy) policy);
+            if (!proofPolicy.getSignatureTemplate().equals("EIP712")) {
+                throw new ProofProviderException("Unsupported signature template: " + proofPolicy.getSignatureTemplate());
             }
             AsymmetricCipherKeyPair signerKeyPair;
             try {
                 signerKeyPair = SignatureUtils.parseKey(signerPrivateKey);
             } catch (IOException e) {
-                throw new ProofProviderException("Failed to parse signer private key", e);
+                throw new ProofProviderException("Failed to parse signer private key");
             }
             ECPrivateKeyParameters signerPrivateKey = (ECPrivateKeyParameters) signerKeyPair.getPrivate();
             ECPublicKeyParameters signerPublicKey = (ECPublicKeyParameters) signerKeyPair.getPublic();
             String signerFinId = toFinId(signerPublicKey);
-            if (!proofPolicy.verifyingKey.equalsIgnoreCase(signerFinId)) {
+            if (!proofPolicy.getVerifyingKey().equalsIgnoreCase(signerFinId)) {
                 throw new ProofProviderException("Signer public key does not match verifying key from policy");
             }
-            byte[] hash = hashMessage(toEIP712(receipt));
+            byte[] hash;
+            try {
+                hash = EIP712.hashMessage(Mapper.toEIP712(receipt));
+            } catch (IOException e) {
+                throw new ProofProviderException("Failed to hash EIP712 message: " + e.getMessage());
+            }
             String signature = Hex.encodeHexString(sign(signerPrivateKey, hash));
             SignatureTemplate template = new EIP712Template();
             receipt.proof = new SignatureProofPolicy(
@@ -73,18 +79,22 @@ public class ProofProvider {
     }
 
 
-    private AssetProofPolicy getAssetProofPolicy(String assetId, AssetType assetType, String paymentOrgId) throws GraphqlException {
+    private Proof getAssetProofPolicy(String assetId, AssetType assetType, String paymentOrgId) throws GraphqlException {
         switch (assetType) {
             case FINP2P:
                 Optional<OssAsset> asset = finP2PSDK.getAsset(assetId);
                 if (asset.isEmpty()) {
                     throw new ProofProviderException("Asset " + assetId + " not found");
                 }
-                asset.get().getProofPolicy();
-                break;
+                if (asset.get().getPolicies() == null || asset.get().getPolicies().getProof() == null) {
+                    throw new ProofProviderException("No proof policy found for asset " + assetId);
+                }
+                return asset.get().getPolicies().getProof();
             case FIAT:
             case CRYPTOCURRENCY:
-                Optional<OSSPayemntAsset> paymentAsset = finP2PSDK.getPaymentAsset(assetId);
+              throw new ProofProviderException("Not implemented for asset type: " + assetType);
+            default:
+                throw new ProofProviderException("Unsupported asset type: " + assetType);
         }
 
     }
