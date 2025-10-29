@@ -1,5 +1,8 @@
 package io.ownera.ledger.adapter;
 
+import io.ownera.finp2p.finapi.model.AccountInformation;
+import io.ownera.finp2p.finapi.model.AccountInformationAccount;
+import io.ownera.finp2p.finapi.model.Transaction;
 import io.ownera.finp2p.signing.eip712.EIP712;
 import io.ownera.finp2p.signing.eip712.Message;
 import io.ownera.finp2p.signing.eip712.models.Domain;
@@ -12,7 +15,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static io.ownera.finp2p.signing.eip712.EIP712.parseMessage;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -812,6 +814,8 @@ public class Mappers {
                 throw new MappingException("Unsupported hash function: " + hashFunction);
         }
     }
+
+
 
 
 }
