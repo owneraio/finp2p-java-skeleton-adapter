@@ -209,8 +209,9 @@ public class Controller {
 
     @PostMapping(value = "/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIGetAssetBalanceResponse> getBalance(@RequestBody APIGetAssetBalanceRequest request) {
+        Asset asset = fromAPI(request.getAsset());
         String balance = tokenService.getBalance(
-                request.getAsset().getAPIFinp2pAsset().getResourceId(),
+                asset.assetId,
                 request.getOwner().getAccount().getFinId()
         );
         return ResponseEntity.status(HttpStatus.OK).body(new APIGetAssetBalanceResponse()

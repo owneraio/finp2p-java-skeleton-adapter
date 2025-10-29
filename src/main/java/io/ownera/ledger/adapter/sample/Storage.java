@@ -1,5 +1,6 @@
 package io.ownera.ledger.adapter.sample;
 
+import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.Asset;
 
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class Storage {
     public void checkAssetExists(String assetId) {
         Asset asset = this.assets.get(assetId);
         if (asset == null) {
-            throw new RuntimeException("Asset " + assetId + " not found");
+            throw new TokenServiceException("Asset " + assetId + " not found");
         }
     }
 
@@ -63,7 +64,7 @@ public class Storage {
     public Account getAccount(String finId) {
         Account account = this.accounts.get(finId);
         if (account == null) {
-            throw new RuntimeException("Account " + finId + " not found");
+            throw new TokenServiceException("Account " + finId + " not found");
         }
         return account;
     }
