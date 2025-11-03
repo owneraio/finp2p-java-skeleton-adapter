@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.Executors;
 
+import static io.ownera.ledger.adapter.sample.collateral.Mapper.successfulDeposit;
 import static io.ownera.ledger.adapter.sample.collateral.Mapper.toAPI;
 
 
@@ -117,8 +118,7 @@ public class CollateralService implements PaymentService {
         issueAssets(UUID.randomUUID().toString(), operationId, new FinIdAccount(investorFinId), "100", new Asset(assetId, AssetType.FINP2P));
 
 
-        finP2PSDK.sendCallbackResponse(cid, );
-
+        finP2PSDK.sendCallbackResponse(cid, successfulDeposit(cid, operationId));
     }
 
     private void issueAssets(String idempotencyKey, String operationId, FinIdAccount to, String quantity, Asset asset) throws ApiException {

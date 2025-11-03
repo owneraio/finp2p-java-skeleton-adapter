@@ -1,11 +1,14 @@
 package io.ownera.ledger.adapter.sample.collateral;
 
-import io.ownera.finp2p.finapi.model.AccountInformation;
-import io.ownera.finp2p.finapi.model.AccountInformationAccount;
-import io.ownera.finp2p.finapi.model.DepositInstructionDepositInstruction;
-import io.ownera.finp2p.finapi.model.Transaction;
+import io.ownera.finp2p.finapi.model.*;
 import io.ownera.ledger.adapter.MappingException;
 import io.ownera.ledger.adapter.service.model.*;
+import io.ownera.ledger.adapter.service.model.Asset;
+import io.ownera.ledger.adapter.service.model.Destination;
+import io.ownera.ledger.adapter.service.model.OperationType;
+import io.ownera.ledger.adapter.service.model.Receipt;
+import io.ownera.ledger.adapter.service.model.Source;
+import io.ownera.ledger.adapter.service.model.TransactionDetails;
 import io.reactivex.annotations.Nullable;
 
 public class Mapper {
@@ -72,20 +75,24 @@ public class Mapper {
 
     }
 
-    public static io.ownera.finp2p.finapi.model.DepositOperation successfulDeposit(String cid, String operationId) {
-        return new io.ownera.finp2p.finapi.model.DepositOperation()
-                .type(io.ownera.finp2p.finapi.model.DepositOperation.TypeEnum.DEPOSIT)
-                .isCompleted(true)
-                .cid(cid)
-                .response(new io.ownera.finp2p.finapi.model.DepositInstruction()
-                        .depositInstruction(
-                                new DepositInstructionDepositInstruction()
+    public static io.ownera.finp2p.finapi.model.OperationStatus successfulDeposit(String cid, String operationId) {
+        return new io.ownera.finp2p.finapi.model.OperationStatus(
+                new OperationStatusDeposit()
+                        .type(OperationStatusDeposit.TypeEnum.DEPOSIT)
+                        .operation(
+                                new io.ownera.finp2p.finapi.model.DepositOperation()
+                                        .type(io.ownera.finp2p.finapi.model.DepositOperation.TypeEnum.DEPOSIT)
+                                        .isCompleted(true)
+                                        .cid(cid)
+                                        .response(new io.ownera.finp2p.finapi.model.DepositInstruction()
+                                                        .depositInstruction(
+                                                                new DepositInstructionDepositInstruction()
 //                                        .account()
 //                                        .details()
 //                                        .description()
 //                                        .paymentOptions()
-                        )
-                        .operationId(operationId)
-                );
+                                                        )
+                                                        .operationId(operationId)
+                                        )));
     }
 }
