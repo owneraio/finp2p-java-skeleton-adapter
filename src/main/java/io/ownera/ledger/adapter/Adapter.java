@@ -1,7 +1,8 @@
 package io.ownera.ledger.adapter;
 
+import io.ownera.finp2p.FinP2PSDK;
 import io.ownera.ledger.adapter.sample.AutoPlanApprovalService;
-import io.ownera.ledger.adapter.sample.CollateralService;
+import io.ownera.ledger.adapter.sample.collateral.CollateralService;
 import io.ownera.ledger.adapter.sample.InMemoryLedger;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
@@ -53,7 +54,8 @@ public class Adapter {
 
     @Bean
     public PaymentService paymentService(InMemoryLedger ledger) {
-        return new CollateralService();
+        FinP2PSDK finP2PSDK = new FinP2PSDK(orgId , finApiUrl, ossUrl);
+        return new CollateralService(finP2PSDK);
     }
 
     @Bean
