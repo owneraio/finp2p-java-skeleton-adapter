@@ -4,6 +4,11 @@ import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toList;
 
 public class Mappers {
@@ -156,7 +161,8 @@ public class Mappers {
             PendingPlan pending = (PendingPlan) status;
             return new APIExecutionPlanApprovalOperation()
                     .cid(pending.correlationId)
-                    .isCompleted(false);
+                    .isCompleted(false)
+                    .operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof RejectedPlan) {
             RejectedPlan rejected = (RejectedPlan) status;
@@ -193,7 +199,8 @@ public class Mappers {
             PendingPlan pending = (PendingPlan) status;
             return new APIApproveExecutionPlanResponse()
                     .cid(pending.correlationId)
-                    .isCompleted(false);
+                    .isCompleted(false)
+                    .operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof RejectedPlan) {
             RejectedPlan rejected = (RejectedPlan) status;
@@ -231,6 +238,7 @@ public class Mappers {
             PendingAssetCreation pending = (PendingAssetCreation) status;
             operation.isCompleted(false);
             operation.cid(pending.correlationId);
+            operation.operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof FailedAssetCreation) {
             FailedAssetCreation failed = (FailedAssetCreation) status;
@@ -262,6 +270,7 @@ public class Mappers {
             PendingAssetCreation pending = (PendingAssetCreation) status;
             response.isCompleted(false);
             response.cid(pending.correlationId);
+            response.operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof FailedAssetCreation) {
             FailedAssetCreation failed = (FailedAssetCreation) status;
@@ -303,6 +312,7 @@ public class Mappers {
             PendingDepositOperation pending = (PendingDepositOperation) status;
             operation.isCompleted(false);
             operation.cid(pending.correlationId);
+            operation.operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof FailedDepositOperation) {
             FailedDepositOperation failed = (FailedDepositOperation) status;
@@ -331,6 +341,7 @@ public class Mappers {
             PendingDepositOperation pending = (PendingDepositOperation) status;
             response.isCompleted(false);
             response.cid(pending.correlationId);
+            response.operationMetadata(toAPIOpt(pending.metadata));
 
         } else if (status instanceof FailedDepositOperation) {
             FailedDepositOperation failed = (FailedDepositOperation) status;
@@ -451,6 +462,7 @@ public class Mappers {
             PendingReceiptStatus pending = (PendingReceiptStatus) op;
             operation.cid(pending.correlationId);
             operation.isCompleted(false);
+            operation.operationMetadata(toAPIOpt(pending.metadata));
         }
         return operation;
     }
@@ -485,6 +497,7 @@ public class Mappers {
             PendingReceiptStatus pending = (PendingReceiptStatus) op;
             response.cid(pending.correlationId);
             response.isCompleted(false);
+            response.operationMetadata(toAPIOpt(pending.metadata));
         }
         return response;
     }
@@ -675,7 +688,39 @@ public class Mappers {
     }
 
     public static EIP712Template fromAPI(APIEIP712Template template) {
-        return new EIP712Template();
+        APIEIP712Domain domain = template.getDomain();
+        long chainId = domain != null && domain.getChainId() != null ? domain.getChainId() : 0;
+        String verifyingContract = domain != null ? domain.getVerifyingContract() : null;
+
+        Map<String, Object> types = new HashMap<>();
+        if (template.getTypes() != null && template.getTypes().getDefinitions() != null) {
+            for (APIEIP712TypeDefinition def : template.getTypes().getDefinitions()) {
+                if (def.getName() != null && def.getFields() != null) {
+                    types.put(def.getName(), def.getFields().stream()
+                            .map(f -> {
+                                Map<String, String> field = new HashMap<>();
+                                field.put("name", f.getName());
+                                field.put("type", f.getType());
+                                return field;
+                            })
+                            .collect(Collectors.toList()));
+                }
+            }
+        }
+
+        Map<String, Object> message = new HashMap<>();
+        if (template.getMessage() != null) {
+            template.getMessage().forEach((k, v) -> message.put(k, v));
+        }
+
+        return new EIP712Template(
+                template.getPrimaryType(),
+                chainId,
+                verifyingContract,
+                types,
+                message,
+                template.getHash()
+        );
     }
 
 
@@ -806,8 +851,43 @@ public class Mappers {
             PendingReceiptStatus pending = (PendingReceiptStatus) op;
             response.cid(pending.correlationId);
             response.isCompleted(false);
+            response.operationMetadata(toAPIOpt(pending.metadata));
         }
         return response;
+    }
+
+    // --- Operation metadata mapping ---
+
+    public static APIOperationMetadata toAPIOpt(@Nullable OperationMetadata metadata) {
+        if (metadata == null || metadata.responseStrategy == null) {
+            return null;
+        }
+        return toAPI(metadata);
+    }
+
+    public static APIOperationMetadata toAPI(OperationMetadata metadata) {
+        APIOperationMetadataOperationResponseStrategy strategy;
+        if (metadata.responseStrategy instanceof PollingResponseStrategy) {
+            strategy = new APIOperationMetadataOperationResponseStrategy(
+                    new APIPollingResultsStrategy()
+                            .type(APIPollingResultsStrategy.TypeEnum.POLL)
+                            .polling(new APIPollingResultsStrategyPolling(
+                                    new APIRandomPollingInterval()
+                                            .type(APIRandomPollingInterval.TypeEnum.RANDOM)
+                            ))
+            );
+        } else if (metadata.responseStrategy instanceof CallbackResponseStrategy) {
+            strategy = new APIOperationMetadataOperationResponseStrategy(
+                    new APICallbackResultsStrategy()
+                            .type(APICallbackResultsStrategy.TypeEnum.CALLBACK)
+                            .callback(new APICallbackEndpoint()
+                                    .type(APICallbackEndpoint.TypeEnum.ENDPOINT)
+                            )
+            );
+        } else {
+            return null;
+        }
+        return new APIOperationMetadata().operationResponseStrategy(strategy);
     }
 
     // --- LedgerReference mapping ---
