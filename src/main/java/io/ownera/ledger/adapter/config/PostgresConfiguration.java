@@ -1,19 +1,21 @@
 package io.ownera.ledger.adapter.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ownera.ledger.adapter.sample.JdbcLedger;
 import io.ownera.ledger.adapter.sample.JdbcOperationStore;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
 import io.ownera.ledger.adapter.service.workflow.OperationTrackingCommonService;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 @Configuration
@@ -23,9 +25,14 @@ public class PostgresConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(PostgresConfiguration.class);
 
     @Bean
-    public JdbcLedger jdbcLedger(JdbcTemplate jdbcTemplate, Optional<ProofProvider> proofProvider) {
-        logger.info("Initializing JdbcLedger with PostgreSQL backend");
-        return new JdbcLedger(jdbcTemplate, proofProvider.orElse(null));
+    public DSLContext dslContext(DataSource dataSource) {
+        return DSL.using(dataSource, SQLDialect.POSTGRES);
+    }
+
+    @Bean
+    public JdbcLedger jdbcLedger(DSLContext dslContext, Optional<ProofProvider> proofProvider) {
+        logger.info("Initializing JdbcLedger with PostgreSQL backend (jOOQ)");
+        return new JdbcLedger(dslContext, proofProvider.orElse(null));
     }
 
     @Bean
@@ -44,7 +51,7 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public OperationStore operationStore(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
-        return new JdbcOperationStore(jdbcTemplate, objectMapper);
+    public OperationStore operationStore(DSLContext dslContext) {
+        return new JdbcOperationStore(dslContext);
     }
 }

@@ -13,6 +13,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ownera.java.sdk.version>0.27.0</ownera.java.sdk.version>
+        <jooq.version>3.19.7</jooq.version>
     </properties>
 
     <parent>
@@ -92,11 +93,18 @@
             <version>${ownera.java.sdk.version}</version>
         </dependency>
 
-        <!-- Spring JDBC -->
+        <!-- Spring JDBC (DataSource, HikariCP, schema init) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <version>3.2.3</version>
+        </dependency>
+
+        <!-- jOOQ -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
         </dependency>
 
         <!-- PostgreSQL driver -->
@@ -147,6 +155,48 @@
                 <configuration>
                     <source>11</source>
                     <target>11</target>
+                </configuration>
+            </plugin>
+
+            <!-- jOOQ codegen: generates type-safe classes from schema.sql (no running DB needed) -->
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-jooq</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>generate</goal></goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jooq</groupId>
+                        <artifactId>jooq-meta-extensions</artifactId>
+                        <version>${jooq.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <generator>
+                        <database>
+                            <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
+                            <properties>
+                                <property>
+                                    <key>scripts</key>
+                                    <value>src/main/resources/schema.sql</value>
+                                </property>
+                                <property>
+                                    <key>defaultNameCase</key>
+                                    <value>lower</value>
+                                </property>
+                            </properties>
+                        </database>
+                        <target>
+                            <packageName>io.ownera.ledger.adapter.db.generated</packageName>
+                            <directory>target/generated-sources/jooq</directory>
+                        </target>
+                    </generator>
                 </configuration>
             </plugin>
         </plugins>

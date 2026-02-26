@@ -3,58 +3,65 @@ package io.ownera.ledger.adapter.sample;
 import io.ownera.ledger.adapter.service.model.OperationStatus;
 import io.ownera.ledger.adapter.service.workflow.OperationRecord;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.jooq.DSLContext;
 
 import javax.annotation.Nullable;
-import java.sql.ResultSet;
-import java.util.List;
+
+import static io.ownera.ledger.adapter.db.generated.Tables.OPERATION_RECORDS;
 
 public class JdbcOperationStore implements OperationStore {
 
-    private final JdbcTemplate jdbc;
+    private final DSLContext dsl;
 
-    public JdbcOperationStore(JdbcTemplate jdbc, com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
-        this.jdbc = jdbc;
+    public JdbcOperationStore(DSLContext dsl) {
+        this.dsl = dsl;
     }
 
     @Override
     @Nullable
     public OperationRecord findByInputsHash(String inputsHash) {
-        List<OperationRecord> results = jdbc.query(
-                "SELECT cid, method, status, inputs_hash FROM operation_records WHERE inputs_hash = ?",
-                ROW_MAPPER, inputsHash);
-        return results.isEmpty() ? null : results.get(0);
+        return dsl.selectFrom(OPERATION_RECORDS)
+                .where(OPERATION_RECORDS.INPUTS_HASH.eq(inputsHash))
+                .fetchOptional()
+                .map(this::toOperationRecord)
+                .orElse(null);
     }
 
     @Override
     public void save(OperationRecord record) {
-        jdbc.update(
-                "INSERT INTO operation_records (cid, method, status, inputs_hash, result_json) VALUES (?, ?, ?, ?, ?)",
-                record.cid, record.method, record.status.name(), record.inputsHash, null);
+        dsl.insertInto(OPERATION_RECORDS)
+                .set(OPERATION_RECORDS.CID, record.cid)
+                .set(OPERATION_RECORDS.METHOD, record.method)
+                .set(OPERATION_RECORDS.STATUS, record.status.name())
+                .set(OPERATION_RECORDS.INPUTS_HASH, record.inputsHash)
+                .execute();
     }
 
     @Override
     public void updateStatus(String cid, OperationRecord.Status status, @Nullable OperationStatus result) {
-        jdbc.update(
-                "UPDATE operation_records SET status = ? WHERE cid = ?",
-                status.name(), cid);
+        dsl.update(OPERATION_RECORDS)
+                .set(OPERATION_RECORDS.STATUS, status.name())
+                .where(OPERATION_RECORDS.CID.eq(cid))
+                .execute();
     }
 
     @Override
     @Nullable
     public OperationRecord findByCid(String cid) {
-        List<OperationRecord> results = jdbc.query(
-                "SELECT cid, method, status, inputs_hash FROM operation_records WHERE cid = ?",
-                ROW_MAPPER, cid);
-        return results.isEmpty() ? null : results.get(0);
+        return dsl.selectFrom(OPERATION_RECORDS)
+                .where(OPERATION_RECORDS.CID.eq(cid))
+                .fetchOptional()
+                .map(this::toOperationRecord)
+                .orElse(null);
     }
 
-    private static final RowMapper<OperationRecord> ROW_MAPPER = (ResultSet rs, int rowNum) -> new OperationRecord(
-            rs.getString("cid"),
-            rs.getString("method"),
-            OperationRecord.Status.valueOf(rs.getString("status")),
-            rs.getString("inputs_hash"),
-            null
-    );
+    private OperationRecord toOperationRecord(org.jooq.Record r) {
+        return new OperationRecord(
+                r.get(OPERATION_RECORDS.CID),
+                r.get(OPERATION_RECORDS.METHOD),
+                OperationRecord.Status.valueOf(r.get(OPERATION_RECORDS.STATUS)),
+                r.get(OPERATION_RECORDS.INPUTS_HASH),
+                null
+        );
+    }
 }

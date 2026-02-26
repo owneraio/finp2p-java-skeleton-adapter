@@ -3,25 +3,26 @@ package io.ownera.ledger.adapter.sample;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
+import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.UUID;
+
+import static io.ownera.ledger.adapter.db.generated.Tables.TRANSACTIONS;
 
 public class JdbcLedger implements TokenService, EscrowService, CommonService {
 
     private static final Logger logger = LoggerFactory.getLogger(JdbcLedger.class);
 
-    private final JdbcTemplate jdbc;
+    private final DSLContext dsl;
     private final JdbcStorage storage;
     private final @Nullable ProofProvider proofProvider;
 
-    public JdbcLedger(JdbcTemplate jdbc, @Nullable ProofProvider proofProvider) {
-        this.jdbc = jdbc;
-        this.storage = new JdbcStorage(jdbc);
+    public JdbcLedger(DSLContext dsl, @Nullable ProofProvider proofProvider) {
+        this.dsl = dsl;
+        this.storage = new JdbcStorage(dsl);
         this.proofProvider = proofProvider;
     }
 
@@ -177,33 +178,39 @@ public class JdbcLedger implements TokenService, EscrowService, CommonService {
         String sourceFinId = tx.source != null ? tx.source.finId : null;
         String destFinId = tx.destination != null ? tx.destination.finId : null;
         String execPlanId = tx.executionContext != null ? tx.executionContext.planId : null;
-        jdbc.update(
-                "INSERT INTO transactions (id, source_fin_id, destination_fin_id, quantity, asset_id, asset_type, " +
-                        "operation_type, operation_id, execution_plan_id, timestamp) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                tx.id, sourceFinId, destFinId, tx.quantity,
-                tx.asset.assetId, tx.asset.assetType.name(),
-                tx.operationType.name(), tx.operationId, execPlanId, tx.timestamp);
+        dsl.insertInto(TRANSACTIONS)
+                .set(TRANSACTIONS.ID, tx.id)
+                .set(TRANSACTIONS.SOURCE_FIN_ID, sourceFinId)
+                .set(TRANSACTIONS.DESTINATION_FIN_ID, destFinId)
+                .set(TRANSACTIONS.QUANTITY, tx.quantity)
+                .set(TRANSACTIONS.ASSET_ID, tx.asset.assetId)
+                .set(TRANSACTIONS.ASSET_TYPE, tx.asset.assetType.name())
+                .set(TRANSACTIONS.OPERATION_TYPE, tx.operationType.name())
+                .set(TRANSACTIONS.OPERATION_ID, tx.operationId)
+                .set(TRANSACTIONS.EXECUTION_PLAN_ID, execPlanId)
+                .set(TRANSACTIONS.TIMESTAMP, tx.timestamp)
+                .execute();
     }
 
     private Transaction loadTransaction(String id) {
-        List<Transaction> results = jdbc.query(
-                "SELECT * FROM transactions WHERE id = ?",
-                (rs, rowNum) -> {
-                    String sourceFinId = rs.getString("source_fin_id");
-                    String destFinId = rs.getString("destination_fin_id");
-                    String execPlanId = rs.getString("execution_plan_id");
+        return dsl.selectFrom(TRANSACTIONS)
+                .where(TRANSACTIONS.ID.eq(id))
+                .fetchOptional()
+                .map(r -> {
+                    String sourceFinId = r.get(TRANSACTIONS.SOURCE_FIN_ID);
+                    String destFinId = r.get(TRANSACTIONS.DESTINATION_FIN_ID);
+                    String execPlanId = r.get(TRANSACTIONS.EXECUTION_PLAN_ID);
                     FinIdAccount source = sourceFinId != null ? new FinIdAccount(sourceFinId) : null;
                     Destination dest = destFinId != null ? new Destination(destFinId, new FinIdAccount(destFinId)) : null;
-                    Asset asset = new Asset(rs.getString("asset_id"), AssetType.valueOf(rs.getString("asset_type")));
+                    Asset asset = new Asset(r.get(TRANSACTIONS.ASSET_ID), AssetType.valueOf(r.get(TRANSACTIONS.ASSET_TYPE)));
                     ExecutionContext exCtx = execPlanId != null ? new ExecutionContext(execPlanId, 0) : null;
                     return new Transaction(
-                            rs.getString("id"), source, dest,
-                            rs.getString("quantity"), asset, exCtx,
-                            OperationType.valueOf(rs.getString("operation_type")),
-                            rs.getString("operation_id"),
-                            rs.getLong("timestamp"));
-                }, id);
-        return results.isEmpty() ? null : results.get(0);
+                            r.get(TRANSACTIONS.ID), source, dest,
+                            r.get(TRANSACTIONS.QUANTITY), asset, exCtx,
+                            OperationType.valueOf(r.get(TRANSACTIONS.OPERATION_TYPE)),
+                            r.get(TRANSACTIONS.OPERATION_ID),
+                            r.get(TRANSACTIONS.TIMESTAMP));
+                })
+                .orElse(null);
     }
 }
