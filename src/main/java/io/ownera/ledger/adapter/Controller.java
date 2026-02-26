@@ -3,12 +3,16 @@ package io.ownera.ledger.adapter;
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
+import io.ownera.ledger.adapter.service.workflow.CorrelationIdGenerator;
+import io.ownera.ledger.adapter.service.workflow.OperationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 import static io.ownera.ledger.adapter.Mappers.*;
 
@@ -22,10 +26,13 @@ public class Controller {
     private final CommonService commonService;
     private final HealthService healthService;
     private final SignatureVerifier signatureVerifier;
+    private final OperationExecutor operationExecutor;
+    private final Optional<TransactionHook> transactionHook;
 
     public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
                       PlanApprovalService planApprovalService, CommonService commonService,
-                      HealthService healthService, SignatureVerifier signatureVerifier) {
+                      HealthService healthService, SignatureVerifier signatureVerifier,
+                      OperationExecutor operationExecutor, Optional<TransactionHook> transactionHook) {
         this.escrowService = escrowService;
         this.tokenService = tokenService;
         this.paymentService = paymentService;
@@ -33,9 +40,15 @@ public class Controller {
         this.commonService = commonService;
         this.healthService = healthService;
         this.signatureVerifier = signatureVerifier;
+        this.operationExecutor = operationExecutor;
+        this.transactionHook = transactionHook;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
+
+    private static String ensureIdempotencyKey(String idempotencyKey) {
+        return idempotencyKey != null ? idempotencyKey : CorrelationIdGenerator.generate();
+    }
 
     // --- Health endpoints ---
 
@@ -71,9 +84,14 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIApproveExecutionPlanRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         String planId = request.getExecutionPlan().getId();
         logger.info("Approve plan: {}", planId);
-        PlanApprovalStatus status = planApprovalService.approvePlan(idempotencyKey, planId);
+        PlanApprovalStatus status = operationExecutor.execute(
+                "approvePlan", ik, planId,
+                () -> planApprovalService.approvePlan(ik, planId),
+                cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
+        );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
@@ -84,16 +102,21 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APICreateAssetRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Create asset: {}", request);
-        AssetCreationStatus status = tokenService.createAsset(
-                idempotencyKey,
-                fromAPI(request.getAsset()),
-                fromAPI(request.getLedgerAssetBinding()),
-                request.getMetadata(),
-                request.getName(),
-                request.getIssuerId(),
-                fromAPI(request.getDenomination()),
-                fromAPI(request.getAssetIdentifier())
+        AssetCreationStatus status = operationExecutor.execute(
+                "createAsset", ik, request.toString(),
+                () -> tokenService.createAsset(
+                        ik,
+                        fromAPI(request.getAsset()),
+                        fromAPI(request.getLedgerAssetBinding()),
+                        request.getMetadata(),
+                        request.getName(),
+                        request.getIssuerId(),
+                        fromAPI(request.getDenomination()),
+                        fromAPI(request.getAssetIdentifier())
+                ),
+                cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
@@ -105,14 +128,26 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIIssueAssetsRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Issue assets: {}", request);
-        ReceiptOperation rcptOp = tokenService.issue(
-                idempotencyKey,
-                fromAPI(request.getAsset()),
-                fromAPI(request.getDestination()),
-                request.getQuantity(),
-                fromAPI(request.getExecutionContext())
+
+        Asset asset = fromAPI(request.getAsset());
+        FinIdAccount destination = fromAPI(request.getDestination());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.ISSUE, null,
+                destination.destination(), asset, request.getQuantity(), null, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "issue", ik, request.toString(),
+                () -> tokenService.issue(ik, asset, destination, request.getQuantity(), exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.ISSUE, null,
+                destination.destination(), asset, request.getQuantity(), null, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -121,22 +156,34 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APITransferAssetRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Transfer assets: {}", request);
+
+        Source source = fromAPI(request.getSource());
+        Destination destination = fromAPI(request.getDestination());
+        Asset asset = fromAPI(request.getAsset());
+        Signature sig = fromAPI(request.getSignature());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
         // Uncomment to enable signature verification:
-        // Signature sig = fromAPI(request.getSignature());
         // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
-        ReceiptOperation rcptOp = tokenService.transfer(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                fromAPI(request.getSignature()),
-                fromAPI(request.getExecutionContext())
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.TRANSFER, source, destination, asset,
+                request.getQuantity(), sig, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "transfer", ik, request.toString(),
+                () -> tokenService.transfer(ik, request.getNonce(), source, destination, asset,
+                        request.getQuantity(), sig, exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.TRANSFER, source, destination, asset,
+                request.getQuantity(), sig, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -145,22 +192,33 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRedeemAssetsRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Redeem assets: {}", request);
+
+        FinIdAccount source = fromAPI(request.getSource());
+        Asset asset = fromAPI(request.getAsset());
+        Signature sig = fromAPI(request.getSignature());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
         // Uncomment to enable signature verification:
-        // Signature sig = fromAPI(request.getSignature());
         // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
-        ReceiptOperation rcptOp = tokenService.redeem(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getSignature()),
-                fromAPI(request.getExecutionContext())
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.REDEEM, source.source(), null, asset,
+                request.getQuantity(), sig, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "redeem", ik, request.toString(),
+                () -> tokenService.redeem(ik, request.getNonce(), source, asset,
+                        request.getQuantity(), request.getOperationId(), sig, exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.REDEEM, source.source(), null, asset,
+                request.getQuantity(), sig, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -206,23 +264,34 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIHoldOperationRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Hold assets: {}", request);
+
+        Source source = fromAPI(request.getSource());
+        Destination destination = fromAPI(request.getDestination());
+        Asset asset = fromAPI(request.getAsset());
+        Signature sig = fromAPI(request.getSignature());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
         // Uncomment to enable signature verification:
-        // Signature sig = fromAPI(request.getSignature());
         // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
-        ReceiptOperation rcptOp = escrowService.hold(
-                idempotencyKey,
-                request.getNonce(),
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                fromAPI(request.getSignature()),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.HOLD, source, destination, asset,
+                request.getQuantity(), sig, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "hold", ik, request.toString(),
+                () -> escrowService.hold(ik, request.getNonce(), source, destination, asset,
+                        request.getQuantity(), sig, request.getOperationId(), exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.HOLD, source, destination, asset,
+                request.getQuantity(), sig, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -231,16 +300,28 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIReleaseOperationRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Release assets: {}", request);
-        ReceiptOperation rcptOp = escrowService.release(
-                idempotencyKey,
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
+
+        Source source = fromAPI(request.getSource());
+        Destination destination = fromAPI(request.getDestination());
+        Asset asset = fromAPI(request.getAsset());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.RELEASE, source, destination, asset,
+                request.getQuantity(), null, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "release", ik, request.toString(),
+                () -> escrowService.release(ik, source, destination, asset,
+                        request.getQuantity(), request.getOperationId(), exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.RELEASE, source, destination, asset,
+                request.getQuantity(), null, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -249,15 +330,27 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRollbackOperationRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Rollback assets: {}", request);
-        ReceiptOperation rcptOp = escrowService.rollback(
-                idempotencyKey,
-                fromAPI(request.getSource()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                request.getOperationId(),
-                fromAPI(request.getExecutionContext())
+
+        Source source = fromAPI(request.getSource());
+        Asset asset = fromAPI(request.getAsset());
+        ExecutionContext exCtx = fromAPI(request.getExecutionContext());
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.ROLLBACK, source, null, asset,
+                request.getQuantity(), null, exCtx));
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "rollback", ik, request.toString(),
+                () -> escrowService.rollback(ik, source, asset,
+                        request.getQuantity(), request.getOperationId(), exCtx),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.ROLLBACK, source, null, asset,
+                request.getQuantity(), null, exCtx, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
@@ -268,21 +361,27 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIDepositInstructionRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Deposit instruction: {}", request);
+
         // Uncomment to enable signature verification:
         // Signature sig = fromAPI(request.getSignature());
         // if (sig != null && !signatureVerifier.verify(sig, request.getOwner().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
-        DepositOperation rcptOp = paymentService.getDepositInstruction(
-                idempotencyKey,
-                fromAPI(request.getOwner()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getAmount(),
-                request.getDetails(),
-                request.getNonce(),
-                fromAPI(request.getSignature())
+        DepositOperation rcptOp = operationExecutor.execute(
+                "depositInstruction", ik, request.toString(),
+                () -> paymentService.getDepositInstruction(
+                        ik,
+                        fromAPI(request.getOwner()),
+                        fromAPI(request.getDestination()),
+                        fromAPI(request.getAsset()),
+                        request.getAmount(),
+                        request.getDetails(),
+                        request.getNonce(),
+                        fromAPI(request.getSignature())
+                ),
+                cid -> new PendingDepositOperation(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(rcptOp));
     }
@@ -292,26 +391,38 @@ public class Controller {
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIPayoutRequest request
     ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Payout: {}", request);
+
+        Source source = fromAPI(request.getSource());
+        Destination destination = fromAPI(request.getDestination());
+        Asset asset = fromAPI(request.getAsset());
+        Signature sig = fromAPI(request.getSignature());
+
         // Uncomment to enable signature verification:
-        // Signature sig = fromAPI(request.getSignature());
         // if (sig != null && !signatureVerifier.verify(sig, request.getSource().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
+
+        transactionHook.ifPresent(h -> h.preTransaction(
+                ik, OperationType.TRANSFER, source, destination, asset,
+                request.getQuantity(), sig, null));
         String description = null;
         if (request.getPayoutInstruction() != null) {
             description = request.getPayoutInstruction().getDescription();
         }
-        ReceiptOperation rcptOp = paymentService.payout(
-                idempotencyKey,
-                fromAPI(request.getSource()),
-                fromAPI(request.getDestination()),
-                fromAPI(request.getAsset()),
-                request.getQuantity(),
-                description,
-                request.getNonce(),
-                fromAPI(request.getSignature())
+        String desc = description;
+        ReceiptOperation rcptOp = operationExecutor.execute(
+                "payout", ik, request.toString(),
+                () -> paymentService.payout(ik, source, destination, asset,
+                        request.getQuantity(), desc, request.getNonce(), sig),
+                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
+
+        transactionHook.ifPresent(h -> h.postTransaction(
+                ik, OperationType.TRANSFER, source, destination, asset,
+                request.getQuantity(), sig, null, rcptOp));
+
         return ResponseEntity.status(HttpStatus.OK).body(toAPIPayoutResponse(rcptOp));
     }
 
