@@ -1,7 +1,5 @@
 package io.ownera.ledger.adapter.service.model;
 
-import java.util.UUID;
-
 public class Receipt {
 
     public final String id;
@@ -29,35 +27,31 @@ public class Receipt {
         this.timestamp = timestamp;
     }
 
-
-    public static Receipt newIssueReceipt(String assetId, String finId, String quantity, String operationId,ExecutionContext exCtx) {
-        String txId = UUID.randomUUID().toString();
+    public static Receipt newIssueReceipt(String transactionId, String assetId, String finId, String quantity, String operationId, ExecutionContext exCtx) {
         Asset asset = new Asset(assetId, AssetType.FINP2P);
         Destination destination = new Destination(finId, new FinIdAccount(finId));
-        TransactionDetails details = new TransactionDetails(txId, operationId);
+        TransactionDetails details = new TransactionDetails(transactionId, operationId);
         TradeDetails trade = new TradeDetails(exCtx);
         long timestamp = System.currentTimeMillis();
-        return new Receipt(txId, OperationType.ISSUE, asset, null, destination, quantity, details, trade, null, timestamp);
+        return new Receipt(transactionId, OperationType.ISSUE, asset, null, destination, quantity, details, trade, null, timestamp);
     }
 
-    public static Receipt newTransferReceipt(String assetId, String from, String to, String quantity, String operationId, ExecutionContext exCtx) {
-        String txId = UUID.randomUUID().toString();
+    public static Receipt newTransferReceipt(String transactionId, String assetId, String from, String to, String quantity, String operationId, ExecutionContext exCtx) {
         Asset asset = new Asset(assetId, AssetType.FINP2P);
         Source source = new Source(from, new FinIdAccount(from));
-        Destination destination = new Destination(to, new FinIdAccount(txId));
-        TransactionDetails details = new TransactionDetails(txId, operationId);
+        Destination destination = new Destination(to, new FinIdAccount(to));
+        TransactionDetails details = new TransactionDetails(transactionId, operationId);
         TradeDetails trade = new TradeDetails(exCtx);
         long timestamp = System.currentTimeMillis();
-        return new Receipt(txId, OperationType.TRANSFER, asset, source, destination, quantity, details, trade, null, timestamp);
+        return new Receipt(transactionId, OperationType.TRANSFER, asset, source, destination, quantity, details, trade, null, timestamp);
     }
 
-    public static Receipt newRedeemReceipt(String assetId, String from, String quantity, String operationId, ExecutionContext exCtx) {
-        String txId = UUID.randomUUID().toString();
+    public static Receipt newRedeemReceipt(String transactionId, String assetId, String from, String quantity, String operationId, ExecutionContext exCtx) {
         Asset asset = new Asset(assetId, AssetType.FINP2P);
         Source source = new Source(from, new FinIdAccount(from));
-        TransactionDetails details = new TransactionDetails(txId, operationId);
+        TransactionDetails details = new TransactionDetails(transactionId, operationId);
         TradeDetails trade = new TradeDetails(exCtx);
         long timestamp = System.currentTimeMillis();
-        return new Receipt(txId, OperationType.REDEEM, asset, source, null, quantity, details, trade, null, timestamp);
+        return new Receipt(transactionId, OperationType.REDEEM, asset, source, null, quantity, details, trade, null, timestamp);
     }
 }
