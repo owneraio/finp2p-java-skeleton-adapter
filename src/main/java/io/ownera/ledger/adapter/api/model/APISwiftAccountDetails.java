@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,7 +37,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APISwiftAccountDetails.JSON_PROPERTY_SWIFT_CODE,
   APISwiftAccountDetails.JSON_PROPERTY_ACCOUNT_NUMBER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APISwiftAccountDetails {
   /**
    * Gets or Sets type
@@ -238,17 +237,17 @@ public class APISwiftAccountDetails {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `swiftCode` to the URL query string
     if (getSwiftCode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sswiftCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSwiftCode()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sswiftCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSwiftCode()))));
     }
 
     // add `accountNumber` to the URL query string
     if (getAccountNumber() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountNumber()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%saccountNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountNumber()))));
     }
 
     return joiner.toString();

@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -46,7 +45,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIDepositInstructionRequest.JSON_PROPERTY_NONCE,
   APIDepositInstructionRequest.JSON_PROPERTY_SIGNATURE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIDepositInstructionRequest {
   public static final String JSON_PROPERTY_DESTINATION = "destination";
   @javax.annotation.Nonnull
@@ -348,17 +347,17 @@ public class APIDepositInstructionRequest {
 
     // add `amount` to the URL query string
     if (getAmount() != null) {
-      joiner.add(String.format(Locale.ROOT, "%samount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAmount()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%samount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAmount()))));
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
     }
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
     }
 
     // add `signature` to the URL query string

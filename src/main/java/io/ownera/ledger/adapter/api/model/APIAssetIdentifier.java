@@ -19,12 +19,12 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.ownera.ledger.adapter.api.model.APIAssetIdentifierNetworkInfo;
 import io.ownera.ledger.adapter.api.model.APIAssetIdentifierType;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,9 +36,10 @@ import io.ownera.ledger.adapter.api.ApiClient;
  */
 @JsonPropertyOrder({
   APIAssetIdentifier.JSON_PROPERTY_ASSET_IDENTIFIER_TYPE,
-  APIAssetIdentifier.JSON_PROPERTY_ASSET_IDENTIFIER_VALUE
+  APIAssetIdentifier.JSON_PROPERTY_ASSET_IDENTIFIER_VALUE,
+  APIAssetIdentifier.JSON_PROPERTY_NETWORK_INFO
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIAssetIdentifier {
   public static final String JSON_PROPERTY_ASSET_IDENTIFIER_TYPE = "assetIdentifierType";
   @javax.annotation.Nonnull
@@ -47,6 +48,10 @@ public class APIAssetIdentifier {
   public static final String JSON_PROPERTY_ASSET_IDENTIFIER_VALUE = "assetIdentifierValue";
   @javax.annotation.Nonnull
   private String assetIdentifierValue;
+
+  public static final String JSON_PROPERTY_NETWORK_INFO = "networkInfo";
+  @javax.annotation.Nullable
+  private APIAssetIdentifierNetworkInfo networkInfo;
 
   public APIAssetIdentifier() { 
   }
@@ -99,6 +104,30 @@ public class APIAssetIdentifier {
   }
 
 
+  public APIAssetIdentifier networkInfo(@javax.annotation.Nullable APIAssetIdentifierNetworkInfo networkInfo) {
+    this.networkInfo = networkInfo;
+    return this;
+  }
+
+  /**
+   * Get networkInfo
+   * @return networkInfo
+   */
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_NETWORK_INFO, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public APIAssetIdentifierNetworkInfo getNetworkInfo() {
+    return networkInfo;
+  }
+
+
+  @JsonProperty(value = JSON_PROPERTY_NETWORK_INFO, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNetworkInfo(@javax.annotation.Nullable APIAssetIdentifierNetworkInfo networkInfo) {
+    this.networkInfo = networkInfo;
+  }
+
+
   /**
    * Return true if this assetIdentifier object is equal to o.
    */
@@ -112,12 +141,13 @@ public class APIAssetIdentifier {
     }
     APIAssetIdentifier assetIdentifier = (APIAssetIdentifier) o;
     return Objects.equals(this.assetIdentifierType, assetIdentifier.assetIdentifierType) &&
-        Objects.equals(this.assetIdentifierValue, assetIdentifier.assetIdentifierValue);
+        Objects.equals(this.assetIdentifierValue, assetIdentifier.assetIdentifierValue) &&
+        Objects.equals(this.networkInfo, assetIdentifier.networkInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(assetIdentifierType, assetIdentifierValue);
+    return Objects.hash(assetIdentifierType, assetIdentifierValue, networkInfo);
   }
 
   @Override
@@ -126,6 +156,7 @@ public class APIAssetIdentifier {
     sb.append("class APIAssetIdentifier {\n");
     sb.append("    assetIdentifierType: ").append(toIndentedString(assetIdentifierType)).append("\n");
     sb.append("    assetIdentifierValue: ").append(toIndentedString(assetIdentifierValue)).append("\n");
+    sb.append("    networkInfo: ").append(toIndentedString(networkInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -175,12 +206,17 @@ public class APIAssetIdentifier {
 
     // add `assetIdentifierType` to the URL query string
     if (getAssetIdentifierType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassetIdentifierType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssetIdentifierType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sassetIdentifierType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssetIdentifierType()))));
     }
 
     // add `assetIdentifierValue` to the URL query string
     if (getAssetIdentifierValue() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sassetIdentifierValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssetIdentifierValue()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sassetIdentifierValue%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAssetIdentifierValue()))));
+    }
+
+    // add `networkInfo` to the URL query string
+    if (getNetworkInfo() != null) {
+      joiner.add(getNetworkInfo().toUrlQueryString(prefix + "networkInfo" + suffix));
     }
 
     return joiner.toString();

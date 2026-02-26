@@ -24,9 +24,9 @@ public interface TokenService {
                             String quantity, @Nullable String operationId, Signature signature,
                             @Nullable ExecutionContext exCtx) throws TokenServiceException;
 
-    String getBalance(String assetId, String finId) throws TokenServiceException;
+    String getBalance(Asset asset, String finId) throws TokenServiceException;
 
-    Balance balance(String assetId, String finId) throws TokenServiceException;
+    Balance balance(Asset asset, String finId) throws TokenServiceException;
 
 
 }

@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,7 +38,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIEIP712Domain.JSON_PROPERTY_CHAIN_ID,
   APIEIP712Domain.JSON_PROPERTY_VERIFYING_CONTRACT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIEIP712Domain {
   public static final String JSON_PROPERTY_NAME = "name";
   @javax.annotation.Nullable
@@ -236,22 +235,22 @@ public class APIEIP712Domain {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
     }
 
     // add `version` to the URL query string
     if (getVersion() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sversion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sversion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVersion()))));
     }
 
     // add `chainId` to the URL query string
     if (getChainId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%schainId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChainId()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%schainId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getChainId()))));
     }
 
     // add `verifyingContract` to the URL query string
     if (getVerifyingContract() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sverifyingContract%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVerifyingContract()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sverifyingContract%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getVerifyingContract()))));
     }
 
     return joiner.toString();

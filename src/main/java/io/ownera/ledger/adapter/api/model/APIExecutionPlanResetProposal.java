@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,7 +36,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIExecutionPlanResetProposal.JSON_PROPERTY_PROPOSAL_TYPE,
   APIExecutionPlanResetProposal.JSON_PROPERTY_PROPOSED_SEQUENCE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIExecutionPlanResetProposal {
   /**
    * Gets or Sets proposalType
@@ -208,12 +207,12 @@ public class APIExecutionPlanResetProposal {
 
     // add `proposalType` to the URL query string
     if (getProposalType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sproposalType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposalType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sproposalType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposalType()))));
     }
 
     // add `proposedSequence` to the URL query string
     if (getProposedSequence() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sproposedSequence%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposedSequence()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sproposedSequence%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposedSequence()))));
     }
 
     return joiner.toString();

@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import static io.ownera.ledger.adapter.Mappers.*;
 
 @RestController
-@RequestMapping("/api")
 public class Controller {
 
     private final EscrowService escrowService;
@@ -25,20 +24,51 @@ public class Controller {
     private final PaymentService paymentService;
     private final PlanApprovalService planApprovalService;
     private final CommonService commonService;
+    private final HealthService healthService;
 
     public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
-                      PlanApprovalService planApprovalService, CommonService commonService) {
+                      PlanApprovalService planApprovalService, CommonService commonService,
+                      HealthService healthService) {
         this.escrowService = escrowService;
         this.tokenService = tokenService;
         this.paymentService = paymentService;
         this.planApprovalService = planApprovalService;
         this.commonService = commonService;
+        this.healthService = healthService;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
 
+    // --- Health endpoints ---
 
-    @PostMapping(value = "/plan/approve", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("OK");
+    }
+
+    @GetMapping(value = "/health/liveness")
+    public ResponseEntity<String> liveness(
+            @RequestHeader(name = "skip-vendor", required = false) String skipVendor
+    ) {
+        if (!"true".equals(skipVendor)) {
+            healthService.liveness();
+        }
+        return ResponseEntity.ok("OK");
+    }
+
+    @GetMapping(value = "/health/readiness")
+    public ResponseEntity<String> readiness(
+            @RequestHeader(name = "skip-vendor", required = false) String skipVendor
+    ) {
+        if (!"true".equals(skipVendor)) {
+            healthService.readiness();
+        }
+        return ResponseEntity.ok("OK");
+    }
+
+    // --- Execution plan endpoints ---
+
+    @PostMapping(value = "/api/plan/approve", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIApproveExecutionPlanResponse> approvePlan(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIApproveExecutionPlanRequest request
@@ -49,7 +79,9 @@ public class Controller {
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
-    @PostMapping(value = "/assets/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // --- Asset management endpoints ---
+
+    @PostMapping(value = "/api/assets/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APICreateAssetResponse> createAsset(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APICreateAssetRequest request
@@ -72,7 +104,9 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/issue", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // --- Token operation endpoints ---
+
+    @PostMapping(value = "/api/assets/issue", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> issue(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIIssueAssetsRequest request
@@ -92,13 +126,12 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> transfer(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APITransferAssetRequest request
     ) {
         logger.info("Transfer assets: {}", request);
-
         try {
             ReceiptOperation rcptOp = tokenService.transfer(
                     idempotencyKey,
@@ -116,7 +149,7 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> redeem(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRedeemAssetsRequest request
@@ -139,8 +172,44 @@ public class Controller {
         }
     }
 
+    // --- Balance endpoints ---
 
-    @PostMapping(value = "/assets/hold", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIGetAssetBalanceResponse> getBalance(@RequestBody APIGetAssetBalanceRequest request) {
+        Asset asset = fromAPI(request.getAsset());
+        String balance = tokenService.getBalance(asset, request.getOwner().getFinId());
+        return ResponseEntity.status(HttpStatus.OK).body(new APIGetAssetBalanceResponse()
+                .asset(request.getAsset())
+                .balance(balance));
+    }
+
+    @PostMapping(value = "/api/asset/balance", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIAssetBalanceInfoResponse> assetBalance(@RequestBody APIAssetBalanceInfoRequest request) {
+        Asset asset = fromAPI(request.getAsset());
+        String finId = request.getAccount().getFinId();
+        Balance balance = tokenService.balance(asset, finId);
+        return ResponseEntity.status(HttpStatus.OK).body(balanceToAPI(request.getAsset(), request.getAccount(), balance));
+    }
+
+    // --- Receipt & operation status endpoints ---
+
+    @GetMapping(value = "/api/assets/receipts/{id}")
+    public ResponseEntity<APIGetReceiptResponse> getReceipt(
+            @PathVariable("id") String transactionId
+    ) {
+        ReceiptOperation receipt = commonService.getReceipt(transactionId);
+        return ResponseEntity.status(HttpStatus.OK).body(Mappers.toAPIGetReceiptResponse(receipt));
+    }
+
+    @GetMapping(value = "/api/operations/status/{id}")
+    public final ResponseEntity<APIOperationStatus> getOperationStatus(@PathVariable("id") String correlationId) {
+        OperationStatus status = commonService.operationStatus(correlationId);
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
+    }
+
+    // --- Escrow endpoints ---
+
+    @PostMapping(value = "/api/assets/hold", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> hold(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIHoldOperationRequest request
@@ -164,7 +233,7 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/release", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/assets/release", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> release(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIReleaseOperationRequest request
@@ -186,7 +255,7 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/rollback", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/assets/rollback", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIReceiptOperation> rollback(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIRollbackOperationRequest request
@@ -207,40 +276,14 @@ public class Controller {
         }
     }
 
-    @PostMapping(value = "/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIGetAssetBalanceResponse> getBalance(@RequestBody APIGetAssetBalanceRequest request) {
-        Asset asset = fromAPI(request.getAsset());
-        String balance = tokenService.getBalance(
-                asset.assetId,
-                request.getOwner().getAccount().getFinId()
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(new APIGetAssetBalanceResponse()
-                .asset(request.getAsset())
-                .balance(balance));
-    }
+    // --- Payment endpoints ---
 
-    @GetMapping(value = "/assets/receipts/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<APIGetReceiptResponse> getReceipt(
-            @PathVariable("id") String transactionId
-    ) {
-        ReceiptOperation receipt = commonService.getReceipt(transactionId);
-        return ResponseEntity.status(HttpStatus.OK).body(Mappers.toAPIGetReceiptResponse(receipt));
-    }
-
-    @GetMapping(value = "/operations/status/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public final ResponseEntity<APIOperationStatus> getOperationStatus(@PathVariable("id") String correlationId) {
-        OperationStatus status = commonService.operationStatus(correlationId);
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
-    }
-
-
-    @PostMapping(value = "/payments/depositInstruction", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/api/payments/depositInstruction", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIDepositInstructionResponse> depositInstruction(
             @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestBody APIDepositInstructionRequest request
     ) {
         logger.info("Deposit instruction: {}", request);
-
         DepositOperation rcptOp = paymentService.getDepositInstruction(
                 idempotencyKey,
                 fromAPI(request.getOwner()),
@@ -253,6 +296,31 @@ public class Controller {
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(rcptOp));
     }
+
+    @PostMapping(value = "/api/payments/payout", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIPayoutResponse> payout(
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestBody APIPayoutRequest request
+    ) {
+        logger.info("Payout: {}", request);
+        String description = null;
+        if (request.getPayoutInstruction() != null) {
+            description = request.getPayoutInstruction().getDescription();
+        }
+        ReceiptOperation rcptOp = paymentService.payout(
+                idempotencyKey,
+                fromAPI(request.getSource()),
+                fromAPI(request.getDestination()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                description,
+                request.getNonce(),
+                fromAPI(request.getSignature())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPIPayoutResponse(rcptOp));
+    }
+
+    // --- Error handling ---
 
     @ExceptionHandler({
             InterruptedException.class,

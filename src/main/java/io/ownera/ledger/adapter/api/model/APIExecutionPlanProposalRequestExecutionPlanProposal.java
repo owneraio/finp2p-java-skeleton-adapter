@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanCancellationProposal;
+import io.ownera.ledger.adapter.api.model.APIExecutionPlanInstructionProposal;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanResetProposal;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -59,7 +58,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 @JsonDeserialize(using = APIExecutionPlanProposalRequestExecutionPlanProposal.APIExecutionPlanProposalRequestExecutionPlanProposalDeserializer.class)
 @JsonSerialize(using = APIExecutionPlanProposalRequestExecutionPlanProposal.APIExecutionPlanProposalRequestExecutionPlanProposalSerializer.class)
 public class APIExecutionPlanProposalRequestExecutionPlanProposal extends AbstractOpenApiSchema {
@@ -122,6 +121,32 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
                 log.log(Level.FINER, "Input data does not match schema 'APIExecutionPlanCancellationProposal'", e);
             }
 
+            // deserialize APIExecutionPlanInstructionProposal
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (APIExecutionPlanInstructionProposal.class.equals(Integer.class) || APIExecutionPlanInstructionProposal.class.equals(Long.class) || APIExecutionPlanInstructionProposal.class.equals(Float.class) || APIExecutionPlanInstructionProposal.class.equals(Double.class) || APIExecutionPlanInstructionProposal.class.equals(Boolean.class) || APIExecutionPlanInstructionProposal.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((APIExecutionPlanInstructionProposal.class.equals(Integer.class) || APIExecutionPlanInstructionProposal.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((APIExecutionPlanInstructionProposal.class.equals(Float.class) || APIExecutionPlanInstructionProposal.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (APIExecutionPlanInstructionProposal.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (APIExecutionPlanInstructionProposal.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APIExecutionPlanInstructionProposal.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'APIExecutionPlanInstructionProposal'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'APIExecutionPlanInstructionProposal'", e);
+            }
+
             // deserialize APIExecutionPlanResetProposal
             try {
                 boolean attemptParsing = true;
@@ -153,7 +178,7 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for APIExecutionPlanProposalRequestExecutionPlanProposal: %d classes match result, expected 1", match));
+            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIExecutionPlanProposalRequestExecutionPlanProposal: %d classes match result, expected 1", match));
         }
 
         /**
@@ -177,6 +202,11 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
         setActualInstance(o);
     }
 
+    public APIExecutionPlanProposalRequestExecutionPlanProposal(APIExecutionPlanInstructionProposal o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
     public APIExecutionPlanProposalRequestExecutionPlanProposal(APIExecutionPlanResetProposal o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
@@ -184,11 +214,13 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
 
     static {
         schemas.put("APIExecutionPlanCancellationProposal", APIExecutionPlanCancellationProposal.class);
+        schemas.put("APIExecutionPlanInstructionProposal", APIExecutionPlanInstructionProposal.class);
         schemas.put("APIExecutionPlanResetProposal", APIExecutionPlanResetProposal.class);
         JSON.registerDescendants(APIExecutionPlanProposalRequestExecutionPlanProposal.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("cancel", APIExecutionPlanCancellationProposal.class);
+        mappings.put("instruction", APIExecutionPlanInstructionProposal.class);
         mappings.put("reset", APIExecutionPlanResetProposal.class);
         mappings.put("executionPlanProposalRequest_executionPlan_proposal", APIExecutionPlanProposalRequestExecutionPlanProposal.class);
         JSON.registerDiscriminator(APIExecutionPlanProposalRequestExecutionPlanProposal.class, "proposalType", mappings);
@@ -202,7 +234,7 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * APIExecutionPlanCancellationProposal, APIExecutionPlanResetProposal
+     * APIExecutionPlanCancellationProposal, APIExecutionPlanInstructionProposal, APIExecutionPlanResetProposal
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
@@ -214,19 +246,24 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
             return;
         }
 
+        if (JSON.isInstanceOf(APIExecutionPlanInstructionProposal.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
         if (JSON.isInstanceOf(APIExecutionPlanResetProposal.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        throw new RuntimeException("Invalid instance type. Must be APIExecutionPlanCancellationProposal, APIExecutionPlanResetProposal");
+        throw new RuntimeException("Invalid instance type. Must be APIExecutionPlanCancellationProposal, APIExecutionPlanInstructionProposal, APIExecutionPlanResetProposal");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * APIExecutionPlanCancellationProposal, APIExecutionPlanResetProposal
+     * APIExecutionPlanCancellationProposal, APIExecutionPlanInstructionProposal, APIExecutionPlanResetProposal
      *
-     * @return The actual instance (APIExecutionPlanCancellationProposal, APIExecutionPlanResetProposal)
+     * @return The actual instance (APIExecutionPlanCancellationProposal, APIExecutionPlanInstructionProposal, APIExecutionPlanResetProposal)
      */
     @Override
     public Object getActualInstance() {
@@ -242,6 +279,17 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
      */
     public APIExecutionPlanCancellationProposal getAPIExecutionPlanCancellationProposal() throws ClassCastException {
         return (APIExecutionPlanCancellationProposal)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `APIExecutionPlanInstructionProposal`. If the actual instance is not `APIExecutionPlanInstructionProposal`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `APIExecutionPlanInstructionProposal`
+     * @throws ClassCastException if the instance is not `APIExecutionPlanInstructionProposal`
+     */
+    public APIExecutionPlanInstructionProposal getAPIExecutionPlanInstructionProposal() throws ClassCastException {
+        return (APIExecutionPlanInstructionProposal)super.getActualInstance();
     }
 
     /**
@@ -295,9 +343,15 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
         }
         return joiner.toString();
     }
+    if (getActualInstance() instanceof APIExecutionPlanInstructionProposal) {
+        if (getActualInstance() != null) {
+          joiner.add(((APIExecutionPlanInstructionProposal)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        }
+        return joiner.toString();
+    }
     if (getActualInstance() instanceof APIExecutionPlanResetProposal) {
         if (getActualInstance() != null) {
-          joiner.add(((APIExecutionPlanResetProposal)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+          joiner.add(((APIExecutionPlanResetProposal)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
         }
         return joiner.toString();
     }

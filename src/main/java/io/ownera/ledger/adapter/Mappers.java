@@ -2,7 +2,7 @@ package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,6 +46,8 @@ public class Mappers {
 
     public static AssetDenominationType fromAPI(APIAssetDenominationType type) {
         switch (type) {
+            case FINP2P:
+                return AssetDenominationType.FINP2P;
             case FIAT:
                 return AssetDenominationType.FIAT;
             case CRYPTOCURRENCY:
@@ -78,6 +80,8 @@ public class Mappers {
                 return AssetIdentifierType.FIGI;
             case CUSTOM:
                 return AssetIdentifierType.CUSTOM;
+            case ISO4217:
+                return AssetIdentifierType.ISO4217;
             default:
                 throw new MappingException("Unsupported asset identifier type: " + type);
         }
@@ -245,6 +249,7 @@ public class Mappers {
                             .ledgerTokenId(new APILedgerTokenId()
                                     .tokenId(success.result.tokenId)
                             )
+                            .ledgerReference(toAPI(success.result.reference))
                     ));
 
         }
@@ -275,6 +280,7 @@ public class Mappers {
                             .ledgerTokenId(new APILedgerTokenId()
                                     .tokenId(success.result.tokenId)
                             )
+                            .ledgerReference(toAPI(success.result.reference))
                     ));
 
         }
@@ -510,6 +516,8 @@ public class Mappers {
                 return APIOperationType.HOLD;
             case RELEASE:
                 return APIOperationType.RELEASE;
+            case ROLLBACK:
+                return APIOperationType.ROLLBACK;
             default:
                 throw new MappingException("Unsupported operation type: " + type);
         }
@@ -742,5 +750,84 @@ public class Mappers {
         }
     }
 
+    // --- PayoutAsset mapping ---
+
+    public static Asset fromAPI(APIPayoutAsset asset) {
+        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
+            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
+            return new Asset(finp2pAsset.getResourceId(), AssetType.FINP2P);
+
+        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
+            APIFiatAsset fiatAsset = (APIFiatAsset) asset.getActualInstance();
+            return new Asset(fiatAsset.getCode(), AssetType.FIAT);
+
+        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
+            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
+            return new Asset(cryptoAsset.getCode(), AssetType.CRYPTOCURRENCY);
+
+        } else {
+            throw new MappingException("Unsupported payout asset type: " + asset.getActualInstance().getClass().getName());
+        }
+    }
+
+    // --- Balance mapping ---
+
+    public static APIAssetBalanceInfoResponse balanceToAPI(APIAsset asset, APIFinIdAccount account, Balance balance) {
+        return new APIAssetBalanceInfoResponse()
+                .account(account)
+                .asset(asset)
+                .balanceInfo(new APIAssetBalance()
+                        .asset(asset)
+                        .current(balance.current)
+                        .available(balance.available)
+                        .held(balance.held)
+                );
+    }
+
+    // --- Payout response mapping ---
+
+    public static APIPayoutResponse toAPIPayoutResponse(ReceiptOperation op) {
+        APIPayoutResponse response = new APIPayoutResponse();
+        if (op instanceof SuccessReceiptStatus) {
+            SuccessReceiptStatus success = (SuccessReceiptStatus) op;
+            response.cid("");
+            response.isCompleted(true);
+            response.response(toAPI(success.receipt));
+
+        } else if (op instanceof FailedReceiptStatus) {
+            FailedReceiptStatus failed = (FailedReceiptStatus) op;
+            response.cid("");
+            response.isCompleted(true);
+            response.error(new APIReceiptOperationErrorInformation()
+                    .code(failed.details.code)
+                    .message(failed.details.message));
+
+        } else if (op instanceof PendingReceiptStatus) {
+            PendingReceiptStatus pending = (PendingReceiptStatus) op;
+            response.cid(pending.correlationId);
+            response.isCompleted(false);
+        }
+        return response;
+    }
+
+    // --- LedgerReference mapping ---
+
+    private static APIContractDetails toAPI(@Nullable LedgerReference reference) {
+        if (reference == null) {
+            return null;
+        }
+        APIContractDetails details = new APIContractDetails()
+                .type(APIContractDetails.TypeEnum.CONTRACT_DETAILS)
+                .network(reference.network)
+                .address(reference.address)
+                .tokenStandard(reference.tokenStandard);
+        if (reference.additionalContractDetails != null) {
+            details.additionalContractDetails(new APIFinP2PEVMOperatorDetails()
+                    .finP2POperatorContractAddress(reference.additionalContractDetails.finP2POperatorContractAddress)
+                    .allowanceRequired(reference.additionalContractDetails.allowanceRequired)
+            );
+        }
+        return details;
+    }
 
 }

@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -41,7 +40,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIContractDetails.JSON_PROPERTY_TOKEN_STANDARD,
   APIContractDetails.JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIContractDetails {
   /**
    * the type of the identifier
@@ -301,22 +300,22 @@ public class APIContractDetails {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `network` to the URL query string
     if (getNetwork() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
     }
 
     // add `address` to the URL query string
     if (getAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%saddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
     }
 
     // add `TokenStandard` to the URL query string
     if (getTokenStandard() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sTokenStandard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenStandard()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sTokenStandard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenStandard()))));
     }
 
     // add `additionalContractDetails` to the URL query string

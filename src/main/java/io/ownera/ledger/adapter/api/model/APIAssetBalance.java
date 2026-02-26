@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -44,7 +43,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIAssetBalance.JSON_PROPERTY_HELD,
   APIAssetBalance.JSON_PROPERTY_RECEIPTS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIAssetBalance {
   public static final String JSON_PROPERTY_ASSET = "asset";
   @javax.annotation.Nonnull
@@ -284,25 +283,25 @@ public class APIAssetBalance {
 
     // add `current` to the URL query string
     if (getCurrent() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scurrent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrent()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scurrent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrent()))));
     }
 
     // add `available` to the URL query string
     if (getAvailable() != null) {
-      joiner.add(String.format(Locale.ROOT, "%savailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvailable()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%savailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvailable()))));
     }
 
     // add `held` to the URL query string
     if (getHeld() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sheld%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeld()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sheld%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeld()))));
     }
 
     // add `receipts` to the URL query string
     if (getReceipts() != null) {
       for (int i = 0; i < getReceipts().size(); i++) {
         if (getReceipts().get(i) != null) {
-          joiner.add(getReceipts().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sreceipts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getReceipts().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sreceipts%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

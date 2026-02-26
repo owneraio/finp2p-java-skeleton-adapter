@@ -19,15 +19,17 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Domain;
+import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Types;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -43,7 +45,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIEIP712Template.JSON_PROPERTY_PRIMARY_TYPE,
   APIEIP712Template.JSON_PROPERTY_HASH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIEIP712Template {
   /**
    * Gets or Sets type
@@ -88,7 +90,7 @@ public class APIEIP712Template {
 
   public static final String JSON_PROPERTY_MESSAGE = "message";
   @javax.annotation.Nonnull
-  private Object message;
+  private Map<String, APIEIP712TypedValue> message = new HashMap<>();
 
   public static final String JSON_PROPERTY_TYPES = "types";
   @javax.annotation.Nonnull
@@ -153,8 +155,16 @@ public class APIEIP712Template {
   }
 
 
-  public APIEIP712Template message(@javax.annotation.Nonnull Object message) {
+  public APIEIP712Template message(@javax.annotation.Nonnull Map<String, APIEIP712TypedValue> message) {
     this.message = message;
+    return this;
+  }
+
+  public APIEIP712Template putMessageItem(String key, APIEIP712TypedValue messageItem) {
+    if (this.message == null) {
+      this.message = new HashMap<>();
+    }
+    this.message.put(key, messageItem);
     return this;
   }
 
@@ -165,14 +175,14 @@ public class APIEIP712Template {
   @javax.annotation.Nonnull
   @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public Object getMessage() {
+  public Map<String, APIEIP712TypedValue> getMessage() {
     return message;
   }
 
 
   @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessage(@javax.annotation.Nonnull Object message) {
+  public void setMessage(@javax.annotation.Nonnull Map<String, APIEIP712TypedValue> message) {
     this.message = message;
   }
 
@@ -333,7 +343,7 @@ public class APIEIP712Template {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `domain` to the URL query string
@@ -343,7 +353,12 @@ public class APIEIP712Template {
 
     // add `message` to the URL query string
     if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
+      for (String _key : getMessage().keySet()) {
+        if (getMessage().get(_key) != null) {
+          joiner.add(getMessage().get(_key).toUrlQueryString(String.format(java.util.Locale.ROOT, "%smessage%s%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+        }
+      }
     }
 
     // add `types` to the URL query string
@@ -353,12 +368,12 @@ public class APIEIP712Template {
 
     // add `primaryType` to the URL query string
     if (getPrimaryType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sprimaryType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sprimaryType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryType()))));
     }
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format(Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
     }
 
     return joiner.toString();

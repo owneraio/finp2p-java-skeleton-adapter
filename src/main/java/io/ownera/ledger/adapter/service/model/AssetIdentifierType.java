@@ -7,5 +7,6 @@ public enum AssetIdentifierType {
     DTI,
     CMU,
     FIGI,
-    CUSTOM
+    CUSTOM,
+    ISO4217
 }

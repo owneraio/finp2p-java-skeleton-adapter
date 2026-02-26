@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -49,7 +48,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIHoldOperationRequest.JSON_PROPERTY_SIGNATURE,
   APIHoldOperationRequest.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIHoldOperationRequest {
   public static final String JSON_PROPERTY_NONCE = "nonce";
   @javax.annotation.Nonnull
@@ -396,12 +395,12 @@ public class APIHoldOperationRequest {
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
     }
 
     // add `operationId` to the URL query string
     if (getOperationId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%soperationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationId()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%soperationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationId()))));
     }
 
     // add `source` to the URL query string
@@ -416,7 +415,7 @@ public class APIHoldOperationRequest {
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format(Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
     }
 
     // add `asset` to the URL query string
@@ -426,7 +425,7 @@ public class APIHoldOperationRequest {
 
     // add `expiry` to the URL query string
     if (getExpiry() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sexpiry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpiry()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sexpiry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getExpiry()))));
     }
 
     // add `signature` to the URL query string

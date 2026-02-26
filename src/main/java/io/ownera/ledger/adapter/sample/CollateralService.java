@@ -2,7 +2,7 @@ package io.ownera.ledger.adapter.sample;
 
 import io.ownera.ledger.adapter.service.PaymentService;
 import io.ownera.ledger.adapter.service.model.*;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.UUID;

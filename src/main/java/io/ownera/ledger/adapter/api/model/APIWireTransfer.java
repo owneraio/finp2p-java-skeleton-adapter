@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -44,7 +43,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIWireTransfer.JSON_PROPERTY_POSTAL_CODE,
   APIWireTransfer.JSON_PROPERTY_COUNTRY
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIWireTransfer {
   /**
    * Gets or Sets type
@@ -394,17 +393,17 @@ public class APIWireTransfer {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `accountHolderName` to the URL query string
     if (getAccountHolderName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%saccountHolderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountHolderName()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%saccountHolderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountHolderName()))));
     }
 
     // add `bankName` to the URL query string
     if (getBankName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sbankName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBankName()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sbankName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBankName()))));
     }
 
     // add `wireDetails` to the URL query string
@@ -414,22 +413,22 @@ public class APIWireTransfer {
 
     // add `line1` to the URL query string
     if (getLine1() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sline1%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLine1()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sline1%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLine1()))));
     }
 
     // add `city` to the URL query string
     if (getCity() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCity()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCity()))));
     }
 
     // add `postalCode` to the URL query string
     if (getPostalCode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%spostalCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPostalCode()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%spostalCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPostalCode()))));
     }
 
     // add `country` to the URL query string
     if (getCountry() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scountry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scountry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
     }
 
     return joiner.toString();

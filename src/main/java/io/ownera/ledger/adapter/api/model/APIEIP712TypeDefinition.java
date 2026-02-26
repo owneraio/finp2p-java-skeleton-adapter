@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -40,20 +39,20 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIEIP712TypeDefinition.JSON_PROPERTY_NAME,
   APIEIP712TypeDefinition.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIEIP712TypeDefinition {
   public static final String JSON_PROPERTY_NAME = "name";
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
   private String name;
 
   public static final String JSON_PROPERTY_FIELDS = "fields";
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
   private List<APIEIP712FieldDefinition> fields = new ArrayList<>();
 
   public APIEIP712TypeDefinition() { 
   }
 
-  public APIEIP712TypeDefinition name(@javax.annotation.Nonnull String name) {
+  public APIEIP712TypeDefinition name(@javax.annotation.Nullable String name) {
     this.name = name;
     return this;
   }
@@ -62,22 +61,22 @@ public class APIEIP712TypeDefinition {
    * Get name
    * @return name
    */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setName(@javax.annotation.Nonnull String name) {
+  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setName(@javax.annotation.Nullable String name) {
     this.name = name;
   }
 
 
-  public APIEIP712TypeDefinition fields(@javax.annotation.Nonnull List<APIEIP712FieldDefinition> fields) {
+  public APIEIP712TypeDefinition fields(@javax.annotation.Nullable List<APIEIP712FieldDefinition> fields) {
     this.fields = fields;
     return this;
   }
@@ -94,17 +93,17 @@ public class APIEIP712TypeDefinition {
    * Get fields
    * @return fields
    */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<APIEIP712FieldDefinition> getFields() {
     return fields;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFields(@javax.annotation.Nonnull List<APIEIP712FieldDefinition> fields) {
+  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setFields(@javax.annotation.Nullable List<APIEIP712FieldDefinition> fields) {
     this.fields = fields;
   }
 
@@ -185,15 +184,15 @@ public class APIEIP712TypeDefinition {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
     }
 
     // add `fields` to the URL query string
     if (getFields() != null) {
       for (int i = 0; i < getFields().size(); i++) {
         if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getFields().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sfields%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,7 +36,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIRegulationError.JSON_PROPERTY_REGULATION_TYPE,
   APIRegulationError.JSON_PROPERTY_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIRegulationError {
   public static final String JSON_PROPERTY_REGULATION_TYPE = "regulationType";
   @javax.annotation.Nonnull
@@ -174,12 +173,12 @@ public class APIRegulationError {
 
     // add `regulationType` to the URL query string
     if (getRegulationType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sregulationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRegulationType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sregulationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRegulationType()))));
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
     }
 
     return joiner.toString();
