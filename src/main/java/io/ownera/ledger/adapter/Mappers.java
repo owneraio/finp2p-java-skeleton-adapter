@@ -619,7 +619,10 @@ public class Mappers {
 
     private static APIProofPolicy toAPI(@Nullable ProofPolicy policy) {
         if (policy == null) {
-            return null;
+            return new APIProofPolicy(
+                    new APINoProofPolicy()
+                            .type(APINoProofPolicy.TypeEnum.NO_PROOF_POLICY)
+            );
         }
         if (policy instanceof NoProofPolicy) {
             return new APIProofPolicy(
