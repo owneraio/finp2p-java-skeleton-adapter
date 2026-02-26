@@ -9,10 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.concurrent.ExecutionException;
 
 import static io.ownera.ledger.adapter.Mappers.*;
 
@@ -25,16 +21,18 @@ public class Controller {
     private final PlanApprovalService planApprovalService;
     private final CommonService commonService;
     private final HealthService healthService;
+    private final SignatureVerifier signatureVerifier;
 
     public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
                       PlanApprovalService planApprovalService, CommonService commonService,
-                      HealthService healthService) {
+                      HealthService healthService, SignatureVerifier signatureVerifier) {
         this.escrowService = escrowService;
         this.tokenService = tokenService;
         this.paymentService = paymentService;
         this.planApprovalService = planApprovalService;
         this.commonService = commonService;
         this.healthService = healthService;
+        this.signatureVerifier = signatureVerifier;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
@@ -87,21 +85,17 @@ public class Controller {
             @RequestBody APICreateAssetRequest request
     ) {
         logger.info("Create asset: {}", request);
-        try {
-            AssetCreationStatus status = tokenService.createAsset(
-                    idempotencyKey,
-                    fromAPI(request.getAsset()),
-                    fromAPI(request.getLedgerAssetBinding()),
-                    request.getMetadata(),
-                    request.getName(),
-                    request.getIssuerId(),
-                    fromAPI(request.getDenomination()),
-                    fromAPI(request.getAssetIdentifier())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedAssetOperation(1, e.getMessage()));
-        }
+        AssetCreationStatus status = tokenService.createAsset(
+                idempotencyKey,
+                fromAPI(request.getAsset()),
+                fromAPI(request.getLedgerAssetBinding()),
+                request.getMetadata(),
+                request.getName(),
+                request.getIssuerId(),
+                fromAPI(request.getDenomination()),
+                fromAPI(request.getAssetIdentifier())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
     // --- Token operation endpoints ---
@@ -112,18 +106,14 @@ public class Controller {
             @RequestBody APIIssueAssetsRequest request
     ) {
         logger.info("Issue assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = tokenService.issue(
-                    idempotencyKey,
-                    fromAPI(request.getAsset()),
-                    fromAPI(request.getDestination()),
-                    request.getQuantity(),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        ReceiptOperation rcptOp = tokenService.issue(
+                idempotencyKey,
+                fromAPI(request.getAsset()),
+                fromAPI(request.getDestination()),
+                request.getQuantity(),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     @PostMapping(value = "/api/assets/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -132,21 +122,22 @@ public class Controller {
             @RequestBody APITransferAssetRequest request
     ) {
         logger.info("Transfer assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = tokenService.transfer(
-                    idempotencyKey,
-                    request.getNonce(),
-                    fromAPI(request.getSource()),
-                    fromAPI(request.getDestination()),
-                    fromAPI(request.getAsset()),
-                    request.getQuantity(),
-                    fromAPI(request.getSignature()),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        // Uncomment to enable signature verification:
+        // Signature sig = fromAPI(request.getSignature());
+        // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
+        //     throw new BusinessException(4, "Signature verification failed");
+        // }
+        ReceiptOperation rcptOp = tokenService.transfer(
+                idempotencyKey,
+                request.getNonce(),
+                fromAPI(request.getSource()),
+                fromAPI(request.getDestination()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                fromAPI(request.getSignature()),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     @PostMapping(value = "/api/assets/redeem", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -155,21 +146,22 @@ public class Controller {
             @RequestBody APIRedeemAssetsRequest request
     ) {
         logger.info("Redeem assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = tokenService.redeem(
-                    idempotencyKey,
-                    request.getNonce(),
-                    fromAPI(request.getSource()),
-                    fromAPI(request.getAsset()),
-                    request.getQuantity(),
-                    request.getOperationId(),
-                    fromAPI(request.getSignature()),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        // Uncomment to enable signature verification:
+        // Signature sig = fromAPI(request.getSignature());
+        // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
+        //     throw new BusinessException(4, "Signature verification failed");
+        // }
+        ReceiptOperation rcptOp = tokenService.redeem(
+                idempotencyKey,
+                request.getNonce(),
+                fromAPI(request.getSource()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                request.getOperationId(),
+                fromAPI(request.getSignature()),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     // --- Balance endpoints ---
@@ -215,22 +207,23 @@ public class Controller {
             @RequestBody APIHoldOperationRequest request
     ) {
         logger.info("Hold assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = escrowService.hold(
-                    idempotencyKey,
-                    request.getNonce(),
-                    fromAPI(request.getSource()),
-                    fromAPI(request.getDestination()),
-                    fromAPI(request.getAsset()),
-                    request.getQuantity(),
-                    fromAPI(request.getSignature()),
-                    request.getOperationId(),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        // Uncomment to enable signature verification:
+        // Signature sig = fromAPI(request.getSignature());
+        // if (!signatureVerifier.verify(sig, request.getSource().getFinId())) {
+        //     throw new BusinessException(4, "Signature verification failed");
+        // }
+        ReceiptOperation rcptOp = escrowService.hold(
+                idempotencyKey,
+                request.getNonce(),
+                fromAPI(request.getSource()),
+                fromAPI(request.getDestination()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                fromAPI(request.getSignature()),
+                request.getOperationId(),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     @PostMapping(value = "/api/assets/release", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -239,20 +232,16 @@ public class Controller {
             @RequestBody APIReleaseOperationRequest request
     ) {
         logger.info("Release assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = escrowService.release(
-                    idempotencyKey,
-                    fromAPI(request.getSource()),
-                    fromAPI(request.getDestination()),
-                    fromAPI(request.getAsset()),
-                    request.getQuantity(),
-                    request.getOperationId(),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        ReceiptOperation rcptOp = escrowService.release(
+                idempotencyKey,
+                fromAPI(request.getSource()),
+                fromAPI(request.getDestination()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                request.getOperationId(),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     @PostMapping(value = "/api/assets/rollback", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -261,19 +250,15 @@ public class Controller {
             @RequestBody APIRollbackOperationRequest request
     ) {
         logger.info("Rollback assets: {}", request);
-        try {
-            ReceiptOperation rcptOp = escrowService.rollback(
-                    idempotencyKey,
-                    fromAPI(request.getSource()),
-                    fromAPI(request.getAsset()),
-                    request.getQuantity(),
-                    request.getOperationId(),
-                    fromAPI(request.getExecutionContext())
-            );
-            return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
-        } catch (TokenServiceException e) {
-            return ResponseEntity.status(HttpStatus.OK).body(failedTokenOperation(1, e.getMessage()));
-        }
+        ReceiptOperation rcptOp = escrowService.rollback(
+                idempotencyKey,
+                fromAPI(request.getSource()),
+                fromAPI(request.getAsset()),
+                request.getQuantity(),
+                request.getOperationId(),
+                fromAPI(request.getExecutionContext())
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(toAPI(rcptOp));
     }
 
     // --- Payment endpoints ---
@@ -284,6 +269,11 @@ public class Controller {
             @RequestBody APIDepositInstructionRequest request
     ) {
         logger.info("Deposit instruction: {}", request);
+        // Uncomment to enable signature verification:
+        // Signature sig = fromAPI(request.getSignature());
+        // if (sig != null && !signatureVerifier.verify(sig, request.getOwner().getFinId())) {
+        //     throw new BusinessException(4, "Signature verification failed");
+        // }
         DepositOperation rcptOp = paymentService.getDepositInstruction(
                 idempotencyKey,
                 fromAPI(request.getOwner()),
@@ -303,6 +293,11 @@ public class Controller {
             @RequestBody APIPayoutRequest request
     ) {
         logger.info("Payout: {}", request);
+        // Uncomment to enable signature verification:
+        // Signature sig = fromAPI(request.getSignature());
+        // if (sig != null && !signatureVerifier.verify(sig, request.getSource().getFinId())) {
+        //     throw new BusinessException(4, "Signature verification failed");
+        // }
         String description = null;
         if (request.getPayoutInstruction() != null) {
             description = request.getPayoutInstruction().getDescription();
@@ -318,20 +313,6 @@ public class Controller {
                 fromAPI(request.getSignature())
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIPayoutResponse(rcptOp));
-    }
-
-    // --- Error handling ---
-
-    @ExceptionHandler({
-            InterruptedException.class,
-            ExecutionException.class
-    })
-    public ModelAndView flowError(HttpServletRequest req, Exception ex) {
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("exception", ex);
-        mav.addObject("url", req.getRequestURL());
-        mav.setViewName("error");
-        return mav;
     }
 
 }

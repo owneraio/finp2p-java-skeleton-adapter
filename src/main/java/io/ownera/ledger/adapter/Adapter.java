@@ -72,6 +72,11 @@ public class Adapter {
         return new SimpleHealthService();
     }
 
+    @Bean
+    public SignatureVerifier signatureVerifier() {
+        return new SignatureVerifier();
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(Adapter.class, args);
     }
