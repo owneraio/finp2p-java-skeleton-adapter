@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,7 +36,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIFinP2PEVMOperatorDetails.JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS,
   APIFinP2PEVMOperatorDetails.JSON_PROPERTY_ALLOWANCE_REQUIRED
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIFinP2PEVMOperatorDetails {
   public static final String JSON_PROPERTY_FIN_P2_P_OPERATOR_CONTRACT_ADDRESS = "FinP2POperatorContractAddress";
   @javax.annotation.Nullable
@@ -174,12 +173,12 @@ public class APIFinP2PEVMOperatorDetails {
 
     // add `FinP2POperatorContractAddress` to the URL query string
     if (getFinP2POperatorContractAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sFinP2POperatorContractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinP2POperatorContractAddress()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sFinP2POperatorContractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinP2POperatorContractAddress()))));
     }
 
     // add `allowanceRequired` to the URL query string
     if (getAllowanceRequired() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sallowanceRequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowanceRequired()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sallowanceRequired%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAllowanceRequired()))));
     }
 
     return joiner.toString();

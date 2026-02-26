@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,16 +38,16 @@ import io.ownera.ledger.adapter.api.ApiClient;
 @JsonPropertyOrder({
   APIEIP712Types.JSON_PROPERTY_DEFINITIONS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIEIP712Types {
   public static final String JSON_PROPERTY_DEFINITIONS = "definitions";
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
   private List<APIEIP712TypeDefinition> definitions = new ArrayList<>();
 
   public APIEIP712Types() { 
   }
 
-  public APIEIP712Types definitions(@javax.annotation.Nonnull List<APIEIP712TypeDefinition> definitions) {
+  public APIEIP712Types definitions(@javax.annotation.Nullable List<APIEIP712TypeDefinition> definitions) {
     this.definitions = definitions;
     return this;
   }
@@ -65,17 +64,17 @@ public class APIEIP712Types {
    * Get definitions
    * @return definitions
    */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<APIEIP712TypeDefinition> getDefinitions() {
     return definitions;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDefinitions(@javax.annotation.Nonnull List<APIEIP712TypeDefinition> definitions) {
+  @JsonProperty(value = JSON_PROPERTY_DEFINITIONS, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefinitions(@javax.annotation.Nullable List<APIEIP712TypeDefinition> definitions) {
     this.definitions = definitions;
   }
 
@@ -156,8 +155,8 @@ public class APIEIP712Types {
     if (getDefinitions() != null) {
       for (int i = 0; i < getDefinitions().size(); i++) {
         if (getDefinitions().get(i) != null) {
-          joiner.add(getDefinitions().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sdefinitions%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getDefinitions().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sdefinitions%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

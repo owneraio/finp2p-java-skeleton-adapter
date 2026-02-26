@@ -217,13 +217,13 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
 
 
     @Override
-    public String getBalance(String assetId, String finId) throws TokenServiceException {
-        return storage.getBalance(finId, assetId);
+    public String getBalance(Asset asset, String finId) throws TokenServiceException {
+        return storage.getBalance(finId, asset.assetId);
     }
 
     @Override
-    public Balance balance(String assetId, String finId) throws TokenServiceException {
-        String balance = storage.getBalance(finId, assetId);
+    public Balance balance(Asset asset, String finId) throws TokenServiceException {
+        String balance = storage.getBalance(finId, asset.assetId);
         return new Balance(balance, balance, "0");
     }
 

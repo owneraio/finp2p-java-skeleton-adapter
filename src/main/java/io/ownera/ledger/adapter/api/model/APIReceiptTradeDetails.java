@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,7 +38,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIReceiptTradeDetails.JSON_PROPERTY_INTENT_VERSION,
   APIReceiptTradeDetails.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIReceiptTradeDetails {
   public static final String JSON_PROPERTY_INTENT_ID = "intentId";
   @javax.annotation.Nullable
@@ -206,12 +205,12 @@ public class APIReceiptTradeDetails {
 
     // add `intentId` to the URL query string
     if (getIntentId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sintentId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentId()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sintentId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentId()))));
     }
 
     // add `intentVersion` to the URL query string
     if (getIntentVersion() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sintentVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentVersion()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sintentVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentVersion()))));
     }
 
     // add `executionContext` to the URL query string

@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -43,7 +42,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIPayoutResponse.JSON_PROPERTY_ERROR,
   APIPayoutResponse.JSON_PROPERTY_RESPONSE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIPayoutResponse {
   public static final String JSON_PROPERTY_CID = "cid";
   @javax.annotation.Nonnull
@@ -270,12 +269,12 @@ public class APIPayoutResponse {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
     }
 
     // add `isCompleted` to the URL query string
     if (getIsCompleted() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sisCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsCompleted()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sisCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsCompleted()))));
     }
 
     // add `operationMetadata` to the URL query string

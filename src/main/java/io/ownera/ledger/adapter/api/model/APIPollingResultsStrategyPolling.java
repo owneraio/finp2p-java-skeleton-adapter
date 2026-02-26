@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,7 +41,6 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -60,7 +58,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 @JsonDeserialize(using = APIPollingResultsStrategyPolling.APIPollingResultsStrategyPollingDeserializer.class)
 @JsonSerialize(using = APIPollingResultsStrategyPolling.APIPollingResultsStrategyPollingSerializer.class)
 public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
@@ -180,7 +178,7 @@ public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(Locale.ROOT, "Failed deserialization for APIPollingResultsStrategyPolling: %d classes match result, expected 1", match));
+            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIPollingResultsStrategyPolling: %d classes match result, expected 1", match));
         }
 
         /**
@@ -222,9 +220,8 @@ public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("absolute", APIAbsolutePollingInterval.class);
-        mappings.put("random", APIPollingResultsStrategy.class);
+        mappings.put("random", APIRandomPollingInterval.class);
         mappings.put("relative", APIRelativePollingInterval.class);
-        mappings.put("randomPollingInterval", APIRandomPollingInterval.class);
         mappings.put("pollingResultsStrategy_polling", APIPollingResultsStrategyPolling.class);
         JSON.registerDiscriminator(APIPollingResultsStrategyPolling.class, "type", mappings);
     }

@@ -19,18 +19,18 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Locale;
 
 /**
  * Indicates how the asset is denominated
  */
 public enum APIAssetDenominationType {
+  
+  FINP2P("finp2p"),
   
   FIAT("fiat"),
   
@@ -73,7 +73,7 @@ public enum APIAssetDenominationType {
       prefix = "";
     }
 
-    return String.format(Locale.ROOT, "%s=%s", prefix, this.toString());
+    return String.format(java.util.Locale.ROOT, "%s=%s", prefix, this.toString());
   }
 
 }

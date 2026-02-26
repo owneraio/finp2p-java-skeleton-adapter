@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -41,7 +40,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIReceiptOperationErrorInformation.JSON_PROPERTY_MESSAGE,
   APIReceiptOperationErrorInformation.JSON_PROPERTY_REGULATION_ERROR_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIReceiptOperationErrorInformation {
   public static final String JSON_PROPERTY_CODE = "code";
   @javax.annotation.Nonnull
@@ -216,20 +215,20 @@ public class APIReceiptOperationErrorInformation {
 
     // add `code` to the URL query string
     if (getCode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
     }
 
     // add `message` to the URL query string
     if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
     }
 
     // add `regulationErrorDetails` to the URL query string
     if (getRegulationErrorDetails() != null) {
       for (int i = 0; i < getRegulationErrorDetails().size(); i++) {
         if (getRegulationErrorDetails().get(i) != null) {
-          joiner.add(getRegulationErrorDetails().get(i).toUrlQueryString(String.format(Locale.ROOT, "%sregulationErrorDetails%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getRegulationErrorDetails().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sregulationErrorDetails%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

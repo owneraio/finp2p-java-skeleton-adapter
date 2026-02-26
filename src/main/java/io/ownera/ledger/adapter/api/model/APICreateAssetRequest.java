@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -48,7 +47,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICreateAssetRequest.JSON_PROPERTY_DENOMINATION,
   APICreateAssetRequest.JSON_PROPERTY_ASSET_IDENTIFIER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APICreateAssetRequest {
   public static final String JSON_PROPERTY_METADATA = "metadata";
   @javax.annotation.Nullable
@@ -344,8 +343,8 @@ public class APICreateAssetRequest {
     // add `metadata` to the URL query string
     if (getMetadata() != null) {
       for (String _key : getMetadata().keySet()) {
-        joiner.add(String.format(Locale.ROOT, "%smetadata%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
+        joiner.add(String.format(java.util.Locale.ROOT, "%smetadata%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
             getMetadata().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMetadata().get(_key)))));
       }
     }
@@ -362,12 +361,12 @@ public class APICreateAssetRequest {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
     }
 
     // add `issuerId` to the URL query string
     if (getIssuerId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sissuerId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuerId()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sissuerId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuerId()))));
     }
 
     // add `denomination` to the URL query string

@@ -3,6 +3,7 @@ package io.ownera.ledger.adapter;
 import io.ownera.ledger.adapter.sample.AutoPlanApprovalService;
 import io.ownera.ledger.adapter.sample.CollateralService;
 import io.ownera.ledger.adapter.sample.InMemoryLedger;
+import io.ownera.ledger.adapter.sample.SimpleHealthService;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import org.slf4j.Logger;
@@ -64,6 +65,11 @@ public class Adapter {
     @Bean
     public CommonService commonService(InMemoryLedger ledger) {
         return ledger;
+    }
+
+    @Bean
+    public HealthService healthService() {
+        return new SimpleHealthService();
     }
 
     public static void main(String[] args) {

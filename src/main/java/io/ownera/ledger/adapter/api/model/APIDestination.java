@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,7 +37,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIDestination.JSON_PROPERTY_FIN_ID,
   APIDestination.JSON_PROPERTY_ACCOUNT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APIDestination {
   public static final String JSON_PROPERTY_FIN_ID = "finId";
   @javax.annotation.Nonnull
@@ -57,7 +56,7 @@ public class APIDestination {
   }
 
   /**
-   * FinID, public key of the user
+   * Existing owner hex representation of a secp256k1 public key 33 bytes compressed
    * @return finId
    */
   @javax.annotation.Nonnull
@@ -175,7 +174,7 @@ public class APIDestination {
 
     // add `finId` to the URL query string
     if (getFinId() != null) {
-      joiner.add(String.format(Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
     }
 
     // add `account` to the URL query string

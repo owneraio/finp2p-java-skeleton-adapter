@@ -5,5 +5,6 @@ public enum OperationType {
     REDEEM,
     HOLD,
     RELEASE,
-    ISSUE
+    ISSUE,
+    ROLLBACK
 }

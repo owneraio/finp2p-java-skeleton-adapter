@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -39,7 +38,7 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICryptoTransfer.JSON_PROPERTY_CONTRACT_ADDRESS,
   APICryptoTransfer.JSON_PROPERTY_WALLET_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
 public class APICryptoTransfer {
   /**
    * Gets or Sets type
@@ -269,22 +268,22 @@ public class APICryptoTransfer {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
     }
 
     // add `network` to the URL query string
     if (getNetwork() != null) {
-      joiner.add(String.format(Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
     }
 
     // add `contractAddress` to the URL query string
     if (getContractAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scontractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContractAddress()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%scontractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContractAddress()))));
     }
 
     // add `walletAddress` to the URL query string
     if (getWalletAddress() != null) {
-      joiner.add(String.format(Locale.ROOT, "%swalletAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletAddress()))));
+      joiner.add(String.format(java.util.Locale.ROOT, "%swalletAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletAddress()))));
     }
 
     return joiner.toString();

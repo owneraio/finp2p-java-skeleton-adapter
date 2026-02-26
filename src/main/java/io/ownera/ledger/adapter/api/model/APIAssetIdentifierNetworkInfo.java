@@ -19,7 +19,6 @@ import java.util.StringJoiner;
 import java.util.Objects;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -31,75 +30,46 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APICustomError
+ * Additional network information for the asset identifier
  */
 @JsonPropertyOrder({
-  APICustomError.JSON_PROPERTY_CODE,
-  APICustomError.JSON_PROPERTY_MESSAGE
+  APIAssetIdentifierNetworkInfo.JSON_PROPERTY_NETWORK_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2025-10-29T09:36:31.082697+02:00[Asia/Jerusalem]", comments = "Generator version: 7.16.0")
-public class APICustomError {
-  public static final String JSON_PROPERTY_CODE = "code";
-  @javax.annotation.Nonnull
-  private Integer code;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+public class APIAssetIdentifierNetworkInfo {
+  public static final String JSON_PROPERTY_NETWORK_ID = "networkId";
+  @javax.annotation.Nullable
+  private String networkId;
 
-  public static final String JSON_PROPERTY_MESSAGE = "message";
-  @javax.annotation.Nonnull
-  private String message;
-
-  public APICustomError() { 
+  public APIAssetIdentifierNetworkInfo() { 
   }
 
-  public APICustomError code(@javax.annotation.Nonnull Integer code) {
-    this.code = code;
+  public APIAssetIdentifierNetworkInfo networkId(@javax.annotation.Nullable String networkId) {
+    this.networkId = networkId;
     return this;
   }
 
   /**
-   * Get code
-   * @return code
+   * Identifier of the network associated with the asset (e.g., blockchain network name or code).
+   * @return networkId
    */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public Integer getCode() {
-    return code;
+  @javax.annotation.Nullable
+  @JsonProperty(value = JSON_PROPERTY_NETWORK_ID, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getNetworkId() {
+    return networkId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(@javax.annotation.Nonnull Integer code) {
-    this.code = code;
-  }
-
-
-  public APICustomError message(@javax.annotation.Nonnull String message) {
-    this.message = message;
-    return this;
-  }
-
-  /**
-   * Get message
-   * @return message
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getMessage() {
-    return message;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessage(@javax.annotation.Nonnull String message) {
-    this.message = message;
+  @JsonProperty(value = JSON_PROPERTY_NETWORK_ID, required = false)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setNetworkId(@javax.annotation.Nullable String networkId) {
+    this.networkId = networkId;
   }
 
 
   /**
-   * Return true if this CustomError object is equal to o.
+   * Return true if this assetIdentifier_networkInfo object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -109,22 +79,20 @@ public class APICustomError {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APICustomError customError = (APICustomError) o;
-    return Objects.equals(this.code, customError.code) &&
-        Objects.equals(this.message, customError.message);
+    APIAssetIdentifierNetworkInfo assetIdentifierNetworkInfo = (APIAssetIdentifierNetworkInfo) o;
+    return Objects.equals(this.networkId, assetIdentifierNetworkInfo.networkId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, message);
+    return Objects.hash(networkId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APICustomError {\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
-    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("class APIAssetIdentifierNetworkInfo {\n");
+    sb.append("    networkId: ").append(toIndentedString(networkId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -172,14 +140,9 @@ public class APICustomError {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `code` to the URL query string
-    if (getCode() != null) {
-      joiner.add(String.format(Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
-    }
-
-    // add `message` to the URL query string
-    if (getMessage() != null) {
-      joiner.add(String.format(Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
+    // add `networkId` to the URL query string
+    if (getNetworkId() != null) {
+      joiner.add(String.format(java.util.Locale.ROOT, "%snetworkId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetworkId()))));
     }
 
     return joiner.toString();
