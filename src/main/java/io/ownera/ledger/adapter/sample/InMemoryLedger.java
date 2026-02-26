@@ -5,16 +5,11 @@ import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Service
-@Profile("in-memory")
 public class InMemoryLedger implements TokenService, EscrowService, CommonService {
 
     private final static Logger logger = LoggerFactory.getLogger(InMemoryLedger.class);
