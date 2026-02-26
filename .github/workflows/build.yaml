@@ -20,9 +20,9 @@ jobs:
           distribution: 'temurin'
           server-id: github
           server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
+          server-password: PKG_TOKEN
       - name: Build
         run: mvn --batch-mode compile
         env:
           GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_TOKEN: ${{ secrets.PKG_TOKEN }}
