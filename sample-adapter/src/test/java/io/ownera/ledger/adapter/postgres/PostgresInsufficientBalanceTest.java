@@ -12,8 +12,8 @@ public class PostgresInsufficientBalanceTest extends AbstractInsufficientBalance
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", PostgresContainerHolder.POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", PostgresContainerHolder.POSTGRES::getUsername);
-        registry.add("spring.datasource.password", PostgresContainerHolder.POSTGRES::getPassword);
+        registry.add("DB_CONNECTION_STRING", PostgresContainerHolder.POSTGRES::getJdbcUrl);
+        registry.add("DB_USERNAME", PostgresContainerHolder.POSTGRES::getUsername);
+        registry.add("DB_PASSWORD", PostgresContainerHolder.POSTGRES::getPassword);
     }
 }
