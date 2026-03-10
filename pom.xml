@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.ownera</groupId>
-    <artifactId>finp2p-java-skeleton-adapter</artifactId>
+    <artifactId>finp2p-java-skeleton-adapter-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 

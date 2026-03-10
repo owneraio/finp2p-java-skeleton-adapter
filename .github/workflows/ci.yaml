@@ -18,7 +18,7 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: PKG_TOKEN
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: mvn --batch-mode deploy -Drevision=${{ github.event.release.tag_name }}
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           PKG_TOKEN: ${{ secrets.PKG_TOKEN }}

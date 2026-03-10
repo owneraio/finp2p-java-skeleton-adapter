@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>io.ownera</groupId>
-        <artifactId>finp2p-java-skeleton-adapter</artifactId>
+        <artifactId>finp2p-java-skeleton-adapter-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>skeleton</artifactId>
+    <artifactId>finp2p-java-skeleton-adapter</artifactId>
 
     <dependencies>
         <dependency>

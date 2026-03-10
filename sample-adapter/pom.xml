@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>io.ownera</groupId>
-        <artifactId>finp2p-java-skeleton-adapter</artifactId>
+        <artifactId>finp2p-java-skeleton-adapter-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
@@ -16,7 +16,7 @@
         <!-- Skeleton framework -->
         <dependency>
             <groupId>io.ownera</groupId>
-            <artifactId>skeleton</artifactId>
+            <artifactId>finp2p-java-skeleton-adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -69,6 +69,11 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <properties>
+        <!-- Sample adapter is not published as a Maven dependency -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <build>
         <plugins>
