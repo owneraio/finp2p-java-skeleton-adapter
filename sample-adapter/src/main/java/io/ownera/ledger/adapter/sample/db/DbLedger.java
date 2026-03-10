@@ -47,7 +47,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
     @Override
     public ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount, @Nullable ExecutionContext exCtx) throws TokenServiceException {
         logger.info("Issue operation: asset={}, amount={}, to={}", asset, amount, to);
-        storage.credit(to.finId, amount, asset.assetId);
+        storage.credit(to.finId, amount, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(), null, to.destination(),
                 amount, asset, exCtx, OperationType.ISSUE, null, System.currentTimeMillis());
@@ -62,7 +62,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
                                      Source source, Destination destination, Asset asset, String quantity,
                                      Signature signature, @Nullable ExecutionContext exCtx) throws TokenServiceException {
         logger.info("Transfer operation: asset={}, quantity={}", asset, quantity);
-        storage.move(source.finId, destination.finId, quantity, asset.assetId);
+        storage.move(source.finId, destination.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(), (FinIdAccount) source.account, destination,
                 quantity, asset, exCtx, OperationType.TRANSFER, null, System.currentTimeMillis());
@@ -76,7 +76,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
     public ReceiptOperation redeem(String idempotencyKey, String nonce, FinIdAccount source, Asset asset, String quantity,
                                    @Nullable String operationId, Signature signature, @Nullable ExecutionContext exCtx) throws TokenServiceException {
         logger.info("Redeem operation: asset={}, quantity={}, operationId={}", asset, quantity, operationId);
-        storage.debit(source.finId, quantity, asset.assetId);
+        storage.debit(source.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(), source, null,
                 quantity, asset, exCtx, OperationType.REDEEM, null, System.currentTimeMillis());
@@ -91,7 +91,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
                                  Asset asset, String quantity, Signature signature, String operationId, @Nullable ExecutionContext exCtx) {
         logger.info("Hold operation: asset={}, quantity={}, operationId={}", asset, quantity, operationId);
         storage.saveHoldOperation(operationId, source.finId, quantity);
-        storage.debit(source.finId, quantity, asset.assetId);
+        storage.debit(source.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(), (FinIdAccount) source.account, destination,
                 quantity, asset, exCtx, OperationType.HOLD, null, System.currentTimeMillis());
@@ -112,7 +112,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
         if (!source.finId.equals(hold.finId)) {
             throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
         }
-        storage.credit(destination.finId, quantity, asset.assetId);
+        storage.credit(destination.finId, quantity, asset);
         storage.removeHoldOperation(operationId);
         FinIdAccount holdSource = new FinIdAccount(hold.finId);
         Transaction tx = new Transaction(
@@ -135,7 +135,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
         if (!source.finId.equals(hold.finId)) {
             throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
         }
-        storage.credit(hold.finId, quantity, asset.assetId);
+        storage.credit(hold.finId, quantity, asset);
         storage.removeHoldOperation(operationId);
         FinIdAccount holdSource = new FinIdAccount(hold.finId);
         Transaction tx = new Transaction(
@@ -149,12 +149,12 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
 
     @Override
     public String getBalance(Asset asset, String finId) throws TokenServiceException {
-        return storage.getBalance(finId, asset.assetId);
+        return storage.getBalance(finId, asset);
     }
 
     @Override
     public Balance balance(Asset asset, String finId) throws TokenServiceException {
-        String balance = storage.getBalance(finId, asset.assetId);
+        String balance = storage.getBalance(finId, asset);
         return new Balance(balance, balance, "0");
     }
 

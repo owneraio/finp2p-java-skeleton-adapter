@@ -17,10 +17,10 @@ public class InMemoryStorage {
         this.assets.put(assetId, asset);
     }
 
-    public void checkAssetExists(String assetId) {
-        Asset asset = this.assets.get(assetId);
-        if (asset == null) {
-            throw new TokenServiceException("Asset " + assetId + " not found");
+    public void checkAssetExists(Asset asset) {
+        Asset stored = this.assets.get(asset.assetId);
+        if (stored == null || stored.assetType != asset.assetType) {
+            throw new TokenServiceException("Asset " + asset.assetId + " not found");
         }
     }
 
@@ -36,30 +36,30 @@ public class InMemoryStorage {
         this.holdOperations.remove(operationId);
     }
 
-    public String getBalance(String finId, String assetId) {
-        this.checkAssetExists(assetId);
+    public String getBalance(String finId, Asset asset) {
+        this.checkAssetExists(asset);
         InMemoryAccount account = this.accounts.get(finId);
         if (account == null) {
             return "0";
         }
-        int balance = account.balance(assetId);
+        int balance = account.balance(asset.assetId);
         return Integer.toString(balance);
     }
 
-    public void debit(String from, String quantity, String assetId) {
-        this.checkAssetExists(assetId);
-        this.getAccount(from).debit(assetId, quantity);
+    public void debit(String from, String quantity, Asset asset) {
+        this.checkAssetExists(asset);
+        this.getAccount(from).debit(asset.assetId, quantity);
     }
 
-    public void credit(String to, String quantity, String assetId) {
-        this.checkAssetExists(assetId);
-        this.getOrCreateAccount(to).credit(assetId, quantity);
+    public void credit(String to, String quantity, Asset asset) {
+        this.checkAssetExists(asset);
+        this.getOrCreateAccount(to).credit(asset.assetId, quantity);
     }
 
-    public void move(String from, String to, String quantity, String assetId) {
-        this.checkAssetExists(assetId);
-        this.getAccount(from).debit(assetId, quantity);
-        this.getOrCreateAccount(to).credit(assetId, quantity);
+    public void move(String from, String to, String quantity, Asset asset) {
+        this.checkAssetExists(asset);
+        this.getAccount(from).debit(asset.assetId, quantity);
+        this.getOrCreateAccount(to).credit(asset.assetId, quantity);
     }
 
     public InMemoryAccount getAccount(String finId) {

@@ -27,10 +27,10 @@ public class DbStorage {
                 .execute();
     }
 
-    public void checkAssetExists(String assetId) {
-        int count = dsl.fetchCount(ASSETS, ASSETS.ID.eq(assetId));
+    public void checkAssetExists(Asset asset) {
+        int count = dsl.fetchCount(ASSETS, ASSETS.TYPE.eq(asset.assetType.name()).and(ASSETS.ID.eq(asset.assetId)));
         if (count == 0) {
-            throw new TokenServiceException("Asset " + assetId + " not found");
+            throw new TokenServiceException("Asset " + asset.assetId + " not found");
         }
     }
 
@@ -56,35 +56,35 @@ public class DbStorage {
                 .execute();
     }
 
-    public String getBalance(String finId, String assetId) {
-        checkAssetExists(assetId);
+    public String getBalance(String finId, Asset asset) {
+        checkAssetExists(asset);
         return dsl.select(BALANCES.BALANCE)
                 .from(BALANCES)
-                .where(BALANCES.FIN_ID.eq(finId).and(BALANCES.ASSET_ID.eq(assetId)))
+                .where(BALANCES.FIN_ID.eq(finId).and(BALANCES.ASSET_ID.eq(asset.assetId)))
                 .fetchOptional(BALANCES.BALANCE)
                 .map(Object::toString)
                 .orElse("0");
     }
 
-    public void debit(String from, String quantity, String assetId) {
-        checkAssetExists(assetId);
+    public void debit(String from, String quantity, Asset asset) {
+        checkAssetExists(asset);
         int amount = Integer.parseInt(quantity);
-        int currentBalance = getCurrentBalance(from, assetId);
+        int currentBalance = getCurrentBalance(from, asset.assetId);
         if (currentBalance < amount) {
-            throw new TokenServiceException("Insufficient balance for asset " + assetId);
+            throw new TokenServiceException("Insufficient balance for asset " + asset.assetId);
         }
         dsl.update(BALANCES)
                 .set(BALANCES.BALANCE, BALANCES.BALANCE.minus(amount))
-                .where(BALANCES.FIN_ID.eq(from).and(BALANCES.ASSET_ID.eq(assetId)))
+                .where(BALANCES.FIN_ID.eq(from).and(BALANCES.ASSET_ID.eq(asset.assetId)))
                 .execute();
     }
 
-    public void credit(String to, String quantity, String assetId) {
-        checkAssetExists(assetId);
+    public void credit(String to, String quantity, Asset asset) {
+        checkAssetExists(asset);
         int amount = Integer.parseInt(quantity);
         dsl.insertInto(BALANCES)
                 .set(BALANCES.FIN_ID, to)
-                .set(BALANCES.ASSET_ID, assetId)
+                .set(BALANCES.ASSET_ID, asset.assetId)
                 .set(BALANCES.BALANCE, amount)
                 .onConflict(BALANCES.FIN_ID, BALANCES.ASSET_ID)
                 .doUpdate()
@@ -92,10 +92,10 @@ public class DbStorage {
                 .execute();
     }
 
-    public void move(String from, String to, String quantity, String assetId) {
-        checkAssetExists(assetId);
-        debit(from, quantity, assetId);
-        credit(to, quantity, assetId);
+    public void move(String from, String to, String quantity, Asset asset) {
+        checkAssetExists(asset);
+        debit(from, quantity, asset);
+        credit(to, quantity, asset);
     }
 
     private int getCurrentBalance(String finId, String assetId) {

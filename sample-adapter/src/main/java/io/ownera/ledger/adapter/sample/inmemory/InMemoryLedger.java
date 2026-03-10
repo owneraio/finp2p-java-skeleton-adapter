@@ -46,7 +46,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
     public ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount, @Nullable ExecutionContext exCtx) throws TokenServiceException {
         logger.info("Issue operation: asset={}, amount={}, to={}, exCtx={}",
                 asset, amount, to, exCtx);
-        storage.credit(to.finId, amount, asset.assetId);
+        storage.credit(to.finId, amount, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(),
                 null,
@@ -73,7 +73,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         logger.info("Transfer operation: asset={}, quantity={}, exCtx={}",
                 asset, quantity, exCtx);
 
-        storage.move(source.finId, destination.finId, quantity, asset.assetId);
+        storage.move(source.finId, destination.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(),
                 (FinIdAccount) source.account,
@@ -98,7 +98,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
                                    @Nullable String operationId, Signature signature, @Nullable ExecutionContext exCtx) throws TokenServiceException {
         logger.info("Redeem operation: asset={}, quantity={}, operationId={}, exCtx={}",
                 asset, quantity, operationId, exCtx);
-        storage.debit(source.finId, quantity, asset.assetId);
+        storage.debit(source.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(),
                 source,
@@ -124,7 +124,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         logger.info("Hold operation: asset={}, quantity={}, operationId={}, exCtx={}",
                 asset, quantity, operationId, exCtx);
         storage.saveHoldOperation(operationId, source.finId, quantity);
-        storage.debit(source.finId, quantity, asset.assetId);
+        storage.debit(source.finId, quantity, asset);
         Transaction tx = new Transaction(
                 UUID.randomUUID().toString(),
                 (FinIdAccount) source.account,
@@ -156,7 +156,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         if (!source.finId.equals(hold.finId)) {
             throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
         }
-        this.storage.credit(destination.finId, quantity, asset.assetId);
+        this.storage.credit(destination.finId, quantity, asset);
         this.storage.removeHoldOperation(operationId);
         FinIdAccount holdSource = new FinIdAccount(hold.finId);
         Transaction tx = new Transaction(
@@ -190,7 +190,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         if (!source.finId.equals(hold.finId)) {
             throw new TokenServiceException("operation " + operationId + " does not belong to source " + source.finId);
         }
-        this.storage.credit(hold.finId, quantity, asset.assetId);
+        this.storage.credit(hold.finId, quantity, asset);
         this.storage.removeHoldOperation(operationId);
         FinIdAccount holdSource = new FinIdAccount(hold.finId);
         Transaction tx = new Transaction(
@@ -215,12 +215,12 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
 
     @Override
     public String getBalance(Asset asset, String finId) throws TokenServiceException {
-        return storage.getBalance(finId, asset.assetId);
+        return storage.getBalance(finId, asset);
     }
 
     @Override
     public Balance balance(Asset asset, String finId) throws TokenServiceException {
-        String balance = storage.getBalance(finId, asset.assetId);
+        String balance = storage.getBalance(finId, asset);
         return new Balance(balance, balance, "0");
     }
 
