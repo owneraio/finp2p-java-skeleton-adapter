@@ -81,7 +81,34 @@
                 </configuration>
             </plugin>
 
-            <!-- jOOQ codegen: generates type-safe classes from schema.sql (no running DB needed) -->
+            <!-- Assemble all SQL schemas into a single directory for jOOQ codegen.
+                 This avoids duplicating schema files — both runtime (Spring SQL init)
+                 and codegen read from canonical sources. -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>collect-schemas-for-jooq</id>
+                        <phase>initialize</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/schemas</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../skeleton/src/main/resources</directory>
+                                    <includes><include>skeleton-schema.sql</include></includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes><include>schema.sql</include></includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- jOOQ codegen: generates type-safe classes from SQL schemas (no running DB needed) -->
             <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
@@ -107,7 +134,7 @@
                             <properties>
                                 <property>
                                     <key>scripts</key>
-                                    <value>src/main/resources/db</value>
+                                    <value>target/schemas</value>
                                 </property>
                                 <property>
                                     <key>defaultNameCase</key>
