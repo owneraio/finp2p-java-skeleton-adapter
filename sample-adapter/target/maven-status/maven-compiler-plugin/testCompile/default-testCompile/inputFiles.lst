@@ -1,0 +1,17 @@
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/AbstractBusinessLogicTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/AbstractTokenLifecycleTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/postgres/PostgresInsufficientBalanceTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/BusinessLogicTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/TestHelpers.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/postgres/PostgresHealthEndpointTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/InsufficientBalanceTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/TokenLifecycleTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/EscrowOperationsTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/AbstractHealthEndpointTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/PostgresContainerHolder.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/AbstractInsufficientBalanceTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/postgres/PostgresBusinessLogicTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/AbstractEscrowOperationsTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/postgres/PostgresTokenLifecycleTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/postgres/PostgresEscrowOperationsTest.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/sample-adapter/src/test/java/io/ownera/ledger/adapter/HealthEndpointTest.java
