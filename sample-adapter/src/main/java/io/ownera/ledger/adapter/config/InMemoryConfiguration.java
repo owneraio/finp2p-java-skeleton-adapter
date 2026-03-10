@@ -1,8 +1,10 @@
 package io.ownera.ledger.adapter.config;
 
+import io.ownera.ledger.adapter.sample.inmemory.InMemoryAccountMappingStore;
 import io.ownera.ledger.adapter.sample.inmemory.InMemoryLedger;
 import io.ownera.ledger.adapter.sample.inmemory.InMemoryOperationStore;
 import io.ownera.ledger.adapter.service.*;
+import io.ownera.ledger.adapter.service.mapping.AccountMappingStore;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
 import io.ownera.ledger.adapter.service.workflow.OperationTrackingCommonService;
@@ -47,5 +49,10 @@ public class InMemoryConfiguration {
     @Bean
     public OperationStore operationStore() {
         return new InMemoryOperationStore();
+    }
+
+    @Bean
+    public AccountMappingStore accountMappingStore() {
+        return new InMemoryAccountMappingStore();
     }
 }
