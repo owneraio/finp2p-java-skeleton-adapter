@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.sample.*;
 import io.ownera.ledger.adapter.service.*;
+import io.ownera.ledger.adapter.service.mapping.*;
 import io.ownera.ledger.adapter.service.workflow.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,11 @@ public class Adapter {
     // public TransactionHook transactionHook() {
     //     return new LoggingTransactionHook();
     // }
+
+    @Bean
+    public AccountMappingStore accountMappingStore() {
+        return new InMemoryAccountMappingStore();
+    }
 
     @Bean
     public ApplicationListener<ApplicationReadyEvent> onReady(SimpleHealthService healthService) {
