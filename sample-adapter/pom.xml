@@ -107,13 +107,15 @@
                             <properties>
                                 <property>
                                     <key>scripts</key>
-                                    <value>src/main/resources/schema.sql</value>
+                                    <value>src/main/resources/db</value>
                                 </property>
                                 <property>
                                     <key>defaultNameCase</key>
                                     <value>lower</value>
                                 </property>
                             </properties>
+                            <!-- Include all schemas -->
+                            <inputSchema></inputSchema>
                         </database>
                         <target>
                             <packageName>io.ownera.ledger.adapter.db.generated</packageName>

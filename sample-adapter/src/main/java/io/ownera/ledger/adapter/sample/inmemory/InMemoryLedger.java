@@ -1,5 +1,7 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.inmemory;
 
+import io.ownera.ledger.adapter.sample.HoldOperation;
+import io.ownera.ledger.adapter.sample.Transaction;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
@@ -14,7 +16,7 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
 
     private final static Logger logger = LoggerFactory.getLogger(InMemoryLedger.class);
 
-    private final Storage storage = new Storage();
+    private final InMemoryStorage storage = new InMemoryStorage();
     private final Map<String, Transaction> transactions = new HashMap<>();
     private final @Nullable ProofProvider proofProvider;
 
@@ -239,8 +241,6 @@ public class InMemoryLedger implements TokenService, EscrowService, CommonServic
         }
         return new SuccessReceiptStatus(tx.toReceipt());
     }
-
-
 
     private void registerTransaction(Transaction tx) {
         this.transactions.put(tx.id, tx);

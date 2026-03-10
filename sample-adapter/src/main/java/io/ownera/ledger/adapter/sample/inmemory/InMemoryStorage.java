@@ -1,15 +1,16 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.inmemory;
 
+import io.ownera.ledger.adapter.sample.HoldOperation;
 import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.Asset;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Storage {
+public class InMemoryStorage {
 
     private final Map<String, Asset> assets = new HashMap<>();
-    private final Map<String, Account> accounts = new HashMap<>();
+    private final Map<String, InMemoryAccount> accounts = new HashMap<>();
     private final Map<String, HoldOperation> holdOperations = new HashMap<>();
 
     public void createAsset(String assetId, Asset asset) {
@@ -37,7 +38,7 @@ public class Storage {
 
     public String getBalance(String finId, String assetId) {
         this.checkAssetExists(assetId);
-        Account account = this.accounts.get(finId);
+        InMemoryAccount account = this.accounts.get(finId);
         if (account == null) {
             return "0";
         }
@@ -61,23 +62,15 @@ public class Storage {
         this.getOrCreateAccount(to).credit(assetId, quantity);
     }
 
-    public Account getAccount(String finId) {
-        Account account = this.accounts.get(finId);
+    public InMemoryAccount getAccount(String finId) {
+        InMemoryAccount account = this.accounts.get(finId);
         if (account == null) {
             throw new TokenServiceException("Account " + finId + " not found");
         }
         return account;
     }
 
-    public Account getOrCreateAccount(String finId) {
-        Account account = this.accounts.get(finId);
-        if (account != null) {
-            return account;
-        } else {
-            Account newAccount = new Account();
-            this.accounts.put(finId, newAccount);
-            return newAccount;
-        }
+    public InMemoryAccount getOrCreateAccount(String finId) {
+        return this.accounts.computeIfAbsent(finId, k -> new InMemoryAccount());
     }
-
 }

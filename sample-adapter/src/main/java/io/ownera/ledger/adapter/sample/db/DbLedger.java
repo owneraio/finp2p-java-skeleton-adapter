@@ -1,5 +1,7 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.db;
 
+import io.ownera.ledger.adapter.sample.HoldOperation;
+import io.ownera.ledger.adapter.sample.Transaction;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
@@ -10,19 +12,19 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static io.ownera.ledger.adapter.db.generated.Tables.TRANSACTIONS;
+import static io.ownera.ledger.adapter.db.generated.default_schema.Tables.TRANSACTIONS;
 
-public class JdbcLedger implements TokenService, EscrowService, CommonService {
+public class DbLedger implements TokenService, EscrowService, CommonService {
 
-    private static final Logger logger = LoggerFactory.getLogger(JdbcLedger.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbLedger.class);
 
     private final DSLContext dsl;
-    private final JdbcStorage storage;
+    private final DbStorage storage;
     private final @Nullable ProofProvider proofProvider;
 
-    public JdbcLedger(DSLContext dsl, @Nullable ProofProvider proofProvider) {
+    public DbLedger(DSLContext dsl, @Nullable ProofProvider proofProvider) {
         this.dsl = dsl;
-        this.storage = new JdbcStorage(dsl);
+        this.storage = new DbStorage(dsl);
         this.proofProvider = proofProvider;
     }
 

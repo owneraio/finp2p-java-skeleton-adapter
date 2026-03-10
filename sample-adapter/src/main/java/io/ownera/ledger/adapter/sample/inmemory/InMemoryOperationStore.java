@@ -1,4 +1,4 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.inmemory;
 
 import io.ownera.ledger.adapter.service.model.OperationStatus;
 import io.ownera.ledger.adapter.service.workflow.OperationRecord;

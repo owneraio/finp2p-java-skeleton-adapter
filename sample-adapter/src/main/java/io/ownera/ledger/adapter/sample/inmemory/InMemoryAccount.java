@@ -1,11 +1,11 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.inmemory;
 
 import io.ownera.ledger.adapter.service.TokenServiceException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Account {
+public class InMemoryAccount {
 
     private final Map<String, Integer> balances = new HashMap<>();
 
@@ -27,5 +27,4 @@ public class Account {
         int currentBalance = this.balances.getOrDefault(assetCode, 0);
         this.balances.put(assetCode, currentBalance + amount);
     }
-
 }

@@ -1,7 +1,7 @@
 package io.ownera.ledger.adapter.config;
 
-import io.ownera.ledger.adapter.sample.JdbcLedger;
-import io.ownera.ledger.adapter.sample.JdbcOperationStore;
+import io.ownera.ledger.adapter.sample.db.DbLedger;
+import io.ownera.ledger.adapter.sample.db.DbOperationStore;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
@@ -30,28 +30,28 @@ public class PostgresConfiguration {
     }
 
     @Bean
-    public JdbcLedger jdbcLedger(DSLContext dslContext, Optional<ProofProvider> proofProvider) {
-        logger.info("Initializing JdbcLedger with PostgreSQL backend (jOOQ)");
-        return new JdbcLedger(dslContext, proofProvider.orElse(null));
+    public DbLedger dbLedger(DSLContext dslContext, Optional<ProofProvider> proofProvider) {
+        logger.info("Initializing DbLedger with PostgreSQL backend (jOOQ)");
+        return new DbLedger(dslContext, proofProvider.orElse(null));
     }
 
     @Bean
-    public TokenService tokenService(JdbcLedger ledger) {
+    public TokenService tokenService(DbLedger ledger) {
         return ledger;
     }
 
     @Bean
-    public EscrowService escrowService(JdbcLedger ledger) {
+    public EscrowService escrowService(DbLedger ledger) {
         return ledger;
     }
 
     @Bean
-    public CommonService commonService(JdbcLedger ledger, OperationStore operationStore) {
+    public CommonService commonService(DbLedger ledger, OperationStore operationStore) {
         return new OperationTrackingCommonService(ledger, operationStore);
     }
 
     @Bean
     public OperationStore operationStore(DSLContext dslContext) {
-        return new JdbcOperationStore(dslContext);
+        return new DbOperationStore(dslContext);
     }
 }

@@ -1,7 +1,7 @@
 package io.ownera.ledger.adapter.config;
 
-import io.ownera.ledger.adapter.sample.InMemoryLedger;
-import io.ownera.ledger.adapter.sample.InMemoryOperationStore;
+import io.ownera.ledger.adapter.sample.inmemory.InMemoryLedger;
+import io.ownera.ledger.adapter.sample.inmemory.InMemoryOperationStore;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;

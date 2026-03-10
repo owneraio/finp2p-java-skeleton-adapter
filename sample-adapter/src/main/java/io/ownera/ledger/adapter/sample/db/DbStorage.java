@@ -1,29 +1,34 @@
-package io.ownera.ledger.adapter.sample;
+package io.ownera.ledger.adapter.sample.db;
 
+import io.ownera.ledger.adapter.sample.HoldOperation;
 import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.Asset;
 import org.jooq.DSLContext;
 
-import static io.ownera.ledger.adapter.db.generated.Tables.*;
+import static io.ownera.ledger.adapter.db.generated.default_schema.Tables.*;
+import static io.ownera.ledger.adapter.db.generated.ledger_adapter.Tables.ASSETS;
 
-public class JdbcStorage {
+public class DbStorage {
 
     private final DSLContext dsl;
 
-    public JdbcStorage(DSLContext dsl) {
+    public DbStorage(DSLContext dsl) {
         this.dsl = dsl;
     }
 
     public void createAsset(String assetId, Asset asset) {
         dsl.insertInto(ASSETS)
-                .set(ASSETS.ASSET_ID, assetId)
-                .set(ASSETS.ASSET_TYPE, asset.assetType.name())
+                .set(ASSETS.TYPE, asset.assetType.name())
+                .set(ASSETS.ID, assetId)
+                .set(ASSETS.TOKEN_STANDARD, "ERC20")
+                .set(ASSETS.DECIMALS, 0)
+                .set(ASSETS.CONTRACT_ADDRESS, "")
                 .onConflictDoNothing()
                 .execute();
     }
 
     public void checkAssetExists(String assetId) {
-        int count = dsl.fetchCount(ASSETS, ASSETS.ASSET_ID.eq(assetId));
+        int count = dsl.fetchCount(ASSETS, ASSETS.ID.eq(assetId));
         if (count == 0) {
             throw new TokenServiceException("Asset " + assetId + " not found");
         }
