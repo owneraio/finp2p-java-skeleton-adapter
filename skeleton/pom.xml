@@ -12,6 +12,10 @@
 
     <artifactId>finp2p-java-skeleton-adapter</artifactId>
 
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

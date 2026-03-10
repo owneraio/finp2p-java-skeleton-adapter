@@ -16,6 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ownera.java.sdk.version>0.27.0</ownera.java.sdk.version>
         <jooq.version>3.19.7</jooq.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <parent>
