@@ -74,6 +74,14 @@
             <artifactId>finp2p-java-sdk</artifactId>
             <version>${ownera.java.sdk.version}</version>
         </dependency>
+
+        <!-- jOOQ (optional — needed only when DB-backed mapping store is used) -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
