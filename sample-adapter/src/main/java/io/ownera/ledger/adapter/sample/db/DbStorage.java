@@ -22,7 +22,7 @@ public class DbStorage {
                 .set(ASSETS.ID, assetId)
                 .set(ASSETS.TOKEN_STANDARD, "ERC20")
                 .set(ASSETS.DECIMALS, 0)
-                .set(ASSETS.CONTRACT_ADDRESS, "")
+                .set(ASSETS.TOKEN_ID, "")
                 .onConflictDoNothing()
                 .execute();
     }
