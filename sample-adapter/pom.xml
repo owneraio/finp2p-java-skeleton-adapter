@@ -109,7 +109,7 @@
                                     <directory>../skeleton/src/main/resources/db/migration/skeleton</directory>
                                     <includes><include>*.sql</include></includes>
                                     <!-- Exclude PL/pgSQL migrations that jOOQ DDLDatabase cannot parse -->
-                                    <excludes><exclude>V1002__*.sql</exclude></excludes>
+                                    <excludes><exclude>R__*.sql</exclude></excludes>
                                 </resource>
                                 <resource>
                                     <directory>src/main/resources/db/migration/adapter</directory>
