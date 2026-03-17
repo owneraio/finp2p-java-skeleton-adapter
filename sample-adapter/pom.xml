@@ -20,11 +20,17 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Spring JDBC (DataSource, HikariCP, schema init) -->
+        <!-- Spring JDBC (DataSource, HikariCP) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <version>3.2.3</version>
+        </dependency>
+
+        <!-- Flyway for schema migrations -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
 
         <!-- jOOQ -->
@@ -100,12 +106,12 @@
                             <outputDirectory>${project.build.directory}/schemas</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>../skeleton/src/main/resources</directory>
-                                    <includes><include>skeleton-schema.sql</include></includes>
+                                    <directory>../skeleton/src/main/resources/db/migration/skeleton</directory>
+                                    <includes><include>*.sql</include></includes>
                                 </resource>
                                 <resource>
-                                    <directory>src/main/resources</directory>
-                                    <includes><include>schema.sql</include></includes>
+                                    <directory>src/main/resources/db/migration/adapter</directory>
+                                    <includes><include>*.sql</include></includes>
                                 </resource>
                             </resources>
                         </configuration>

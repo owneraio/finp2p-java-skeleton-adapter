@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * Database-backed implementation of {@link AccountMappingStore}.
- * Uses the {@code ledger_adapter.account_mappings} table defined in skeleton-schema.sql.
+ * Uses the {@code ledger_adapter.account_mappings} table defined in V1001__create_ledger_adapter_schema.sql.
  * <p>
  * Uses jOOQ plain DSL (no codegen) so the skeleton stays self-contained.
  */
