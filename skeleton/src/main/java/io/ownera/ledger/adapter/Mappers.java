@@ -776,9 +776,14 @@ public class Mappers {
         }
         switch (hashFunction) {
             case SHA3_256:
+            case SHA3_2562:
                 return HashFunction.SHA3_256;
             case KECCAK_256:
+            case KECCAK_2562:
                 return HashFunction.KECCAK_256;
+            case BLAKE2B:
+            case UNSPECIFIED:
+                return HashFunction.UNSPECIFIED;
             default:
                 throw new MappingException("Unsupported hash function: " + hashFunction);
         }
@@ -793,6 +798,8 @@ public class Mappers {
                 return APIHashFunction.SHA3_256;
             case KECCAK_256:
                 return APIHashFunction.KECCAK_256;
+            case UNSPECIFIED:
+                return APIHashFunction.UNSPECIFIED;
             default:
                 throw new MappingException("Unsupported hash function: " + hashFunction);
         }
