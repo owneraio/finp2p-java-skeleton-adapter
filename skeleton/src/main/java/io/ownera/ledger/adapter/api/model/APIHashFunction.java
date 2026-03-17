@@ -60,6 +60,9 @@ public enum APIHashFunction {
 
   @JsonCreator
   public static APIHashFunction fromValue(String value) {
+    if (value == null || value.isEmpty()) {
+      return UNSPECIFIED;
+    }
     for (APIHashFunction b : APIHashFunction.values()) {
       if (b.value.equals(value)) {
         return b;
