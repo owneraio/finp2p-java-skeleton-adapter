@@ -13,15 +13,14 @@ CREATE TABLE IF NOT EXISTS ledger_adapter.operations (
     inputs_hash VARCHAR(255) NOT NULL UNIQUE
 );
 
--- Asset registry with blockchain-specific fields
+-- Asset registry (tokenId is fetched from OSS via finP2PSDK.getAsset())
 CREATE TABLE IF NOT EXISTS ledger_adapter.assets (
-    type             VARCHAR(255) NOT NULL,
-    id               VARCHAR(255) NOT NULL,
-    token_standard   VARCHAR(50)  NOT NULL,
-    created_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    decimals         INTEGER      NOT NULL,
-    contract_address VARCHAR(255) NOT NULL,
+    type           VARCHAR(255) NOT NULL,
+    id             VARCHAR(255) NOT NULL,
+    token_standard VARCHAR(50)  NOT NULL,
+    created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    decimals       INTEGER      NOT NULL,
     PRIMARY KEY (type, id)
 );
 
