@@ -95,6 +95,61 @@ public class Controller {
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
+    @PostMapping(value = "/api/plan/proposal", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<APIApproveExecutionPlanResponse> planProposal(
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestBody APIExecutionPlanProposalRequest request
+    ) {
+        String ik = ensureIdempotencyKey(idempotencyKey);
+        String planId = request.getExecutionPlan().getId();
+        Object proposal = request.getExecutionPlan().getProposal().getActualInstance();
+        logger.info("Plan proposal: planId={}, type={}", planId, proposal.getClass().getSimpleName());
+
+        PlanApprovalStatus status;
+        if (proposal instanceof APIExecutionPlanCancellationProposal) {
+            status = operationExecutor.execute(
+                    "proposeCancelPlan", ik, planId,
+                    () -> planApprovalService.proposeCancelPlan(ik, planId),
+                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
+            );
+        } else if (proposal instanceof APIExecutionPlanResetProposal) {
+            APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) proposal;
+            int seq = reset.getProposedSequence() != null ? reset.getProposedSequence() : 0;
+            status = operationExecutor.execute(
+                    "proposeResetPlan", ik, planId + ":" + seq,
+                    () -> planApprovalService.proposeResetPlan(ik, planId, seq),
+                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
+            );
+        } else if (proposal instanceof APIExecutionPlanInstructionProposal) {
+            APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) proposal;
+            int seq = instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0;
+            status = operationExecutor.execute(
+                    "proposeInstructionApproval", ik, planId + ":" + seq,
+                    () -> planApprovalService.proposeInstructionApproval(ik, planId, seq),
+                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
+            );
+        } else {
+            logger.warn("Unknown proposal type: {}", proposal.getClass().getName());
+            status = new ApprovedPlan();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
+    }
+
+    @PostMapping(value = "/api/plan/proposal/status", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> proposalStatus(
+            @RequestBody APIExecutionPlanProposalStatusRequest request
+    ) {
+        String planId = request.getRequest().getExecutionPlan().getId();
+        String status = request.getStatus() != null ? request.getStatus().getValue() : "unknown";
+        String requestType = request.getRequest().getExecutionPlan().getProposal() != null
+                ? request.getRequest().getExecutionPlan().getProposal().getActualInstance().getClass().getSimpleName()
+                : "unknown";
+        logger.info("Proposal status: planId={}, status={}, type={}", planId, status, requestType);
+        planApprovalService.proposalStatus(planId, status, requestType);
+        return ResponseEntity.noContent().build();
+    }
+
     // --- Asset management endpoints ---
 
     @PostMapping(value = "/api/assets/create", consumes = MediaType.APPLICATION_JSON_VALUE)
