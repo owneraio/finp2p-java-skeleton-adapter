@@ -3,15 +3,22 @@
 
 CREATE SCHEMA IF NOT EXISTS ledger_adapter;
 
+-- CID sequence for operation correlation IDs
+CREATE SEQUENCE IF NOT EXISTS ledger_adapter.operation_cid_seq;
+
 -- Operation tracking for idempotency and status polling
 CREATE TABLE IF NOT EXISTS ledger_adapter.operations (
-    cid         VARCHAR(255) PRIMARY KEY,
-    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    method      VARCHAR(255) NOT NULL,
-    status      VARCHAR(50)  NOT NULL,
-    inputs_hash VARCHAR(255) NOT NULL UNIQUE
+    cid        VARCHAR(255) PRIMARY KEY DEFAULT ('CID-' || nextval('ledger_adapter.operation_cid_seq')),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    method     VARCHAR(255) NOT NULL,
+    status     VARCHAR(50)  NOT NULL,
+    inputs     JSONB        NOT NULL UNIQUE,
+    outputs    JSONB        NOT NULL DEFAULT '{}'
 );
+
+CREATE INDEX IF NOT EXISTS idx_operations_status
+    ON ledger_adapter.operations (status);
 
 -- Asset registry (tokenId is fetched from OSS via finP2PSDK.getAsset())
 CREATE TABLE IF NOT EXISTS ledger_adapter.assets (
