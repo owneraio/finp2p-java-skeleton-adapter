@@ -5,9 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class OperationExecutor {
@@ -16,40 +14,60 @@ public class OperationExecutor {
 
     private final OperationStore store;
     private final @Nullable CallbackClient callbackClient;
+    private final @Nullable Function<OperationStatus, String> resultSerializer;
 
-    public OperationExecutor(OperationStore store, @Nullable CallbackClient callbackClient) {
+    public OperationExecutor(OperationStore store,
+                             @Nullable CallbackClient callbackClient,
+                             @Nullable Function<OperationStatus, String> resultSerializer) {
         this.store = store;
         this.callbackClient = callbackClient;
+        this.resultSerializer = resultSerializer;
+    }
+
+    public OperationExecutor(OperationStore store, @Nullable CallbackClient callbackClient) {
+        this(store, callbackClient, null);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends OperationStatus> T execute(
             String method,
             String idempotencyKey,
-            String inputsJson,
+            String inputsRaw,
             Supplier<T> operation,
             PendingFactory<T> pendingFactory
     ) {
-        String inputsHash = computeHash(method, idempotencyKey, inputsJson);
+        // Wrap inputs as JSON object for JSONB storage
+        String inputsJson = toInputsJson(method, idempotencyKey, inputsRaw);
 
-        OperationRecord existing = store.findByInputsHash(inputsHash);
+        // Check for existing operation with same inputs (idempotency)
+        OperationRecord existing = store.findByInputs(inputsJson);
         if (existing != null) {
-            if (existing.status == OperationRecord.Status.COMPLETED && existing.result != null) {
+            if (existing.status == OperationRecord.Status.SUCCEEDED) {
                 logger.debug("Returning cached result for method={}, cid={}", method, existing.cid);
-                return (T) existing.result;
+                return pendingFactory.createPending(existing.cid);
             }
-            logger.debug("Operation in progress for method={}, cid={}", method, existing.cid);
-            return pendingFactory.createPending(existing.cid);
+            if (existing.status == OperationRecord.Status.IN_PROGRESS) {
+                logger.debug("Operation in progress for method={}, cid={}", method, existing.cid);
+                return pendingFactory.createPending(existing.cid);
+            }
+            // FAILED — fall through to retry
         }
 
         String cid = CorrelationIdGenerator.generate();
         OperationRecord record = new OperationRecord(
-                cid, method, OperationRecord.Status.IN_PROGRESS, inputsHash, null);
-        store.save(record);
+                cid, method, OperationRecord.Status.IN_PROGRESS, inputsJson, null);
+        OperationRecord saved = store.save(record);
+
+        // save() may return an existing record if inputs conflict (concurrent insert)
+        if (!saved.cid.equals(cid)) {
+            logger.debug("Concurrent insert detected, returning existing cid={}", saved.cid);
+            return pendingFactory.createPending(saved.cid);
+        }
 
         try {
             T result = operation.get();
-            store.updateStatus(cid, OperationRecord.Status.COMPLETED, result);
+            String outputsJson = serializeResult(result);
+            store.updateStatus(cid, OperationRecord.Status.SUCCEEDED, outputsJson);
 
             if (callbackClient != null) {
                 try {
@@ -71,22 +89,21 @@ public class OperationExecutor {
         T createPending(String cid);
     }
 
-    private static String computeHash(String method, String idempotencyKey, String inputsJson) {
+    private static String toInputsJson(String method, String idempotencyKey, String raw) {
+        // Escape for JSON string value
+        String escaped = raw.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t");
+        return "{\"method\":\"" + method + "\",\"idempotencyKey\":\"" + idempotencyKey
+                + "\",\"data\":\"" + escaped + "\"}";
+    }
+
+    private @Nullable String serializeResult(@Nullable OperationStatus result) {
+        if (result == null || resultSerializer == null) return null;
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(method.getBytes(StandardCharsets.UTF_8));
-            digest.update((byte) 0);
-            digest.update(idempotencyKey.getBytes(StandardCharsets.UTF_8));
-            digest.update((byte) 0);
-            digest.update(inputsJson.getBytes(StandardCharsets.UTF_8));
-            byte[] hash = digest.digest();
-            StringBuilder sb = new StringBuilder(hash.length * 2);
-            for (byte b : hash) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 not available", e);
+            return resultSerializer.apply(result);
+        } catch (Exception e) {
+            logger.warn("Failed to serialize operation result: {}", e.getMessage());
+            return null;
         }
     }
 }
