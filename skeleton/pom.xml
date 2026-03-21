@@ -79,6 +79,18 @@
             <version>${ownera.java.sdk.version}</version>
         </dependency>
 
+        <!-- Signing (BouncyCastle + web3j for EIP712) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.70</version>
+        </dependency>
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.9.1</version>
+        </dependency>
+
         <!-- jOOQ (optional — needed only when DB-backed mapping store is used) -->
         <dependency>
             <groupId>org.jooq</groupId>

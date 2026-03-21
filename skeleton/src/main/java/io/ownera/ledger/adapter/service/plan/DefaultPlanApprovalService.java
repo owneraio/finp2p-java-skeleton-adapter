@@ -1,19 +1,19 @@
 package io.ownera.ledger.adapter.service.plan;
 
-import io.ownera.finp2p.FinP2PSDK;
-import io.ownera.finp2p.finapi.ApiException;
-import io.ownera.finp2p.finapi.model.AccountInformation;
-import io.ownera.finp2p.finapi.model.CryptocurrencyAsset;
-import io.ownera.finp2p.finapi.model.Execution;
-import io.ownera.finp2p.finapi.model.ExecutionInstruction;
-import io.ownera.finp2p.finapi.model.ExecutionPlan;
-import io.ownera.finp2p.finapi.model.ExecutionPlanOperation;
-import io.ownera.finp2p.finapi.model.FiatAsset;
-import io.ownera.finp2p.finapi.model.Finp2pAsset;
-import io.ownera.finp2p.finapi.model.HoldInstruction;
-import io.ownera.finp2p.finapi.model.IssueInstruction;
-import io.ownera.finp2p.finapi.model.RedemptionInstruction;
-import io.ownera.finp2p.finapi.model.TransferInstruction;
+import io.ownera.finp2p.OperationalSDK;
+import io.ownera.finp2p.opapi.ApiException;
+import io.ownera.finp2p.opapi.model.AccountInformation;
+import io.ownera.finp2p.opapi.model.CryptocurrencyAsset;
+import io.ownera.finp2p.opapi.model.Execution;
+import io.ownera.finp2p.opapi.model.ExecutionInstruction;
+import io.ownera.finp2p.opapi.model.ExecutionPlan;
+import io.ownera.finp2p.opapi.model.ExecutionPlanOperation;
+import io.ownera.finp2p.opapi.model.FiatAsset;
+import io.ownera.finp2p.opapi.model.Finp2pAsset;
+import io.ownera.finp2p.opapi.model.HoldInstruction;
+import io.ownera.finp2p.opapi.model.IssueInstruction;
+import io.ownera.finp2p.opapi.model.RedemptionInstruction;
+import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.workflow.CallbackClient;
@@ -37,14 +37,14 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     private static final Logger logger = LoggerFactory.getLogger(DefaultPlanApprovalService.class);
 
     private final String orgId;
-    private final @Nullable FinP2PSDK finP2PSDK;
+    private final @Nullable OperationalSDK finP2PSDK;
     private final @Nullable PlanApprovalPlugin syncPlugin;
     private final @Nullable AsyncPlanApprovalPlugin asyncPlugin;
     private final @Nullable InboundTransferHook inboundTransferHook;
     private final @Nullable CallbackClient callbackClient;
 
     public DefaultPlanApprovalService(String orgId,
-                                      @Nullable FinP2PSDK finP2PSDK,
+                                      @Nullable OperationalSDK finP2PSDK,
                                       @Nullable PlanApprovalPlugin syncPlugin,
                                       @Nullable AsyncPlanApprovalPlugin asyncPlugin,
                                       @Nullable InboundTransferHook inboundTransferHook,
@@ -60,7 +60,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     @Override
     public PlanApprovalStatus approvePlan(String idempotencyKey, String planId) {
         if (finP2PSDK == null) {
-            logger.warn("FinP2PSDK not configured, auto-approving plan: {}", planId);
+            logger.warn("OperationalSDK not configured, auto-approving plan: {}", planId);
             return new ApprovedPlan();
         }
 
@@ -118,7 +118,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                     TransferInstruction transfer = (TransferInstruction) actual;
                     String destFinId = transfer.getDestination() != null ? transfer.getDestination().getFinId() : null;
                     String srcFinId = transfer.getSource() != null ? transfer.getSource().getFinId() : null;
-                    io.ownera.finp2p.finapi.model.Asset a = transfer.getAsset();
+                    io.ownera.finp2p.opapi.model.Asset a = transfer.getAsset();
 
                     try {
                         inboundTransferHook.onInboundTransfer(idempotencyKey,
@@ -269,7 +269,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         return toFinIdAccount(account);
     }
 
-    private static Asset toInternalAsset(@Nullable io.ownera.finp2p.finapi.model.Asset sdkAsset) {
+    private static Asset toInternalAsset(@Nullable io.ownera.finp2p.opapi.model.Asset sdkAsset) {
         if (sdkAsset == null) return new Asset("", AssetType.FINP2P);
         Object actual = sdkAsset.getActualInstance();
         if (actual instanceof Finp2pAsset) {
