@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 import java.util.List;
 
 /**
@@ -161,7 +163,8 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             if (op == null) continue;
 
             Object actual = op.getActualInstance();
-            PlanApprovalStatus result = validateInstruction(idempotencyKey, planId, actual);
+            List<String> orgs = instr.getOrganizations() != null ? instr.getOrganizations() : Collections.emptyList();
+            PlanApprovalStatus result = validateInstruction(idempotencyKey, planId, orgs, actual);
             if (result != null && !(result instanceof ApprovedPlan)) {
                 return result;
             }
@@ -170,10 +173,11 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         return new ApprovedPlan();
     }
 
-    private @Nullable PlanApprovalStatus validateInstruction(String idempotencyKey, String planId, Object instruction) {
+    private @Nullable PlanApprovalStatus validateInstruction(String idempotencyKey, String planId,
+                                                               List<String> organizations, Object instruction) {
         if (instruction instanceof IssueInstruction) {
             IssueInstruction issue = (IssueInstruction) instruction;
-            return validateIssuance(idempotencyKey,
+            return validateIssuance(idempotencyKey, organizations,
                     toFinIdAccount(issue.getDestination()),
                     toInternalAsset(issue.getAsset()),
                     issue.getAmount());
@@ -199,11 +203,11 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                 }
             }
 
-            return validateTransfer(idempotencyKey, source, dest, asset, transfer.getAmount());
+            return validateTransfer(idempotencyKey, organizations, source, dest, asset, transfer.getAmount());
 
         } else if (instruction instanceof HoldInstruction) {
             HoldInstruction hold = (HoldInstruction) instruction;
-            return validateTransfer(idempotencyKey,
+            return validateTransfer(idempotencyKey, organizations,
                     toFinIdAccount(hold.getSource()),
                     toDestinationAccount(hold.getDestination()),
                     toInternalAsset(hold.getAsset()),
@@ -211,7 +215,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
 
         } else if (instruction instanceof RedemptionInstruction) {
             RedemptionInstruction redeem = (RedemptionInstruction) instruction;
-            return validateRedemption(idempotencyKey,
+            return validateRedemption(idempotencyKey, organizations,
                     toFinIdAccount(redeem.getSource()),
                     toDestinationAccount(redeem.getDestination()),
                     toInternalAsset(redeem.getAsset()),
@@ -222,38 +226,41 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateIssuance(String idempotencyKey, FinIdAccount destination, Asset asset, String amount) {
+    private PlanApprovalStatus validateIssuance(String idempotencyKey, List<String> organizations,
+                                                   FinIdAccount destination, Asset asset, String amount) {
         if (asyncPlugin != null) {
             String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateIssuance(idempotencyKey, cid, destination, asset, amount);
+            asyncPlugin.validateIssuance(idempotencyKey, cid, organizations, destination, asset, amount);
             return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
         }
         if (syncPlugin != null) {
-            return syncPlugin.validateIssuance(destination, asset, amount);
+            return syncPlugin.validateIssuance(organizations, destination, asset, amount);
         }
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateTransfer(String idempotencyKey, FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
+    private PlanApprovalStatus validateTransfer(String idempotencyKey, List<String> organizations,
+                                                    FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
         if (asyncPlugin != null) {
             String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateTransfer(idempotencyKey, cid, source, destination, asset, amount);
+            asyncPlugin.validateTransfer(idempotencyKey, cid, organizations, source, destination, asset, amount);
             return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
         }
         if (syncPlugin != null) {
-            return syncPlugin.validateTransfer(source, destination, asset, amount);
+            return syncPlugin.validateTransfer(organizations, source, destination, asset, amount);
         }
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateRedemption(String idempotencyKey, FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
+    private PlanApprovalStatus validateRedemption(String idempotencyKey, List<String> organizations,
+                                                      FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
         if (asyncPlugin != null) {
             String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateRedemption(idempotencyKey, cid, source, destination, asset, amount);
+            asyncPlugin.validateRedemption(idempotencyKey, cid, organizations, source, destination, asset, amount);
             return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
         }
         if (syncPlugin != null) {
-            return syncPlugin.validateRedemption(source, destination, asset, amount);
+            return syncPlugin.validateRedemption(organizations, source, destination, asset, amount);
         }
         return new ApprovedPlan();
     }
