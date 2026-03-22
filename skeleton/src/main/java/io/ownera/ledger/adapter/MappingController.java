@@ -37,42 +37,40 @@ public class MappingController {
             Map<String, String> accountMappings = (Map<String, String>) body.get("accountMappings");
             String status = (String) body.getOrDefault("status", "active");
 
-            if (finId == null || accountMappings == null || accountMappings.get("ledgerAccountId") == null) {
+            if (finId == null || accountMappings == null || accountMappings.isEmpty()) {
                 return ResponseEntity.badRequest()
-                        .body(Map.of("error", "finId and accountMappings.ledgerAccountId are required"));
+                        .body(Map.of("error", "finId and accountMappings are required"));
             }
-
-            String ledgerAccountId = accountMappings.get("ledgerAccountId");
 
             if (!"active".equals(status) && !"inactive".equals(status)) {
                 return ResponseEntity.badRequest()
                         .body(Map.of("error", "status must be 'active' or 'inactive'"));
             }
 
-            logger.info("Owner mapping requested: finId={}, account={}, status={}",
+            logger.info("Owner mapping requested: finId={}, fields={}, status={}",
                     finId.substring(0, Math.min(20, finId.length())),
-                    ledgerAccountId.substring(0, Math.min(20, ledgerAccountId.length())),
-                    status);
+                    accountMappings.keySet(), status);
 
             if ("inactive".equals(status)) {
-                store.delete(finId, ledgerAccountId);
+                store.delete(finId, null);
                 logger.info("Owner mapping disabled: finId={}", finId);
                 return ResponseEntity.ok(Map.of(
                         "finId", finId,
                         "status", "inactive",
-                        "accountMappings", Map.of("ledgerAccountId", ledgerAccountId)
+                        "accountMappings", accountMappings
                 ));
             }
 
-            store.save(finId, ledgerAccountId);
+            store.save(finId, accountMappings);
 
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("finId", finId);
             result.put("status", "active");
-            result.put("accountMappings", Map.of("ledgerAccountId", ledgerAccountId));
+            result.put("accountMappings", accountMappings);
 
             provisionHook.ifPresent(hook -> {
                 try {
+                    String ledgerAccountId = accountMappings.getOrDefault("ledgerAccountId", "");
                     Map<String, String> extra = hook.afterSave(finId, ledgerAccountId, status);
                     if (extra != null) {
                         result.putAll(extra);
@@ -82,7 +80,7 @@ public class MappingController {
                 }
             });
 
-            logger.info("Owner mapping created: finId={}, account={}", finId, ledgerAccountId);
+            logger.info("Owner mapping created: finId={}, fields={}", finId, accountMappings.keySet());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             logger.error("Owner mapping failed", e);
@@ -99,7 +97,8 @@ public class MappingController {
                 mappings = Arrays.stream(ids)
                         .map(String::trim)
                         .filter(s -> !s.isEmpty())
-                        .flatMap(fid -> store.getByFinId(fid).stream())
+                        .map(store::getByFinId)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList());
             } else {
                 mappings = store.listAll();
@@ -110,7 +109,7 @@ public class MappingController {
                         Map<String, Object> entry = new LinkedHashMap<>();
                         entry.put("finId", m.getFinId());
                         entry.put("status", "active");
-                        entry.put("accountMappings", Map.of("ledgerAccountId", m.getAccount()));
+                        entry.put("accountMappings", m.getFields());
                         return entry;
                     })
                     .collect(Collectors.toList());

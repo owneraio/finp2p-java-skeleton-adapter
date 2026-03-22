@@ -24,17 +24,18 @@ CREATE TABLE IF NOT EXISTS ledger_adapter.assets (
     PRIMARY KEY (type, id)
 );
 
--- Investor account mappings (many-to-many: finId <-> account)
+-- Account mappings: key-value pairs per finId (e.g. ledgerAccountId, custodyAccountId)
 CREATE TABLE IF NOT EXISTS ledger_adapter.account_mappings (
     fin_id     VARCHAR(255) NOT NULL,
-    account    VARCHAR(255) NOT NULL,
+    field_name VARCHAR(255) NOT NULL,
+    value      VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (fin_id, account)
+    PRIMARY KEY (fin_id, field_name)
 );
 
 CREATE INDEX IF NOT EXISTS idx_account_mappings_fin_id
-    ON ledger_adapter.account_mappings (fin_id, created_at, account);
+    ON ledger_adapter.account_mappings (fin_id);
 
-CREATE INDEX IF NOT EXISTS idx_account_mappings_account
-    ON ledger_adapter.account_mappings (account, created_at, fin_id);
+CREATE INDEX IF NOT EXISTS idx_account_mappings_value
+    ON ledger_adapter.account_mappings (value, field_name);
