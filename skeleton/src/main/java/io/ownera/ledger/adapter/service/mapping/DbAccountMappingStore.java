@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Uses the {@code ledger_adapter.account_mappings} key-value table.
  * Uses jOOQ plain DSL (no codegen) so the skeleton stays self-contained.
  */
-public class JdbcAccountMappingStore implements AccountMappingStore {
+public class DbAccountMappingStore implements AccountMappingStore {
 
     private static final Table<?> TABLE = DSL.table(DSL.name("ledger_adapter", "account_mappings"));
     private static final Field<String> FIN_ID = DSL.field(DSL.name("fin_id"), String.class);
@@ -30,7 +30,7 @@ public class JdbcAccountMappingStore implements AccountMappingStore {
 
     private final DSLContext dsl;
 
-    public JdbcAccountMappingStore(DSLContext dsl) {
+    public DbAccountMappingStore(DSLContext dsl) {
         this.dsl = dsl;
     }
 

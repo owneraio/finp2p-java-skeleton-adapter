@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.ownera.ledger.adapter.TokenLifecycleTest
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.101 s - in io.ownera.ledger.adapter.TokenLifecycleTest
