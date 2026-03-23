@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class OperationExecutor {
@@ -16,10 +18,23 @@ public class OperationExecutor {
 
     private final OperationStore store;
     private final @Nullable CallbackClient callbackClient;
+    private final boolean async;
+    private final @Nullable ExecutorService executorPool;
 
-    public OperationExecutor(OperationStore store, @Nullable CallbackClient callbackClient) {
+    public OperationExecutor(OperationStore store,
+                             @Nullable CallbackClient callbackClient,
+                             boolean async) {
         this.store = store;
         this.callbackClient = callbackClient;
+        this.async = async;
+        this.executorPool = async ? Executors.newCachedThreadPool() : null;
+    }
+
+    /**
+     * Synchronous workflow (default).
+     */
+    public OperationExecutor(OperationStore store, @Nullable CallbackClient callbackClient) {
+        this(store, callbackClient, false);
     }
 
     /**
@@ -66,6 +81,15 @@ public class OperationExecutor {
                 cid, method, OperationRecord.Status.IN_PROGRESS, inputsHash, null);
         store.save(record);
 
+        if (async) {
+            executorPool.submit(() -> executeOperation(cid, method, operation));
+            return pendingFactory.createPending(cid);
+        }
+
+        return executeOperation(cid, method, operation);
+    }
+
+    private <T extends OperationStatus> T executeOperation(String cid, String method, Supplier<T> operation) {
         try {
             T result = operation.get();
             store.updateStatus(cid, OperationRecord.Status.COMPLETED, result);
@@ -80,8 +104,10 @@ public class OperationExecutor {
 
             return result;
         } catch (Exception e) {
+            logger.error("Operation failed: method={}, cid={}, error={}", method, cid, e.getMessage());
             store.updateStatus(cid, OperationRecord.Status.FAILED, null);
-            throw e;
+            if (!async) throw e;
+            return null;
         }
     }
 
