@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * Uses the {@code ledger_adapter.operations} table.
  * Uses jOOQ plain DSL (no codegen) so the skeleton stays self-contained.
  */
-public class JdbcOperationStore implements OperationStore {
+public class DbOperationStore implements OperationStore {
 
     private static final Table<?> TABLE = DSL.table(DSL.name("ledger_adapter", "operations"));
     private static final Field<String> CID = DSL.field(DSL.name("cid"), String.class);
@@ -23,7 +23,7 @@ public class JdbcOperationStore implements OperationStore {
 
     private final DSLContext dsl;
 
-    public JdbcOperationStore(DSLContext dsl) {
+    public DbOperationStore(DSLContext dsl) {
         this.dsl = dsl;
     }
 
