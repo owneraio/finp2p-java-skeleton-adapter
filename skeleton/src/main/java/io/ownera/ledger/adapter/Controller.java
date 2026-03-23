@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 import static io.ownera.ledger.adapter.Mappers.*;
+import static io.ownera.ledger.adapter.service.workflow.OperationExecutor.computeInputsHash;
 
 @RestController
 public class Controller {
@@ -88,7 +89,7 @@ public class Controller {
         String planId = request.getExecutionPlan().getId();
         logger.info("Approve plan: {}", planId);
         PlanApprovalStatus status = operationExecutor.execute(
-                "approvePlan", ik, planId,
+                "approvePlan", computeInputsHash("approvePlan", ik, planId),
                 () -> planApprovalService.approvePlan(ik, planId),
                 cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
@@ -108,7 +109,7 @@ public class Controller {
         PlanApprovalStatus status;
         if (proposal instanceof APIExecutionPlanCancellationProposal) {
             status = operationExecutor.execute(
-                    "proposeCancelPlan", ik, planId,
+                    "proposeCancelPlan", computeInputsHash("proposeCancelPlan", ik, planId),
                     () -> planApprovalService.proposeCancelPlan(ik, planId),
                     cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
             );
@@ -116,7 +117,7 @@ public class Controller {
             APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) proposal;
             int seq = reset.getProposedSequence() != null ? reset.getProposedSequence() : 0;
             status = operationExecutor.execute(
-                    "proposeResetPlan", ik, planId + ":" + seq,
+                    "proposeResetPlan", computeInputsHash("proposeResetPlan", ik, planId, String.valueOf(seq)),
                     () -> planApprovalService.proposeResetPlan(ik, planId, seq),
                     cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
             );
@@ -124,7 +125,7 @@ public class Controller {
             APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) proposal;
             int seq = instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0;
             status = operationExecutor.execute(
-                    "proposeInstructionApproval", ik, planId + ":" + seq,
+                    "proposeInstructionApproval", computeInputsHash("proposeInstructionApproval", ik, planId, String.valueOf(seq)),
                     () -> planApprovalService.proposeInstructionApproval(ik, planId, seq),
                     cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
             );
@@ -160,7 +161,7 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Create asset: {}", request);
         AssetCreationStatus status = operationExecutor.execute(
-                "createAsset", ik, request.toString(),
+                "createAsset", computeInputsHash("createAsset", ik, request.toString()),
                 () -> tokenService.createAsset(
                         ik,
                         fromAPI(request.getAsset()),
@@ -194,7 +195,7 @@ public class Controller {
                 ik, OperationType.ISSUE, null,
                 destination.destination(), asset, request.getQuantity(), null, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "issue", ik, request.toString(),
+                "issue", computeInputsHash("issue", ik, request.toString()),
                 () -> tokenService.issue(ik, asset, destination, request.getQuantity(), exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
@@ -229,7 +230,7 @@ public class Controller {
                 ik, OperationType.TRANSFER, source, destination, asset,
                 request.getQuantity(), sig, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "transfer", ik, request.toString(),
+                "transfer", computeInputsHash("transfer", ik, request.toString()),
                 () -> tokenService.transfer(ik, request.getNonce(), source, destination, asset,
                         request.getQuantity(), sig, exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
@@ -264,7 +265,7 @@ public class Controller {
                 ik, OperationType.REDEEM, source.source(), null, asset,
                 request.getQuantity(), sig, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "redeem", ik, request.toString(),
+                "redeem", computeInputsHash("redeem", ik, request.toString()),
                 () -> tokenService.redeem(ik, request.getNonce(), source, asset,
                         request.getQuantity(), request.getOperationId(), sig, exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
@@ -337,7 +338,7 @@ public class Controller {
                 ik, OperationType.HOLD, source, destination, asset,
                 request.getQuantity(), sig, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "hold", ik, request.toString(),
+                "hold", computeInputsHash("hold", ik, request.toString()),
                 () -> escrowService.hold(ik, request.getNonce(), source, destination, asset,
                         request.getQuantity(), sig, request.getOperationId(), exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
@@ -367,7 +368,7 @@ public class Controller {
                 ik, OperationType.RELEASE, source, destination, asset,
                 request.getQuantity(), null, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "release", ik, request.toString(),
+                "release", computeInputsHash("release", ik, request.toString()),
                 () -> escrowService.release(ik, source, destination, asset,
                         request.getQuantity(), request.getOperationId(), exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
@@ -396,7 +397,7 @@ public class Controller {
                 ik, OperationType.ROLLBACK, source, null, asset,
                 request.getQuantity(), null, exCtx));
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "rollback", ik, request.toString(),
+                "rollback", computeInputsHash("rollback", ik, request.toString()),
                 () -> escrowService.rollback(ik, source, asset,
                         request.getQuantity(), request.getOperationId(), exCtx),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
@@ -425,7 +426,7 @@ public class Controller {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
         DepositOperation rcptOp = operationExecutor.execute(
-                "depositInstruction", ik, request.toString(),
+                "depositInstruction", computeInputsHash("depositInstruction", ik, request.toString()),
                 () -> paymentService.getDepositInstruction(
                         ik,
                         fromAPI(request.getOwner()),
@@ -468,7 +469,7 @@ public class Controller {
         }
         String desc = description;
         ReceiptOperation rcptOp = operationExecutor.execute(
-                "payout", ik, request.toString(),
+                "payout", computeInputsHash("payout", ik, request.toString()),
                 () -> paymentService.payout(ik, source, destination, asset,
                         request.getQuantity(), desc, request.getNonce(), sig),
                 cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))

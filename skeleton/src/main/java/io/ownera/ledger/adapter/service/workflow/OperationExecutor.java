@@ -22,16 +22,35 @@ public class OperationExecutor {
         this.callbackClient = callbackClient;
     }
 
+    /**
+     * Compute a SHA-256 inputs hash for idempotency dedup.
+     * Callers use this to produce the inputsHash before calling execute().
+     */
+    public static String computeInputsHash(String... parts) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0) digest.update((byte) 0);
+                digest.update(parts[i].getBytes(StandardCharsets.UTF_8));
+            }
+            byte[] hash = digest.digest();
+            StringBuilder sb = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends OperationStatus> T execute(
             String method,
-            String idempotencyKey,
-            String inputsJson,
+            String inputsHash,
             Supplier<T> operation,
             PendingFactory<T> pendingFactory
     ) {
-        String inputsHash = computeHash(method, idempotencyKey, inputsJson);
-
         OperationRecord existing = store.findByInputsHash(inputsHash);
         if (existing != null) {
             if (existing.status == OperationRecord.Status.COMPLETED && existing.result != null) {
@@ -69,24 +88,5 @@ public class OperationExecutor {
     @FunctionalInterface
     public interface PendingFactory<T> {
         T createPending(String cid);
-    }
-
-    private static String computeHash(String method, String idempotencyKey, String inputsJson) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(method.getBytes(StandardCharsets.UTF_8));
-            digest.update((byte) 0);
-            digest.update(idempotencyKey.getBytes(StandardCharsets.UTF_8));
-            digest.update((byte) 0);
-            digest.update(inputsJson.getBytes(StandardCharsets.UTF_8));
-            byte[] hash = digest.digest();
-            StringBuilder sb = new StringBuilder(hash.length * 2);
-            for (byte b : hash) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 not available", e);
-        }
     }
 }
