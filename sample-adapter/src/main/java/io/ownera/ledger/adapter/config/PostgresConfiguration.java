@@ -1,7 +1,7 @@
 package io.ownera.ledger.adapter.config;
 
 import io.ownera.ledger.adapter.sample.db.DbLedger;
-import io.ownera.ledger.adapter.sample.db.DbOperationStore;
+import io.ownera.ledger.adapter.service.workflow.JdbcOperationStore;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.mapping.JdbcAccountMappingStore;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
@@ -51,7 +51,7 @@ public class PostgresConfiguration {
 
     @Bean
     public OperationStore operationStore(DSLContext dslContext) {
-        return new DbOperationStore(dslContext);
+        return new JdbcOperationStore(dslContext);
     }
 
     @Bean
