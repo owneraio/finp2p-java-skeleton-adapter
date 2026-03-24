@@ -2,6 +2,8 @@
 
 A framework for building FinP2P ledger adapters in Java. The skeleton handles REST endpoints, idempotency, operation tracking, database migrations, account mappings, and plan approval orchestration. Adapter implementations focus on the business logic: interacting with the target ledger/blockchain.
 
+For the full API specification, see the [Ledger Adapter Spec](https://finp2p-docs.ownera.io/v0.27-rc/reference/ledger-adapter-spec).
+
 ## Project Structure
 
 ```
@@ -11,7 +13,7 @@ finp2p-java-skeleton-adapter/
 ```
 
 **skeleton** provides:
-- REST controller with all FinP2P ledger endpoints
+- REST controller implementing the full [Ledger Adapter Spec](https://finp2p-docs.ownera.io/v0.27-rc/reference/ledger-adapter-spec)
 - Service interfaces adapters must implement
 - Operation executor with idempotency and async support
 - DB-backed operation store and account mapping store
@@ -31,8 +33,6 @@ finp2p-java-skeleton-adapter/
 
 ### Dependency
 
-Add the skeleton to your adapter's `pom.xml`:
-
 ```xml
 <dependency>
     <groupId>io.ownera</groupId>
@@ -48,31 +48,6 @@ MAVEN_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED" mvn clean install
 ```
 
 ## Architecture
-
-### REST Endpoints (provided by skeleton)
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/assets/create` | POST | Create a new asset |
-| `/api/assets/issue` | POST | Issue (mint) tokens |
-| `/api/assets/transfer` | POST | Transfer tokens |
-| `/api/assets/redeem` | POST | Redeem (burn) tokens |
-| `/api/assets/getBalance` | POST | Get balance |
-| `/api/asset/balance` | POST | Get detailed balance info |
-| `/api/assets/hold` | POST | Escrow hold |
-| `/api/assets/release` | POST | Release escrow |
-| `/api/assets/rollback` | POST | Rollback escrow |
-| `/api/assets/receipts/{id}` | GET | Get receipt by transaction ID |
-| `/api/operations/status/{id}` | GET | Poll operation status |
-| `/api/plan/approve` | POST | Approve execution plan |
-| `/api/plan/proposal` | POST | Propose cancel/reset/instruction |
-| `/api/plan/proposal/status` | POST | Proposal status callback |
-| `/api/payments/depositInstruction` | POST | Get deposit instructions |
-| `/api/payments/payout` | POST | Execute payout |
-| `/mapping/owners` | POST | Create/update account mappings |
-| `/mapping/owners` | GET | List account mappings |
-| `/mapping/fields` | GET | Get supported mapping fields |
-| `/health`, `/health/liveness`, `/health/readiness` | GET | Health probes |
 
 ### Service Interfaces
 
@@ -218,24 +193,20 @@ The skeleton manages the `ledger_adapter` schema:
 
 Adapters create their own tables (typically in `public` schema) for ledger-specific data like balances, transactions, and hold operations.
 
-### Two-Connection Pattern
+### Environment Variables
 
-For production deployments, use separate DB users for migration and runtime:
+The skeleton recognizes these environment variables (adapters wire them in `application.properties`):
 
-```properties
-# Admin connection (DDL, schema creation, grants)
-spring.flyway.url=${MIGRATION_CONNECTION_STRING:${DB_CONNECTION_STRING}}
-spring.flyway.user=${MIGRATION_USERNAME:${DB_USERNAME}}
-spring.flyway.password=${MIGRATION_PASSWORD:${DB_PASSWORD}}
-
-# Runtime connection (least-privilege, DML only)
-spring.datasource.url=${DB_CONNECTION_STRING}
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
-
-# Grant runtime user access (resolved by Flyway placeholder in R__grant_ledger_user.sql)
-spring.flyway.placeholders.ledger_user=${LEDGER_USER:${DB_USERNAME:}}
-```
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `DB_CONNECTION_STRING` | Runtime database JDBC URL | required |
+| `DB_USERNAME` / `DB_PASSWORD` | Runtime database credentials | required |
+| `MIGRATION_CONNECTION_STRING` | Admin database URL for Flyway | falls back to `DB_CONNECTION_STRING` |
+| `MIGRATION_USERNAME` / `MIGRATION_PASSWORD` | Admin credentials for DDL | falls back to `DB_USERNAME` / `DB_PASSWORD` |
+| `LEDGER_USER` | Runtime user granted schema access | falls back to `DB_USERNAME` |
+| `LOG_LEVEL` | Root log level | `INFO` |
+| `ORG_ID` | Organization ID (plan approval) | adapter-specific |
+| `FINP2P_ADDRESS` | FinP2P API URL | adapter-specific |
 
 ## Workflow and Idempotency
 
@@ -281,25 +252,6 @@ public PlanApprovalService planApprovalService(
 ```
 
 This fetches the execution plan from the FinP2P API, filters instructions by org, and delegates validation to the plugin. Plugin validation methods receive the `organizations` list responsible for each instruction.
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `DB_CONNECTION_STRING` | Runtime database JDBC URL | required |
-| `DB_USERNAME` | Runtime database user | required |
-| `DB_PASSWORD` | Runtime database password | required |
-| `DB_DRIVER` | JDBC driver class | `org.postgresql.Driver` |
-| `MIGRATION_CONNECTION_STRING` | Migration database URL | falls back to `DB_CONNECTION_STRING` |
-| `MIGRATION_USERNAME` | Migration database user | falls back to `DB_USERNAME` |
-| `MIGRATION_PASSWORD` | Migration database password | falls back to `DB_PASSWORD` |
-| `LEDGER_USER` | Runtime user to grant schema access | falls back to `DB_USERNAME` |
-| `LOG_LEVEL` | Root log level | `INFO` |
-| `ORG_ID` | Organization ID for plan approval | adapter-specific |
-| `FINP2P_ADDRESS` | FinP2P API URL | adapter-specific |
-| `OSS_URL` | OSS API URL | adapter-specific |
 
 ## Versioning
 
