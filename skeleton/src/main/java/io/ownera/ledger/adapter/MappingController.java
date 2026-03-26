@@ -18,13 +18,16 @@ public class MappingController {
     private static final Logger logger = LoggerFactory.getLogger(MappingController.class);
 
     private final AccountMappingStore store;
+    private final Optional<MappingValidator> validator;
     private final Optional<MappingProvisionHook> provisionHook;
     private final List<AccountMappingField> fields;
 
     public MappingController(AccountMappingStore store,
+                             Optional<MappingValidator> validator,
                              Optional<MappingProvisionHook> provisionHook,
                              Optional<List<AccountMappingField>> fields) {
         this.store = store;
+        this.validator = validator;
         this.provisionHook = provisionHook;
         this.fields = fields.orElse(Collections.emptyList());
     }
@@ -61,16 +64,20 @@ public class MappingController {
                 ));
             }
 
-            store.save(finId, accountMappings);
+            Map<String, String> validatedMappings = validator
+                    .map(v -> v.validate(finId, accountMappings))
+                    .orElse(accountMappings);
+
+            store.save(finId, validatedMappings);
 
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("finId", finId);
             result.put("status", "active");
-            result.put("accountMappings", accountMappings);
+            result.put("accountMappings", validatedMappings);
 
             provisionHook.ifPresent(hook -> {
                 try {
-                    String ledgerAccountId = accountMappings.getOrDefault("ledgerAccountId", "");
+                    String ledgerAccountId = validatedMappings.getOrDefault("ledgerAccountId", "");
                     Map<String, String> extra = hook.afterSave(finId, ledgerAccountId, status);
                     if (extra != null) {
                         result.putAll(extra);
@@ -80,8 +87,11 @@ public class MappingController {
                 }
             });
 
-            logger.info("Owner mapping created: finId={}, fields={}", finId, accountMappings.keySet());
+            logger.info("Owner mapping created: finId={}, fields={}", finId, validatedMappings.keySet());
             return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Owner mapping validation failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             logger.error("Owner mapping failed", e);
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
