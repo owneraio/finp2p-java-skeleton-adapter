@@ -19,16 +19,13 @@ public class MappingController {
 
     private final AccountMappingStore store;
     private final Optional<MappingValidator> validator;
-    private final Optional<MappingProvisionHook> provisionHook;
     private final List<AccountMappingField> fields;
 
     public MappingController(AccountMappingStore store,
                              Optional<MappingValidator> validator,
-                             Optional<MappingProvisionHook> provisionHook,
                              Optional<List<AccountMappingField>> fields) {
         this.store = store;
         this.validator = validator;
-        this.provisionHook = provisionHook;
         this.fields = fields.orElse(Collections.emptyList());
     }
 
@@ -74,18 +71,6 @@ public class MappingController {
             result.put("finId", finId);
             result.put("status", "active");
             result.put("accountMappings", validatedMappings);
-
-            provisionHook.ifPresent(hook -> {
-                try {
-                    String ledgerAccountId = validatedMappings.getOrDefault("ledgerAccountId", "");
-                    Map<String, String> extra = hook.afterSave(finId, ledgerAccountId, status);
-                    if (extra != null) {
-                        result.putAll(extra);
-                    }
-                } catch (Exception e) {
-                    logger.warn("Provision hook failed: finId={}, error={}", finId, e.getMessage());
-                }
-            });
 
             logger.info("Owner mapping created: finId={}, fields={}", finId, validatedMappings.keySet());
             return ResponseEntity.ok(result);

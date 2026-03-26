@@ -8,7 +8,6 @@
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/model/ApprovedPlan.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/model/DepositAsset.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIApproveExecutionPlanRequestExecutionPlan.java
-/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/mapping/MappingProvisionHook.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIPollingResultsStrategyPolling.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/model/NoProofPolicy.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/finp2p/signing/eip712/models/Transfer.java
@@ -18,6 +17,7 @@
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIIssueAssetsResponse.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/finp2p/signing/eip712/models/Term.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIGetReceiptResponse.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/mapping/MappingValidator.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/JSON.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APICreateAssetResponse.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APICustomAsset.java
