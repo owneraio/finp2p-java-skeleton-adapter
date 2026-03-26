@@ -1,5 +1,6 @@
 package io.ownera.ledger.adapter;
 
+import io.ownera.finp2p.FinP2PSDK;
 import io.ownera.ledger.adapter.service.mapping.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,16 +18,20 @@ import java.util.stream.Collectors;
 public class MappingController {
 
     private static final Logger logger = LoggerFactory.getLogger(MappingController.class);
+    private static final Pattern HEX_PATTERN = Pattern.compile("^[0-9a-fA-F]+$");
 
     private final AccountMappingStore store;
-    private final Optional<MappingProvisionHook> provisionHook;
+    private final Optional<FinP2PSDK> finP2PSDK;
+    private final Optional<MappingValidator> validator;
     private final List<AccountMappingField> fields;
 
     public MappingController(AccountMappingStore store,
-                             Optional<MappingProvisionHook> provisionHook,
+                             Optional<FinP2PSDK> finP2PSDK,
+                             Optional<MappingValidator> validator,
                              Optional<List<AccountMappingField>> fields) {
         this.store = store;
-        this.provisionHook = provisionHook;
+        this.finP2PSDK = finP2PSDK;
+        this.validator = validator;
         this.fields = fields.orElse(Collections.emptyList());
     }
 
@@ -40,6 +46,22 @@ public class MappingController {
             if (finId == null || accountMappings == null || accountMappings.isEmpty()) {
                 return ResponseEntity.badRequest()
                         .body(Map.of("error", "finId and accountMappings are required"));
+            }
+
+            if (!HEX_PATTERN.matcher(finId).matches()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "finId must be a hexadecimal string"));
+            }
+
+            if (finP2PSDK.isPresent()) {
+                try {
+                    if (finP2PSDK.get().getUserByFinId(finId).isEmpty()) {
+                        return ResponseEntity.badRequest()
+                                .body(Map.of("error", "finId not found on the router"));
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to verify finId on router: {}", e.getMessage());
+                }
             }
 
             if (!"active".equals(status) && !"inactive".equals(status)) {
@@ -61,27 +83,22 @@ public class MappingController {
                 ));
             }
 
-            store.save(finId, accountMappings);
+            Map<String, String> validatedMappings = validator
+                    .map(v -> v.validate(finId, accountMappings))
+                    .orElse(accountMappings);
+
+            store.save(finId, validatedMappings);
 
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("finId", finId);
             result.put("status", "active");
-            result.put("accountMappings", accountMappings);
+            result.put("accountMappings", validatedMappings);
 
-            provisionHook.ifPresent(hook -> {
-                try {
-                    String ledgerAccountId = accountMappings.getOrDefault("ledgerAccountId", "");
-                    Map<String, String> extra = hook.afterSave(finId, ledgerAccountId, status);
-                    if (extra != null) {
-                        result.putAll(extra);
-                    }
-                } catch (Exception e) {
-                    logger.warn("Provision hook failed: finId={}, error={}", finId, e.getMessage());
-                }
-            });
-
-            logger.info("Owner mapping created: finId={}, fields={}", finId, accountMappings.keySet());
+            logger.info("Owner mapping created: finId={}, fields={}", finId, validatedMappings.keySet());
             return ResponseEntity.ok(result);
+        } catch (MappingValidationException e) {
+            logger.warn("Owner mapping validation failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             logger.error("Owner mapping failed", e);
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
