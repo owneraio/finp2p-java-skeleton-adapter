@@ -15,7 +15,7 @@ public interface MappingValidator {
      * @param finId  the FinP2P identity
      * @param fields the raw fields from the request
      * @return the validated (possibly transformed) fields to persist
-     * @throws IllegalArgumentException if the mapping is invalid
+     * @throws MappingValidationException if the mapping is invalid
      */
     Map<String, String> validate(String finId, Map<String, String> fields);
 }

@@ -270,6 +270,7 @@ io/ownera/ledger/adapter/service/model/FailedAssetCreation.class
 io/ownera/ledger/adapter/service/proof/ProofDomain.class
 io/ownera/ledger/adapter/api/ApiException.class
 io/ownera/ledger/adapter/api/model/APIExecutionPlanCancellationProposal.class
+io/ownera/ledger/adapter/service/mapping/MappingValidationException.class
 io/ownera/ledger/adapter/service/model/IbanIdentifier.class
 io/ownera/ledger/adapter/service/model/Source.class
 io/ownera/ledger/adapter/service/model/OperationStatus.class

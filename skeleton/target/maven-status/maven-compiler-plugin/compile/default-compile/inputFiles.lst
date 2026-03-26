@@ -33,6 +33,7 @@
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/finp2p/signing/eip712/models/Selling.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/finp2p/signing/eip712/models/EIP712Message.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIHashListTemplate.java
+/home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/mapping/MappingValidationException.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/service/model/PendingPlan.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APICallbackEndpoint.java
 /home/ancalled/tmp/37/finp2p-java-skeleton-adapter/skeleton/src/main/java/io/ownera/ledger/adapter/api/model/APIFiatAccount.java

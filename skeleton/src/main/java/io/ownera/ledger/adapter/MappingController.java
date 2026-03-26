@@ -74,7 +74,7 @@ public class MappingController {
 
             logger.info("Owner mapping created: finId={}, fields={}", finId, validatedMappings.keySet());
             return ResponseEntity.ok(result);
-        } catch (IllegalArgumentException e) {
+        } catch (MappingValidationException e) {
             logger.warn("Owner mapping validation failed: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
