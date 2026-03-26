@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: io.ownera.ledger.adapter.postgres.PostgresHealthEndpointTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.823 s - in io.ownera.ledger.adapter.postgres.PostgresHealthEndpointTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.481 s - in io.ownera.ledger.adapter.postgres.PostgresHealthEndpointTest

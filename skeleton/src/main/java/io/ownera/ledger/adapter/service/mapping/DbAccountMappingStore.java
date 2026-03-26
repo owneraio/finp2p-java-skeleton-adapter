@@ -16,12 +16,11 @@ import java.util.stream.Collectors;
 
 /**
  * Database-backed implementation of {@link AccountMappingStore}.
- * Uses the {@code ledger_adapter.account_mappings} key-value table.
+ * Uses the {@code <schema>.account_mappings} key-value table. Schema defaults to {@code ledger_adapter}.
  * Uses jOOQ plain DSL (no codegen) so the skeleton stays self-contained.
  */
 public class DbAccountMappingStore implements AccountMappingStore {
 
-    private static final Table<?> TABLE = DSL.table(DSL.name("ledger_adapter", "account_mappings"));
     private static final Field<String> FIN_ID = DSL.field(DSL.name("fin_id"), String.class);
     private static final Field<String> FIELD_NAME = DSL.field(DSL.name("field_name"), String.class);
     private static final Field<String> VALUE = DSL.field(DSL.name("value"), String.class);
@@ -29,14 +28,20 @@ public class DbAccountMappingStore implements AccountMappingStore {
     private static final Field<OffsetDateTime> UPDATED_AT = DSL.field(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE);
 
     private final DSLContext dsl;
+    private final Table<?> table;
 
     public DbAccountMappingStore(DSLContext dsl) {
+        this(dsl, "ledger_adapter");
+    }
+
+    public DbAccountMappingStore(DSLContext dsl, String schemaName) {
         this.dsl = dsl;
+        this.table = DSL.table(DSL.name(schemaName, "account_mappings"));
     }
 
     @Override
     public AccountMapping getByFinId(String finId) {
-        Result<?> rows = dsl.selectFrom(TABLE)
+        Result<?> rows = dsl.selectFrom(table)
                 .where(FIN_ID.eq(finId))
                 .orderBy(FIELD_NAME.asc())
                 .fetch();
@@ -48,7 +53,7 @@ public class DbAccountMappingStore implements AccountMappingStore {
     @Override
     public List<AccountMapping> getByFieldValue(String fieldName, String value) {
         List<String> finIds = dsl.selectDistinct(FIN_ID)
-                .from(TABLE)
+                .from(table)
                 .where(FIELD_NAME.eq(fieldName).and(VALUE.eq(value.toLowerCase())))
                 .fetch(FIN_ID);
 
@@ -64,7 +69,7 @@ public class DbAccountMappingStore implements AccountMappingStore {
 
         for (Map.Entry<String, String> entry : fields.entrySet()) {
             String normalized = entry.getValue().toLowerCase();
-            dsl.insertInto(TABLE)
+            dsl.insertInto(table)
                     .set(FIN_ID, finId)
                     .set(FIELD_NAME, entry.getKey())
                     .set(VALUE, normalized)
@@ -81,11 +86,11 @@ public class DbAccountMappingStore implements AccountMappingStore {
     @Override
     public void delete(String finId, String fieldName) {
         if (fieldName != null) {
-            dsl.deleteFrom(TABLE)
+            dsl.deleteFrom(table)
                     .where(FIN_ID.eq(finId).and(FIELD_NAME.eq(fieldName)))
                     .execute();
         } else {
-            dsl.deleteFrom(TABLE)
+            dsl.deleteFrom(table)
                     .where(FIN_ID.eq(finId))
                     .execute();
         }
@@ -93,7 +98,7 @@ public class DbAccountMappingStore implements AccountMappingStore {
 
     @Override
     public List<AccountMapping> listAll() {
-        Result<?> allRows = dsl.selectFrom(TABLE)
+        Result<?> allRows = dsl.selectFrom(table)
                 .orderBy(FIN_ID.asc(), FIELD_NAME.asc())
                 .fetch();
 

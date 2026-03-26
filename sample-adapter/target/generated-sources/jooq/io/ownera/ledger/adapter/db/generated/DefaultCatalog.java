@@ -4,9 +4,6 @@
 package io.ownera.ledger.adapter.db.generated;
 
 
-import io.ownera.ledger.adapter.db.generated.default_schema.DefaultSchema;
-import io.ownera.ledger.adapter.db.generated.ledger_adapter.LedgerAdapter;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,11 +26,6 @@ public class DefaultCatalog extends CatalogImpl {
     public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
 
     /**
-     * The schema <code>ledger_adapter</code>.
-     */
-    public final LedgerAdapter LEDGER_ADAPTER = LedgerAdapter.LEDGER_ADAPTER;
-
-    /**
      * The schema <code>DEFAULT_SCHEMA</code>.
      */
     public final DefaultSchema DEFAULT_SCHEMA = DefaultSchema.DEFAULT_SCHEMA;
@@ -48,7 +40,6 @@ public class DefaultCatalog extends CatalogImpl {
     @Override
     public final List<Schema> getSchemas() {
         return Arrays.asList(
-            LedgerAdapter.LEDGER_ADAPTER,
             DefaultSchema.DEFAULT_SCHEMA
         );
     }

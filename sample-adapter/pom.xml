@@ -105,12 +105,8 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/schemas</outputDirectory>
                             <resources>
-                                <resource>
-                                    <directory>../skeleton/src/main/resources/db/migration/skeleton</directory>
-                                    <includes><include>*.sql</include></includes>
-                                    <!-- Exclude PL/pgSQL migrations that jOOQ DDLDatabase cannot parse -->
-                                    <excludes><exclude>R__*.sql</exclude></excludes>
-                                </resource>
+                                <!-- Only adapter migrations — skeleton uses Flyway placeholders
+                                     that jOOQ DDLDatabase cannot parse -->
                                 <resource>
                                     <directory>src/main/resources/db/migration/adapter</directory>
                                     <includes><include>*.sql</include></includes>
