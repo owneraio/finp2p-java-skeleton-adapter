@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: io.ownera.ledger.adapter.postgres.PostgresEscrowOperationsTest
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.986 s - in io.ownera.ledger.adapter.postgres.PostgresEscrowOperationsTest

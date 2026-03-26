@@ -4,30 +4,44 @@ import io.ownera.ledger.adapter.sample.HoldOperation;
 import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.Asset;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 
-import static io.ownera.ledger.adapter.db.generated.default_schema.Tables.*;
-import static io.ownera.ledger.adapter.db.generated.ledger_adapter.Tables.ASSETS;
+import static io.ownera.ledger.adapter.db.generated.Tables.*;
 
 public class DbStorage {
 
+    // Skeleton-owned table — uses plain DSL since schema name is configurable
+    private static final Field<String> ASSET_TYPE = DSL.field(DSL.name("type"), String.class);
+    private static final Field<String> ASSET_ID = DSL.field(DSL.name("id"), String.class);
+    private static final Field<String> TOKEN_STANDARD = DSL.field(DSL.name("token_standard"), String.class);
+    private static final Field<Integer> DECIMALS = DSL.field(DSL.name("decimals"), Integer.class);
+
     private final DSLContext dsl;
+    private final Table<?> assetsTable;
 
     public DbStorage(DSLContext dsl) {
+        this(dsl, "ledger_adapter");
+    }
+
+    public DbStorage(DSLContext dsl, String schemaName) {
         this.dsl = dsl;
+        this.assetsTable = DSL.table(DSL.name(schemaName, "assets"));
     }
 
     public void createAsset(String assetId, Asset asset) {
-        dsl.insertInto(ASSETS)
-                .set(ASSETS.TYPE, asset.assetType.name())
-                .set(ASSETS.ID, assetId)
-                .set(ASSETS.TOKEN_STANDARD, "ERC20")
-                .set(ASSETS.DECIMALS, 0)
+        dsl.insertInto(assetsTable)
+                .set(ASSET_TYPE, asset.assetType.name())
+                .set(ASSET_ID, assetId)
+                .set(TOKEN_STANDARD, "ERC20")
+                .set(DECIMALS, 0)
                 .onConflictDoNothing()
                 .execute();
     }
 
     public void checkAssetExists(Asset asset) {
-        int count = dsl.fetchCount(ASSETS, ASSETS.TYPE.eq(asset.assetType.name()).and(ASSETS.ID.eq(asset.assetId)));
+        int count = dsl.fetchCount(assetsTable, ASSET_TYPE.eq(asset.assetType.name()).and(ASSET_ID.eq(asset.assetId)));
         if (count == 0) {
             throw new TokenServiceException("Asset " + asset.assetId + " not found");
         }

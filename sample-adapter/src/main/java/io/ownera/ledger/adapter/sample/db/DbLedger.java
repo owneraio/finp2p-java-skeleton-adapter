@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static io.ownera.ledger.adapter.db.generated.default_schema.Tables.TRANSACTIONS;
+import static io.ownera.ledger.adapter.db.generated.Tables.TRANSACTIONS;
 
 public class DbLedger implements TokenService, EscrowService, CommonService {
 
