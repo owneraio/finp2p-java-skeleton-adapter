@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIWireDetails;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIWireTransfer
  */
@@ -43,13 +42,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIWireTransfer.JSON_PROPERTY_POSTAL_CODE,
   APIWireTransfer.JSON_PROPERTY_COUNTRY
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIWireTransfer {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    WIRE_TRANSFER(String.valueOf("wireTransfer"));
+    WIRETRANSFER("wireTransfer");
 
     private String value;
 
@@ -79,228 +78,228 @@ public class APIWireTransfer {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_ACCOUNT_HOLDER_NAME = "accountHolderName";
-  @javax.annotation.Nonnull
   private String accountHolderName;
 
   public static final String JSON_PROPERTY_BANK_NAME = "bankName";
-  @javax.annotation.Nonnull
   private String bankName;
 
   public static final String JSON_PROPERTY_WIRE_DETAILS = "wireDetails";
-  @javax.annotation.Nonnull
   private APIWireDetails wireDetails;
 
   public static final String JSON_PROPERTY_LINE1 = "line1";
-  @javax.annotation.Nullable
   private String line1;
 
   public static final String JSON_PROPERTY_CITY = "city";
-  @javax.annotation.Nullable
   private String city;
 
   public static final String JSON_PROPERTY_POSTAL_CODE = "postalCode";
-  @javax.annotation.Nullable
   private String postalCode;
 
   public static final String JSON_PROPERTY_COUNTRY = "country";
-  @javax.annotation.Nullable
   private String country;
 
   public APIWireTransfer() { 
   }
 
-  public APIWireTransfer type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIWireTransfer type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIWireTransfer accountHolderName(@javax.annotation.Nonnull String accountHolderName) {
+  public APIWireTransfer accountHolderName(String accountHolderName) {
     this.accountHolderName = accountHolderName;
     return this;
   }
 
-  /**
+   /**
    * Get accountHolderName
    * @return accountHolderName
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_HOLDER_NAME, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT_HOLDER_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getAccountHolderName() {
     return accountHolderName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_HOLDER_NAME, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT_HOLDER_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccountHolderName(@javax.annotation.Nonnull String accountHolderName) {
+  public void setAccountHolderName(String accountHolderName) {
     this.accountHolderName = accountHolderName;
   }
 
 
-  public APIWireTransfer bankName(@javax.annotation.Nonnull String bankName) {
+  public APIWireTransfer bankName(String bankName) {
     this.bankName = bankName;
     return this;
   }
 
-  /**
+   /**
    * Get bankName
    * @return bankName
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BANK_NAME, required = true)
+  @JsonProperty(JSON_PROPERTY_BANK_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getBankName() {
     return bankName;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BANK_NAME, required = true)
+  @JsonProperty(JSON_PROPERTY_BANK_NAME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBankName(@javax.annotation.Nonnull String bankName) {
+  public void setBankName(String bankName) {
     this.bankName = bankName;
   }
 
 
-  public APIWireTransfer wireDetails(@javax.annotation.Nonnull APIWireDetails wireDetails) {
+  public APIWireTransfer wireDetails(APIWireDetails wireDetails) {
     this.wireDetails = wireDetails;
     return this;
   }
 
-  /**
+   /**
    * Get wireDetails
    * @return wireDetails
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WIRE_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_WIRE_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIWireDetails getWireDetails() {
     return wireDetails;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WIRE_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_WIRE_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setWireDetails(@javax.annotation.Nonnull APIWireDetails wireDetails) {
+  public void setWireDetails(APIWireDetails wireDetails) {
     this.wireDetails = wireDetails;
   }
 
 
-  public APIWireTransfer line1(@javax.annotation.Nullable String line1) {
+  public APIWireTransfer line1(String line1) {
     this.line1 = line1;
     return this;
   }
 
-  /**
+   /**
    * Get line1
    * @return line1
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LINE1, required = false)
+  @JsonProperty(JSON_PROPERTY_LINE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getLine1() {
     return line1;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LINE1, required = false)
+  @JsonProperty(JSON_PROPERTY_LINE1)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLine1(@javax.annotation.Nullable String line1) {
+  public void setLine1(String line1) {
     this.line1 = line1;
   }
 
 
-  public APIWireTransfer city(@javax.annotation.Nullable String city) {
+  public APIWireTransfer city(String city) {
     this.city = city;
     return this;
   }
 
-  /**
+   /**
    * Get city
    * @return city
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CITY, required = false)
+  @JsonProperty(JSON_PROPERTY_CITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getCity() {
     return city;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CITY, required = false)
+  @JsonProperty(JSON_PROPERTY_CITY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCity(@javax.annotation.Nullable String city) {
+  public void setCity(String city) {
     this.city = city;
   }
 
 
-  public APIWireTransfer postalCode(@javax.annotation.Nullable String postalCode) {
+  public APIWireTransfer postalCode(String postalCode) {
     this.postalCode = postalCode;
     return this;
   }
 
-  /**
+   /**
    * Get postalCode
    * @return postalCode
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_POSTAL_CODE, required = false)
+  @JsonProperty(JSON_PROPERTY_POSTAL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getPostalCode() {
     return postalCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_POSTAL_CODE, required = false)
+  @JsonProperty(JSON_PROPERTY_POSTAL_CODE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPostalCode(@javax.annotation.Nullable String postalCode) {
+  public void setPostalCode(String postalCode) {
     this.postalCode = postalCode;
   }
 
 
-  public APIWireTransfer country(@javax.annotation.Nullable String country) {
+  public APIWireTransfer country(String country) {
     this.country = country;
     return this;
   }
 
-  /**
+   /**
    * Get country
    * @return country
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
+  @JsonProperty(JSON_PROPERTY_COUNTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getCountry() {
     return country;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_COUNTRY, required = false)
+  @JsonProperty(JSON_PROPERTY_COUNTRY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCountry(@javax.annotation.Nullable String country) {
+  public void setCountry(String country) {
     this.country = country;
   }
 
@@ -393,17 +392,17 @@ public class APIWireTransfer {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `accountHolderName` to the URL query string
     if (getAccountHolderName() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%saccountHolderName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountHolderName()))));
+      joiner.add(String.format("%saccountHolderName%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAccountHolderName()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `bankName` to the URL query string
     if (getBankName() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sbankName%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBankName()))));
+      joiner.add(String.format("%sbankName%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getBankName()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `wireDetails` to the URL query string
@@ -413,22 +412,22 @@ public class APIWireTransfer {
 
     // add `line1` to the URL query string
     if (getLine1() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sline1%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getLine1()))));
+      joiner.add(String.format("%sline1%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getLine1()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `city` to the URL query string
     if (getCity() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCity()))));
+      joiner.add(String.format("%scity%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `postalCode` to the URL query string
     if (getPostalCode() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%spostalCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPostalCode()))));
+      joiner.add(String.format("%spostalCode%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getPostalCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `country` to the URL query string
     if (getCountry() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scountry%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCountry()))));
+      joiner.add(String.format("%scountry%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCountry()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

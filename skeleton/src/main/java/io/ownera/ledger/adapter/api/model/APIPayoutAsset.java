@@ -17,293 +17,127 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APICryptocurrencyAsset;
-import io.ownera.ledger.adapter.api.model.APIFiatAsset;
-import io.ownera.ledger.adapter.api.model.APIFinp2pAsset;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+/**
+ * describes asset information
+ */
+@JsonPropertyOrder({
+  APIPayoutAsset.JSON_PROPERTY_ID,
+  APIPayoutAsset.JSON_PROPERTY_LEDGER_IDENTIFIER
+})
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIPayoutAsset {
+  public static final String JSON_PROPERTY_ID = "id";
+  private String id;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
-import io.ownera.ledger.adapter.api.JSON;
+  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
+  private APILedgerAssetIdentifier ledgerIdentifier;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-@JsonDeserialize(using = APIPayoutAsset.APIPayoutAssetDeserializer.class)
-@JsonSerialize(using = APIPayoutAsset.APIPayoutAssetSerializer.class)
-public class APIPayoutAsset extends AbstractOpenApiSchema {
-    private static final Logger log = Logger.getLogger(APIPayoutAsset.class.getName());
+  public APIPayoutAsset() { 
+  }
 
-    public static class APIPayoutAssetSerializer extends StdSerializer<APIPayoutAsset> {
-        public APIPayoutAssetSerializer(Class<APIPayoutAsset> t) {
-            super(t);
-        }
+  public APIPayoutAsset id(String id) {
+    this.id = id;
+    return this;
+  }
 
-        public APIPayoutAssetSerializer() {
-            this(null);
-        }
+   /**
+   * finp2p resource id format
+   * @return id
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-        @Override
-        public void serialize(APIPayoutAsset value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeObject(value.getActualInstance());
-        }
+  public String getId() {
+    return id;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setId(String id) {
+    this.id = id;
+  }
+
+
+  public APIPayoutAsset ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
+    return this;
+  }
+
+   /**
+   * Get ledgerIdentifier
+   * @return ledgerIdentifier
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public APILedgerAssetIdentifier getLedgerIdentifier() {
+    return ledgerIdentifier;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
+  }
+
+
+  /**
+   * Return true if this payoutAsset object is equal to o.
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public static class APIPayoutAssetDeserializer extends StdDeserializer<APIPayoutAsset> {
-        public APIPayoutAssetDeserializer() {
-            this(APIPayoutAsset.class);
-        }
-
-        public APIPayoutAssetDeserializer(Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public APIPayoutAsset deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode tree = jp.readValueAsTree();
-            Object deserialized = null;
-            boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
-            int match = 0;
-            JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize APICryptocurrencyAsset
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (APICryptocurrencyAsset.class.equals(Integer.class) || APICryptocurrencyAsset.class.equals(Long.class) || APICryptocurrencyAsset.class.equals(Float.class) || APICryptocurrencyAsset.class.equals(Double.class) || APICryptocurrencyAsset.class.equals(Boolean.class) || APICryptocurrencyAsset.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((APICryptocurrencyAsset.class.equals(Integer.class) || APICryptocurrencyAsset.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((APICryptocurrencyAsset.class.equals(Float.class) || APICryptocurrencyAsset.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (APICryptocurrencyAsset.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (APICryptocurrencyAsset.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                    }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APICryptocurrencyAsset.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'APICryptocurrencyAsset'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'APICryptocurrencyAsset'", e);
-            }
-
-            // deserialize APIFiatAsset
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (APIFiatAsset.class.equals(Integer.class) || APIFiatAsset.class.equals(Long.class) || APIFiatAsset.class.equals(Float.class) || APIFiatAsset.class.equals(Double.class) || APIFiatAsset.class.equals(Boolean.class) || APIFiatAsset.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((APIFiatAsset.class.equals(Integer.class) || APIFiatAsset.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((APIFiatAsset.class.equals(Float.class) || APIFiatAsset.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (APIFiatAsset.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (APIFiatAsset.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                    }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APIFiatAsset.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'APIFiatAsset'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'APIFiatAsset'", e);
-            }
-
-            // deserialize APIFinp2pAsset
-            try {
-                boolean attemptParsing = true;
-                // ensure that we respect type coercion as set on the client ObjectMapper
-                if (APIFinp2pAsset.class.equals(Integer.class) || APIFinp2pAsset.class.equals(Long.class) || APIFinp2pAsset.class.equals(Float.class) || APIFinp2pAsset.class.equals(Double.class) || APIFinp2pAsset.class.equals(Boolean.class) || APIFinp2pAsset.class.equals(String.class)) {
-                    attemptParsing = typeCoercion;
-                    if (!attemptParsing) {
-                        attemptParsing |= ((APIFinp2pAsset.class.equals(Integer.class) || APIFinp2pAsset.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((APIFinp2pAsset.class.equals(Float.class) || APIFinp2pAsset.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (APIFinp2pAsset.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (APIFinp2pAsset.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                    }
-                }
-                if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APIFinp2pAsset.class);
-                    // TODO: there is no validation against JSON schema constraints
-                    // (min, max, enum, pattern...), this does not perform a strict JSON
-                    // validation, which means the 'match' count may be higher than it should be.
-                    match++;
-                    log.log(Level.FINER, "Input data matches schema 'APIFinp2pAsset'");
-                }
-            } catch (Exception e) {
-                // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'APIFinp2pAsset'", e);
-            }
-
-            if (match == 1) {
-                APIPayoutAsset ret = new APIPayoutAsset();
-                ret.setActualInstance(deserialized);
-                return ret;
-            }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIPayoutAsset: %d classes match result, expected 1", match));
-        }
-
-        /**
-         * Handle deserialization of the 'null' value.
-         */
-        @Override
-        public APIPayoutAsset getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIPayoutAsset cannot be null");
-        }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    APIPayoutAsset payoutAsset = (APIPayoutAsset) o;
+    return Objects.equals(this.id, payoutAsset.id) &&
+        Objects.equals(this.ledgerIdentifier, payoutAsset.ledgerIdentifier);
+  }
 
-    // store a list of schema names defined in oneOf
-    public static final Map<String, Class<?>> schemas = new HashMap<>();
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, ledgerIdentifier);
+  }
 
-    public APIPayoutAsset() {
-        super("oneOf", Boolean.FALSE);
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class APIPayoutAsset {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public APIPayoutAsset(APICryptocurrencyAsset o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public APIPayoutAsset(APIFiatAsset o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    public APIPayoutAsset(APIFinp2pAsset o) {
-        super("oneOf", Boolean.FALSE);
-        setActualInstance(o);
-    }
-
-    static {
-        schemas.put("APICryptocurrencyAsset", APICryptocurrencyAsset.class);
-        schemas.put("APIFiatAsset", APIFiatAsset.class);
-        schemas.put("APIFinp2pAsset", APIFinp2pAsset.class);
-        JSON.registerDescendants(APIPayoutAsset.class, Collections.unmodifiableMap(schemas));
-        // Initialize and register the discriminator mappings.
-        Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("cryptocurrency", APICryptocurrencyAsset.class);
-        mappings.put("fiat", APIFiatAsset.class);
-        mappings.put("finp2p", APIFinp2pAsset.class);
-        mappings.put("payoutAsset", APIPayoutAsset.class);
-        JSON.registerDiscriminator(APIPayoutAsset.class, "type", mappings);
-    }
-
-    @Override
-    public Map<String, Class<?>> getSchemas() {
-        return APIPayoutAsset.schemas;
-    }
-
-    /**
-     * Set the instance that matches the oneOf child schema, check
-     * the instance parameter is valid against the oneOf child schemas:
-     * APICryptocurrencyAsset, APIFiatAsset, APIFinp2pAsset
-     *
-     * It could be an instance of the 'oneOf' schemas.
-     * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
-     */
-    @Override
-    public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(APICryptocurrencyAsset.class, instance, new HashSet<Class<?>>())) {
-            super.setActualInstance(instance);
-            return;
-        }
-
-        if (JSON.isInstanceOf(APIFiatAsset.class, instance, new HashSet<Class<?>>())) {
-            super.setActualInstance(instance);
-            return;
-        }
-
-        if (JSON.isInstanceOf(APIFinp2pAsset.class, instance, new HashSet<Class<?>>())) {
-            super.setActualInstance(instance);
-            return;
-        }
-
-        throw new RuntimeException("Invalid instance type. Must be APICryptocurrencyAsset, APIFiatAsset, APIFinp2pAsset");
-    }
-
-    /**
-     * Get the actual instance, which can be the following:
-     * APICryptocurrencyAsset, APIFiatAsset, APIFinp2pAsset
-     *
-     * @return The actual instance (APICryptocurrencyAsset, APIFiatAsset, APIFinp2pAsset)
-     */
-    @Override
-    public Object getActualInstance() {
-        return super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `APICryptocurrencyAsset`. If the actual instance is not `APICryptocurrencyAsset`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `APICryptocurrencyAsset`
-     * @throws ClassCastException if the instance is not `APICryptocurrencyAsset`
-     */
-    public APICryptocurrencyAsset getAPICryptocurrencyAsset() throws ClassCastException {
-        return (APICryptocurrencyAsset)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `APIFiatAsset`. If the actual instance is not `APIFiatAsset`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `APIFiatAsset`
-     * @throws ClassCastException if the instance is not `APIFiatAsset`
-     */
-    public APIFiatAsset getAPIFiatAsset() throws ClassCastException {
-        return (APIFiatAsset)super.getActualInstance();
-    }
-
-    /**
-     * Get the actual instance of `APIFinp2pAsset`. If the actual instance is not `APIFinp2pAsset`,
-     * the ClassCastException will be thrown.
-     *
-     * @return The actual instance of `APIFinp2pAsset`
-     * @throws ClassCastException if the instance is not `APIFinp2pAsset`
-     */
-    public APIFinp2pAsset getAPIFinp2pAsset() throws ClassCastException {
-        return (APIFinp2pAsset)super.getActualInstance();
-    }
-
-
+    return o.toString().replace("\n", "\n    ");
+  }
 
   /**
    * Convert the instance into URL query string.
@@ -337,26 +171,17 @@ public class APIPayoutAsset extends AbstractOpenApiSchema {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    if (getActualInstance() instanceof APICryptocurrencyAsset) {
-        if (getActualInstance() != null) {
-          joiner.add(((APICryptocurrencyAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
-        }
-        return joiner.toString();
+    // add `id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
-    if (getActualInstance() instanceof APIFiatAsset) {
-        if (getActualInstance() != null) {
-          joiner.add(((APIFiatAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof APIFinp2pAsset) {
-        if (getActualInstance() != null) {
-          joiner.add(((APIFinp2pAsset)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
-        }
-        return joiner.toString();
-    }
-    return null;
-  }
 
+    // add `ledgerIdentifier` to the URL query string
+    if (getLedgerIdentifier() != null) {
+      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
+    }
+
+    return joiner.toString();
+  }
 }
 

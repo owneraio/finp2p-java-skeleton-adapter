@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,52 +25,81 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIAssetCreateResponse;
+import io.ownera.ledger.adapter.api.model.APICreateAssetOperationErrorInformation;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * Additional network information for the asset identifier
+ * APICreateAssetResponseAllOf
  */
 @JsonPropertyOrder({
-  APIAssetIdentifierNetworkInfo.JSON_PROPERTY_NETWORK_ID
+  APICreateAssetResponseAllOf.JSON_PROPERTY_ERROR,
+  APICreateAssetResponseAllOf.JSON_PROPERTY_RESPONSE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APIAssetIdentifierNetworkInfo {
-  public static final String JSON_PROPERTY_NETWORK_ID = "networkId";
-  @javax.annotation.Nullable
-  private String networkId;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APICreateAssetResponseAllOf {
+  public static final String JSON_PROPERTY_ERROR = "error";
+  private APICreateAssetOperationErrorInformation error;
 
-  public APIAssetIdentifierNetworkInfo() { 
+  public static final String JSON_PROPERTY_RESPONSE = "response";
+  private APIAssetCreateResponse response;
+
+  public APICreateAssetResponseAllOf() { 
   }
 
-  public APIAssetIdentifierNetworkInfo networkId(@javax.annotation.Nullable String networkId) {
-    this.networkId = networkId;
+  public APICreateAssetResponseAllOf error(APICreateAssetOperationErrorInformation error) {
+    this.error = error;
     return this;
   }
 
-  /**
-   * Identifier of the network associated with the asset (e.g., blockchain network name or code).
-   * @return networkId
-   */
+   /**
+   * Get error
+   * @return error
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NETWORK_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getNetworkId() {
-    return networkId;
+
+  public APICreateAssetOperationErrorInformation getError() {
+    return error;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NETWORK_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNetworkId(@javax.annotation.Nullable String networkId) {
-    this.networkId = networkId;
+  public void setError(APICreateAssetOperationErrorInformation error) {
+    this.error = error;
+  }
+
+
+  public APICreateAssetResponseAllOf response(APIAssetCreateResponse response) {
+    this.response = response;
+    return this;
+  }
+
+   /**
+   * Get response
+   * @return response
+  **/
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_RESPONSE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public APIAssetCreateResponse getResponse() {
+    return response;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_RESPONSE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResponse(APIAssetCreateResponse response) {
+    this.response = response;
   }
 
 
   /**
-   * Return true if this assetIdentifier_networkInfo object is equal to o.
+   * Return true if this CreateAssetResponse_allOf object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -79,20 +109,22 @@ public class APIAssetIdentifierNetworkInfo {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIAssetIdentifierNetworkInfo assetIdentifierNetworkInfo = (APIAssetIdentifierNetworkInfo) o;
-    return Objects.equals(this.networkId, assetIdentifierNetworkInfo.networkId);
+    APICreateAssetResponseAllOf createAssetResponseAllOf = (APICreateAssetResponseAllOf) o;
+    return Objects.equals(this.error, createAssetResponseAllOf.error) &&
+        Objects.equals(this.response, createAssetResponseAllOf.response);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(networkId);
+    return Objects.hash(error, response);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIAssetIdentifierNetworkInfo {\n");
-    sb.append("    networkId: ").append(toIndentedString(networkId)).append("\n");
+    sb.append("class APICreateAssetResponseAllOf {\n");
+    sb.append("    error: ").append(toIndentedString(error)).append("\n");
+    sb.append("    response: ").append(toIndentedString(response)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -140,9 +172,14 @@ public class APIAssetIdentifierNetworkInfo {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `networkId` to the URL query string
-    if (getNetworkId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%snetworkId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetworkId()))));
+    // add `error` to the URL query string
+    if (getError() != null) {
+      joiner.add(getError().toUrlQueryString(prefix + "error" + suffix));
+    }
+
+    // add `response` to the URL query string
+    if (getResponse() != null) {
+      joiner.add(getResponse().toUrlQueryString(prefix + "response" + suffix));
     }
 
     return joiner.toString();

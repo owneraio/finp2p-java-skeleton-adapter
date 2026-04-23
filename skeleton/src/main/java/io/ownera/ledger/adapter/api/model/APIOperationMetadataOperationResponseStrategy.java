@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,11 +28,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APICallbackEndpoint;
 import io.ownera.ledger.adapter.api.model.APICallbackResultsStrategy;
+import io.ownera.ledger.adapter.api.model.APICallbackResultsStrategyCallback;
 import io.ownera.ledger.adapter.api.model.APIPollingResultsStrategy;
 import io.ownera.ledger.adapter.api.model.APIPollingResultsStrategyPolling;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -56,10 +56,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 @JsonDeserialize(using = APIOperationMetadataOperationResponseStrategy.APIOperationMetadataOperationResponseStrategyDeserializer.class)
 @JsonSerialize(using = APIOperationMetadataOperationResponseStrategy.APIOperationMetadataOperationResponseStrategySerializer.class)
 public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenApiSchema {
@@ -153,7 +152,7 @@ public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenA
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIOperationMetadataOperationResponseStrategy: %d classes match result, expected 1", match));
+            throw new IOException(String.format("Failed deserialization for APIOperationMetadataOperationResponseStrategy: %d classes match result, expected 1", match));
         }
 
         /**
@@ -189,7 +188,9 @@ public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenA
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("callback", APICallbackResultsStrategy.class);
+        mappings.put("callbackResultsStrategy", APICallbackResultsStrategy.class);
         mappings.put("poll", APIPollingResultsStrategy.class);
+        mappings.put("pollingResultsStrategy", APIPollingResultsStrategy.class);
         mappings.put("OperationMetadata_operationResponseStrategy", APIOperationMetadataOperationResponseStrategy.class);
         JSON.registerDiscriminator(APIOperationMetadataOperationResponseStrategy.class, "type", mappings);
     }

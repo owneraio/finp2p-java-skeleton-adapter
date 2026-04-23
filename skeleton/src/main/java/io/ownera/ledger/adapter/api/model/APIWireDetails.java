@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,7 +31,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIIbanAccountDetails;
 import io.ownera.ledger.adapter.api.model.APISortCodeDetails;
 import io.ownera.ledger.adapter.api.model.APISwiftAccountDetails;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,10 +55,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 @JsonDeserialize(using = APIWireDetails.APIWireDetailsDeserializer.class)
 @JsonSerialize(using = APIWireDetails.APIWireDetailsSerializer.class)
 public class APIWireDetails extends AbstractOpenApiSchema {
@@ -178,7 +177,7 @@ public class APIWireDetails extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIWireDetails: %d classes match result, expected 1", match));
+            throw new IOException(String.format("Failed deserialization for APIWireDetails: %d classes match result, expected 1", match));
         }
 
         /**
@@ -220,8 +219,11 @@ public class APIWireDetails extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("iban", APIIbanAccountDetails.class);
+        mappings.put("ibanAccountDetails", APIIbanAccountDetails.class);
         mappings.put("sortCode", APISortCodeDetails.class);
+        mappings.put("sortCodeDetails", APISortCodeDetails.class);
         mappings.put("swift", APISwiftAccountDetails.class);
+        mappings.put("swiftAccountDetails", APISwiftAccountDetails.class);
         mappings.put("wireDetails", APIWireDetails.class);
         JSON.registerDiscriminator(APIWireDetails.class, "type", mappings);
     }

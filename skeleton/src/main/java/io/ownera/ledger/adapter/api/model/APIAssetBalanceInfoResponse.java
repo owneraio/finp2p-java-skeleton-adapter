@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,12 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIAsset;
 import io.ownera.ledger.adapter.api.model.APIAssetBalance;
-import io.ownera.ledger.adapter.api.model.APIFinIdAccount;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIFinIdAccountBase;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIAssetBalanceInfoResponse
  */
@@ -40,91 +39,91 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIAssetBalanceInfoResponse.JSON_PROPERTY_ASSET,
   APIAssetBalanceInfoResponse.JSON_PROPERTY_BALANCE_INFO
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIAssetBalanceInfoResponse {
   public static final String JSON_PROPERTY_ACCOUNT = "account";
-  @javax.annotation.Nonnull
-  private APIFinIdAccount account;
+  private APIFinIdAccountBase account;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIAsset asset;
 
   public static final String JSON_PROPERTY_BALANCE_INFO = "balanceInfo";
-  @javax.annotation.Nullable
   private APIAssetBalance balanceInfo;
 
   public APIAssetBalanceInfoResponse() { 
   }
 
-  public APIAssetBalanceInfoResponse account(@javax.annotation.Nonnull APIFinIdAccount account) {
+  public APIAssetBalanceInfoResponse account(APIFinIdAccountBase account) {
     this.account = account;
     return this;
   }
 
-  /**
+   /**
    * Get account
    * @return account
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIFinIdAccount getAccount() {
+
+  public APIFinIdAccountBase getAccount() {
     return account;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(@javax.annotation.Nonnull APIFinIdAccount account) {
+  public void setAccount(APIFinIdAccountBase account) {
     this.account = account;
   }
 
 
-  public APIAssetBalanceInfoResponse asset(@javax.annotation.Nonnull APIAsset asset) {
+  public APIAssetBalanceInfoResponse asset(APIAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
+  public void setAsset(APIAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIAssetBalanceInfoResponse balanceInfo(@javax.annotation.Nullable APIAssetBalance balanceInfo) {
+  public APIAssetBalanceInfoResponse balanceInfo(APIAssetBalance balanceInfo) {
     this.balanceInfo = balanceInfo;
     return this;
   }
 
-  /**
+   /**
    * Get balanceInfo
    * @return balanceInfo
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_BALANCE_INFO, required = false)
+  @JsonProperty(JSON_PROPERTY_BALANCE_INFO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIAssetBalance getBalanceInfo() {
     return balanceInfo;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BALANCE_INFO, required = false)
+  @JsonProperty(JSON_PROPERTY_BALANCE_INFO)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setBalanceInfo(@javax.annotation.Nullable APIAssetBalance balanceInfo) {
+  public void setBalanceInfo(APIAssetBalance balanceInfo) {
     this.balanceInfo = balanceInfo;
   }
 

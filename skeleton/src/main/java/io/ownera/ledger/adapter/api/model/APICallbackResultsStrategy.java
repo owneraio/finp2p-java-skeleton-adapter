@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,12 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APICallbackEndpoint;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APICallbackResultsStrategyCallback;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APICallbackResultsStrategy
  */
@@ -37,13 +36,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICallbackResultsStrategy.JSON_PROPERTY_TYPE,
   APICallbackResultsStrategy.JSON_PROPERTY_CALLBACK
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APICallbackResultsStrategy {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    CALLBACK(String.valueOf("callback"));
+    CALLBACK("callback");
 
     private String value;
 
@@ -73,60 +72,60 @@ public class APICallbackResultsStrategy {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_CALLBACK = "callback";
-  @javax.annotation.Nonnull
-  private APICallbackEndpoint callback;
+  private APICallbackResultsStrategyCallback callback;
 
   public APICallbackResultsStrategy() { 
   }
 
-  public APICallbackResultsStrategy type(@javax.annotation.Nonnull TypeEnum type) {
+  public APICallbackResultsStrategy type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APICallbackResultsStrategy callback(@javax.annotation.Nonnull APICallbackEndpoint callback) {
+  public APICallbackResultsStrategy callback(APICallbackResultsStrategyCallback callback) {
     this.callback = callback;
     return this;
   }
 
-  /**
+   /**
    * Get callback
    * @return callback
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CALLBACK, required = true)
+  @JsonProperty(JSON_PROPERTY_CALLBACK)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APICallbackEndpoint getCallback() {
+
+  public APICallbackResultsStrategyCallback getCallback() {
     return callback;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CALLBACK, required = true)
+  @JsonProperty(JSON_PROPERTY_CALLBACK)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCallback(@javax.annotation.Nonnull APICallbackEndpoint callback) {
+  public void setCallback(APICallbackResultsStrategyCallback callback) {
     this.callback = callback;
   }
 
@@ -207,7 +206,7 @@ public class APICallbackResultsStrategy {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `callback` to the URL query string

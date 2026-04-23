@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIPaymentInstructions
  */
@@ -36,13 +35,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIPaymentInstructions.JSON_PROPERTY_TYPE,
   APIPaymentInstructions.JSON_PROPERTY_INSTRUCTION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIPaymentInstructions {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    PAYMENT_INSTRUCTIONS(String.valueOf("paymentInstructions"));
+    PAYMENTINSTRUCTIONS("paymentInstructions");
 
     private String value;
 
@@ -72,60 +71,60 @@ public class APIPaymentInstructions {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_INSTRUCTION = "instruction";
-  @javax.annotation.Nonnull
   private String instruction;
 
   public APIPaymentInstructions() { 
   }
 
-  public APIPaymentInstructions type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIPaymentInstructions type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIPaymentInstructions instruction(@javax.annotation.Nonnull String instruction) {
+  public APIPaymentInstructions instruction(String instruction) {
     this.instruction = instruction;
     return this;
   }
 
-  /**
+   /**
    * Get instruction
    * @return instruction
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INSTRUCTION, required = true)
+  @JsonProperty(JSON_PROPERTY_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getInstruction() {
     return instruction;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INSTRUCTION, required = true)
+  @JsonProperty(JSON_PROPERTY_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setInstruction(@javax.annotation.Nonnull String instruction) {
+  public void setInstruction(String instruction) {
     this.instruction = instruction;
   }
 
@@ -206,12 +205,12 @@ public class APIPaymentInstructions {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `instruction` to the URL query string
     if (getInstruction() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sinstruction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInstruction()))));
+      joiner.add(String.format("%sinstruction%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getInstruction()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

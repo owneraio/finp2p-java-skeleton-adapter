@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,12 +25,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalRequest;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalStatusRequestRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * provides status update on the agreement reached for a specific proposal
  */
@@ -37,15 +36,15 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIExecutionPlanProposalStatusRequest.JSON_PROPERTY_STATUS,
   APIExecutionPlanProposalStatusRequest.JSON_PROPERTY_REQUEST
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIExecutionPlanProposalStatusRequest {
   /**
    * Gets or Sets status
    */
   public enum StatusEnum {
-    APPROVED(String.valueOf("approved")),
+    APPROVED("approved"),
     
-    REJECTED(String.valueOf("rejected"));
+    REJECTED("rejected");
 
     private String value;
 
@@ -75,60 +74,60 @@ public class APIExecutionPlanProposalStatusRequest {
   }
 
   public static final String JSON_PROPERTY_STATUS = "status";
-  @javax.annotation.Nonnull
   private StatusEnum status;
 
   public static final String JSON_PROPERTY_REQUEST = "request";
-  @javax.annotation.Nonnull
-  private APIExecutionPlanProposalRequest request;
+  private APIExecutionPlanProposalStatusRequestRequest request;
 
   public APIExecutionPlanProposalStatusRequest() { 
   }
 
-  public APIExecutionPlanProposalStatusRequest status(@javax.annotation.Nonnull StatusEnum status) {
+  public APIExecutionPlanProposalStatusRequest status(StatusEnum status) {
     this.status = status;
     return this;
   }
 
-  /**
+   /**
    * Get status
    * @return status
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
+  @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public StatusEnum getStatus() {
     return status;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_STATUS, required = true)
+  @JsonProperty(JSON_PROPERTY_STATUS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setStatus(@javax.annotation.Nonnull StatusEnum status) {
+  public void setStatus(StatusEnum status) {
     this.status = status;
   }
 
 
-  public APIExecutionPlanProposalStatusRequest request(@javax.annotation.Nonnull APIExecutionPlanProposalRequest request) {
+  public APIExecutionPlanProposalStatusRequest request(APIExecutionPlanProposalStatusRequestRequest request) {
     this.request = request;
     return this;
   }
 
-  /**
+   /**
    * Get request
    * @return request
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_REQUEST, required = true)
+  @JsonProperty(JSON_PROPERTY_REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIExecutionPlanProposalRequest getRequest() {
+
+  public APIExecutionPlanProposalStatusRequestRequest getRequest() {
     return request;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REQUEST, required = true)
+  @JsonProperty(JSON_PROPERTY_REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRequest(@javax.annotation.Nonnull APIExecutionPlanProposalRequest request) {
+  public void setRequest(APIExecutionPlanProposalStatusRequestRequest request) {
     this.request = request;
   }
 
@@ -209,7 +208,7 @@ public class APIExecutionPlanProposalStatusRequest {
 
     // add `status` to the URL query string
     if (getStatus() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sstatus%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getStatus()))));
+      joiner.add(String.format("%sstatus%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getStatus()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `request` to the URL query string

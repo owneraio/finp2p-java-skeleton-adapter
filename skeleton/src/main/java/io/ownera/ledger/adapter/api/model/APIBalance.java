@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIAsset;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIBalance
  */
@@ -37,63 +36,63 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIBalance.JSON_PROPERTY_ASSET,
   APIBalance.JSON_PROPERTY_BALANCE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIBalance {
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIAsset asset;
 
   public static final String JSON_PROPERTY_BALANCE = "balance";
-  @javax.annotation.Nonnull
   private String balance;
 
   public APIBalance() { 
   }
 
-  public APIBalance asset(@javax.annotation.Nonnull APIAsset asset) {
+  public APIBalance asset(APIAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
+  public void setAsset(APIAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIBalance balance(@javax.annotation.Nonnull String balance) {
+  public APIBalance balance(String balance) {
     this.balance = balance;
     return this;
   }
 
-  /**
+   /**
    * the number of asset tokens
    * @return balance
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BALANCE, required = true)
+  @JsonProperty(JSON_PROPERTY_BALANCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getBalance() {
     return balance;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BALANCE, required = true)
+  @JsonProperty(JSON_PROPERTY_BALANCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBalance(@javax.annotation.Nonnull String balance) {
+  public void setBalance(String balance) {
     this.balance = balance;
   }
 
@@ -179,7 +178,7 @@ public class APIBalance {
 
     // add `balance` to the URL query string
     if (getBalance() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sbalance%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBalance()))));
+      joiner.add(String.format("%sbalance%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getBalance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

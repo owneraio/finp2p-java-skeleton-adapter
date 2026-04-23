@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,12 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIHashGroup;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * ordered list of hash groups
  */
@@ -40,13 +39,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIHashListTemplate.JSON_PROPERTY_HASH_GROUPS,
   APIHashListTemplate.JSON_PROPERTY_HASH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIHashListTemplate {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    HASH_LIST(String.valueOf("hashList"));
+    HASHLIST("hashList");
 
     private String value;
 
@@ -76,96 +75,93 @@ public class APIHashListTemplate {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_HASH_GROUPS = "hashGroups";
-  @javax.annotation.Nonnull
   private List<APIHashGroup> hashGroups = new ArrayList<>();
 
   public static final String JSON_PROPERTY_HASH = "hash";
-  @javax.annotation.Nonnull
   private String hash;
 
   public APIHashListTemplate() { 
   }
 
-  public APIHashListTemplate type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIHashListTemplate type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIHashListTemplate hashGroups(@javax.annotation.Nonnull List<APIHashGroup> hashGroups) {
+  public APIHashListTemplate hashGroups(List<APIHashGroup> hashGroups) {
     this.hashGroups = hashGroups;
     return this;
   }
 
   public APIHashListTemplate addHashGroupsItem(APIHashGroup hashGroupsItem) {
-    if (this.hashGroups == null) {
-      this.hashGroups = new ArrayList<>();
-    }
     this.hashGroups.add(hashGroupsItem);
     return this;
   }
 
-  /**
+   /**
    * Get hashGroups
    * @return hashGroups
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HASH_GROUPS, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH_GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public List<APIHashGroup> getHashGroups() {
     return hashGroups;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HASH_GROUPS, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH_GROUPS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHashGroups(@javax.annotation.Nonnull List<APIHashGroup> hashGroups) {
+  public void setHashGroups(List<APIHashGroup> hashGroups) {
     this.hashGroups = hashGroups;
   }
 
 
-  public APIHashListTemplate hash(@javax.annotation.Nonnull String hash) {
+  public APIHashListTemplate hash(String hash) {
     this.hash = hash;
     return this;
   }
 
-  /**
+   /**
    * hex representation of the combined hash groups hash value
    * @return hash
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getHash() {
     return hash;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHash(@javax.annotation.Nonnull String hash) {
+  public void setHash(String hash) {
     this.hash = hash;
   }
 
@@ -248,22 +244,22 @@ public class APIHashListTemplate {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `hashGroups` to the URL query string
     if (getHashGroups() != null) {
       for (int i = 0; i < getHashGroups().size(); i++) {
         if (getHashGroups().get(i) != null) {
-          joiner.add(getHashGroups().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%shashGroups%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getHashGroups().get(i).toUrlQueryString(String.format("%shashGroups%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
+      joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

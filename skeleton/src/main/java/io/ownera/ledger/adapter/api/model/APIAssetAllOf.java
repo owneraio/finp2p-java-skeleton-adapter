@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,82 +25,51 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIFinIdAccount;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APISource
+ * APIAssetAllOf
  */
 @JsonPropertyOrder({
-  APISource.JSON_PROPERTY_FIN_ID,
-  APISource.JSON_PROPERTY_ACCOUNT
+  APIAssetAllOf.JSON_PROPERTY_LEDGER_IDENTIFIER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APISource {
-  public static final String JSON_PROPERTY_FIN_ID = "finId";
-  @javax.annotation.Nonnull
-  private String finId;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIAssetAllOf {
+  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
+  private APILedgerAssetIdentifier ledgerIdentifier;
 
-  public static final String JSON_PROPERTY_ACCOUNT = "account";
-  @javax.annotation.Nonnull
-  private APIFinIdAccount account;
-
-  public APISource() { 
+  public APIAssetAllOf() { 
   }
 
-  public APISource finId(@javax.annotation.Nonnull String finId) {
-    this.finId = finId;
+  public APIAssetAllOf ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
     return this;
   }
 
-  /**
-   * Existing owner hex representation of a secp256k1 public key 33 bytes compressed
-   * @return finId
-   */
+   /**
+   * Get ledgerIdentifier
+   * @return ledgerIdentifier
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getFinId() {
-    return finId;
+
+  public APILedgerAssetIdentifier getLedgerIdentifier() {
+    return ledgerIdentifier;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFinId(@javax.annotation.Nonnull String finId) {
-    this.finId = finId;
-  }
-
-
-  public APISource account(@javax.annotation.Nonnull APIFinIdAccount account) {
-    this.account = account;
-    return this;
-  }
-
-  /**
-   * Get account
-   * @return account
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIFinIdAccount getAccount() {
-    return account;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(@javax.annotation.Nonnull APIFinIdAccount account) {
-    this.account = account;
+  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
   }
 
 
   /**
-   * Return true if this source object is equal to o.
+   * Return true if this asset_allOf object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -109,22 +79,20 @@ public class APISource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APISource source = (APISource) o;
-    return Objects.equals(this.finId, source.finId) &&
-        Objects.equals(this.account, source.account);
+    APIAssetAllOf assetAllOf = (APIAssetAllOf) o;
+    return Objects.equals(this.ledgerIdentifier, assetAllOf.ledgerIdentifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(finId, account);
+    return Objects.hash(ledgerIdentifier);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APISource {\n");
-    sb.append("    finId: ").append(toIndentedString(finId)).append("\n");
-    sb.append("    account: ").append(toIndentedString(account)).append("\n");
+    sb.append("class APIAssetAllOf {\n");
+    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -172,14 +140,9 @@ public class APISource {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `finId` to the URL query string
-    if (getFinId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
-    }
-
-    // add `account` to the URL query string
-    if (getAccount() != null) {
-      joiner.add(getAccount().toUrlQueryString(prefix + "account" + suffix));
+    // add `ledgerIdentifier` to the URL query string
+    if (getLedgerIdentifier() != null) {
+      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
     }
 
     return joiner.toString();

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,13 +28,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Domain;
 import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Types;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIEIP712Template
  */
@@ -45,13 +44,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIEIP712Template.JSON_PROPERTY_PRIMARY_TYPE,
   APIEIP712Template.JSON_PROPERTY_HASH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIEIP712Template {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    EIP712(String.valueOf("EIP712"));
+    EIP712("EIP712");
 
     private String value;
 
@@ -81,180 +80,177 @@ public class APIEIP712Template {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_DOMAIN = "domain";
-  @javax.annotation.Nonnull
   private APIEIP712Domain domain;
 
   public static final String JSON_PROPERTY_MESSAGE = "message";
-  @javax.annotation.Nonnull
   private Map<String, APIEIP712TypedValue> message = new HashMap<>();
 
   public static final String JSON_PROPERTY_TYPES = "types";
-  @javax.annotation.Nonnull
   private APIEIP712Types types;
 
   public static final String JSON_PROPERTY_PRIMARY_TYPE = "primaryType";
-  @javax.annotation.Nonnull
   private String primaryType;
 
   public static final String JSON_PROPERTY_HASH = "hash";
-  @javax.annotation.Nonnull
   private String hash;
 
   public APIEIP712Template() { 
   }
 
-  public APIEIP712Template type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIEIP712Template type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIEIP712Template domain(@javax.annotation.Nonnull APIEIP712Domain domain) {
+  public APIEIP712Template domain(APIEIP712Domain domain) {
     this.domain = domain;
     return this;
   }
 
-  /**
+   /**
    * Get domain
    * @return domain
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DOMAIN, required = true)
+  @JsonProperty(JSON_PROPERTY_DOMAIN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIEIP712Domain getDomain() {
     return domain;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DOMAIN, required = true)
+  @JsonProperty(JSON_PROPERTY_DOMAIN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDomain(@javax.annotation.Nonnull APIEIP712Domain domain) {
+  public void setDomain(APIEIP712Domain domain) {
     this.domain = domain;
   }
 
 
-  public APIEIP712Template message(@javax.annotation.Nonnull Map<String, APIEIP712TypedValue> message) {
+  public APIEIP712Template message(Map<String, APIEIP712TypedValue> message) {
     this.message = message;
     return this;
   }
 
   public APIEIP712Template putMessageItem(String key, APIEIP712TypedValue messageItem) {
-    if (this.message == null) {
-      this.message = new HashMap<>();
-    }
     this.message.put(key, messageItem);
     return this;
   }
 
-  /**
+   /**
    * Get message
    * @return message
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Map<String, APIEIP712TypedValue> getMessage() {
     return message;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessage(@javax.annotation.Nonnull Map<String, APIEIP712TypedValue> message) {
+  public void setMessage(Map<String, APIEIP712TypedValue> message) {
     this.message = message;
   }
 
 
-  public APIEIP712Template types(@javax.annotation.Nonnull APIEIP712Types types) {
+  public APIEIP712Template types(APIEIP712Types types) {
     this.types = types;
     return this;
   }
 
-  /**
+   /**
    * Get types
    * @return types
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIEIP712Types getTypes() {
     return types;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPES, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPES)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTypes(@javax.annotation.Nonnull APIEIP712Types types) {
+  public void setTypes(APIEIP712Types types) {
     this.types = types;
   }
 
 
-  public APIEIP712Template primaryType(@javax.annotation.Nonnull String primaryType) {
+  public APIEIP712Template primaryType(String primaryType) {
     this.primaryType = primaryType;
     return this;
   }
 
-  /**
+   /**
    * Get primaryType
    * @return primaryType
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PRIMARY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getPrimaryType() {
     return primaryType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PRIMARY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PRIMARY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setPrimaryType(@javax.annotation.Nonnull String primaryType) {
+  public void setPrimaryType(String primaryType) {
     this.primaryType = primaryType;
   }
 
 
-  public APIEIP712Template hash(@javax.annotation.Nonnull String hash) {
+  public APIEIP712Template hash(String hash) {
     this.hash = hash;
     return this;
   }
 
-  /**
+   /**
    * hex representation of template hash
    * @return hash
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getHash() {
     return hash;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHash(@javax.annotation.Nonnull String hash) {
+  public void setHash(String hash) {
     this.hash = hash;
   }
 
@@ -343,7 +339,7 @@ public class APIEIP712Template {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `domain` to the URL query string
@@ -355,8 +351,8 @@ public class APIEIP712Template {
     if (getMessage() != null) {
       for (String _key : getMessage().keySet()) {
         if (getMessage().get(_key) != null) {
-          joiner.add(getMessage().get(_key).toUrlQueryString(String.format(java.util.Locale.ROOT, "%smessage%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix))));
+          joiner.add(getMessage().get(_key).toUrlQueryString(String.format("%smessage%s%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix))));
         }
       }
     }
@@ -368,12 +364,12 @@ public class APIEIP712Template {
 
     // add `primaryType` to the URL query string
     if (getPrimaryType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sprimaryType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getPrimaryType()))));
+      joiner.add(String.format("%sprimaryType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getPrimaryType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
+      joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

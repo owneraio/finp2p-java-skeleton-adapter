@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,24 +25,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIExecutionPlanCancellationProposal
  */
 @JsonPropertyOrder({
   APIExecutionPlanCancellationProposal.JSON_PROPERTY_PROPOSAL_TYPE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIExecutionPlanCancellationProposal {
   /**
    * Gets or Sets proposalType
    */
   public enum ProposalTypeEnum {
-    CANCEL(String.valueOf("cancel"));
+    CANCEL("cancel");
 
     private String value;
 
@@ -71,32 +70,32 @@ public class APIExecutionPlanCancellationProposal {
   }
 
   public static final String JSON_PROPERTY_PROPOSAL_TYPE = "proposalType";
-  @javax.annotation.Nonnull
   private ProposalTypeEnum proposalType;
 
   public APIExecutionPlanCancellationProposal() { 
   }
 
-  public APIExecutionPlanCancellationProposal proposalType(@javax.annotation.Nonnull ProposalTypeEnum proposalType) {
+  public APIExecutionPlanCancellationProposal proposalType(ProposalTypeEnum proposalType) {
     this.proposalType = proposalType;
     return this;
   }
 
-  /**
+   /**
    * Get proposalType
    * @return proposalType
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public ProposalTypeEnum getProposalType() {
     return proposalType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setProposalType(@javax.annotation.Nonnull ProposalTypeEnum proposalType) {
+  public void setProposalType(ProposalTypeEnum proposalType) {
     this.proposalType = proposalType;
   }
 
@@ -175,7 +174,7 @@ public class APIExecutionPlanCancellationProposal {
 
     // add `proposalType` to the URL query string
     if (getProposalType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sproposalType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposalType()))));
+      joiner.add(String.format("%sproposalType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getProposalType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

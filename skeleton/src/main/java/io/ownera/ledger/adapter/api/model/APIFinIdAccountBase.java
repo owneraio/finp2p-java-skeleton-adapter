@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,25 +25,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APILedgerTokenId
+ * APIFinIdAccountBase
  */
 @JsonPropertyOrder({
-  APILedgerTokenId.JSON_PROPERTY_TYPE,
-  APILedgerTokenId.JSON_PROPERTY_TOKEN_ID
+  APIFinIdAccountBase.JSON_PROPERTY_TYPE,
+  APIFinIdAccountBase.JSON_PROPERTY_FIN_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APILedgerTokenId {
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIFinIdAccountBase {
   /**
-   * the type of the identifier
+   * Gets or Sets type
    */
   public enum TypeEnum {
-    TOKEN_ID(String.valueOf("tokenId"));
+    FINID("finId");
 
     private String value;
 
@@ -72,66 +71,66 @@ public class APILedgerTokenId {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_TOKEN_ID = "tokenId";
-  @javax.annotation.Nonnull
-  private String tokenId;
+  public static final String JSON_PROPERTY_FIN_ID = "finId";
+  private String finId;
 
-  public APILedgerTokenId() { 
+  public APIFinIdAccountBase() { 
   }
 
-  public APILedgerTokenId type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIFinIdAccountBase type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
-   * the type of the identifier
+   /**
+   * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APILedgerTokenId tokenId(@javax.annotation.Nonnull String tokenId) {
-    this.tokenId = tokenId;
+  public APIFinIdAccountBase finId(String finId) {
+    this.finId = finId;
     return this;
   }
 
-  /**
-   * the token id binding
-   * @return tokenId
-   */
+   /**
+   * Existing owner hex representation of a secp256k1 public key 33 bytes compressed
+   * @return finId
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getTokenId() {
-    return tokenId;
+
+  public String getFinId() {
+    return finId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTokenId(@javax.annotation.Nonnull String tokenId) {
-    this.tokenId = tokenId;
+  public void setFinId(String finId) {
+    this.finId = finId;
   }
 
 
   /**
-   * Return true if this ledgerTokenId object is equal to o.
+   * Return true if this finIdAccountBase object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -141,22 +140,22 @@ public class APILedgerTokenId {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APILedgerTokenId ledgerTokenId = (APILedgerTokenId) o;
-    return Objects.equals(this.type, ledgerTokenId.type) &&
-        Objects.equals(this.tokenId, ledgerTokenId.tokenId);
+    APIFinIdAccountBase finIdAccountBase = (APIFinIdAccountBase) o;
+    return Objects.equals(this.type, finIdAccountBase.type) &&
+        Objects.equals(this.finId, finIdAccountBase.finId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, tokenId);
+    return Objects.hash(type, finId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APILedgerTokenId {\n");
+    sb.append("class APIFinIdAccountBase {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    tokenId: ").append(toIndentedString(tokenId)).append("\n");
+    sb.append("    finId: ").append(toIndentedString(finId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -206,12 +205,12 @@ public class APILedgerTokenId {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
-    // add `tokenId` to the URL query string
-    if (getTokenId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stokenId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenId()))));
+    // add `finId` to the URL query string
+    if (getFinId() != null) {
+      joiner.add(String.format("%sfinId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getFinId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

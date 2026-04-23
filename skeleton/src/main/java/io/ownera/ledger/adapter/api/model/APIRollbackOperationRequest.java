@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,14 +25,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIAsset;
+import io.ownera.ledger.adapter.api.model.APIAccount;
 import io.ownera.ledger.adapter.api.model.APIExecutionContext;
-import io.ownera.ledger.adapter.api.model.APISource;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIRollbackOperationRequest
  */
@@ -39,150 +37,121 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIRollbackOperationRequest.JSON_PROPERTY_OPERATION_ID,
   APIRollbackOperationRequest.JSON_PROPERTY_SOURCE,
   APIRollbackOperationRequest.JSON_PROPERTY_QUANTITY,
-  APIRollbackOperationRequest.JSON_PROPERTY_ASSET,
   APIRollbackOperationRequest.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIRollbackOperationRequest {
   public static final String JSON_PROPERTY_OPERATION_ID = "operationId";
-  @javax.annotation.Nonnull
   private String operationId;
 
   public static final String JSON_PROPERTY_SOURCE = "source";
-  @javax.annotation.Nonnull
-  private APISource source;
+  private APIAccount source;
 
   public static final String JSON_PROPERTY_QUANTITY = "quantity";
-  @javax.annotation.Nonnull
   private String quantity;
 
-  public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
-  private APIAsset asset;
-
   public static final String JSON_PROPERTY_EXECUTION_CONTEXT = "executionContext";
-  @javax.annotation.Nullable
   private APIExecutionContext executionContext;
 
   public APIRollbackOperationRequest() { 
   }
 
-  public APIRollbackOperationRequest operationId(@javax.annotation.Nonnull String operationId) {
+  public APIRollbackOperationRequest operationId(String operationId) {
     this.operationId = operationId;
     return this;
   }
 
-  /**
-   * Hold operation id
+   /**
+   * The operation ID from the hold request, required to revert the asset hold
    * @return operationId
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getOperationId() {
     return operationId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_OPERATION_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOperationId(@javax.annotation.Nonnull String operationId) {
+  public void setOperationId(String operationId) {
     this.operationId = operationId;
   }
 
 
-  public APIRollbackOperationRequest source(@javax.annotation.Nonnull APISource source) {
+  public APIRollbackOperationRequest source(APIAccount source) {
     this.source = source;
     return this;
   }
 
-  /**
+   /**
    * Get source
    * @return source
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = true)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APISource getSource() {
+
+  public APIAccount getSource() {
     return source;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = true)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSource(@javax.annotation.Nonnull APISource source) {
+  public void setSource(APIAccount source) {
     this.source = source;
   }
 
 
-  public APIRollbackOperationRequest quantity(@javax.annotation.Nonnull String quantity) {
+  public APIRollbackOperationRequest quantity(String quantity) {
     this.quantity = quantity;
     return this;
   }
 
-  /**
+   /**
    * How many units of the asset tokens
    * @return quantity
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getQuantity() {
     return quantity;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setQuantity(@javax.annotation.Nonnull String quantity) {
+  public void setQuantity(String quantity) {
     this.quantity = quantity;
   }
 
 
-  public APIRollbackOperationRequest asset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
-    return this;
-  }
-
-  /**
-   * Get asset
-   * @return asset
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIAsset getAsset() {
-    return asset;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
-  }
-
-
-  public APIRollbackOperationRequest executionContext(@javax.annotation.Nullable APIExecutionContext executionContext) {
+  public APIRollbackOperationRequest executionContext(APIExecutionContext executionContext) {
     this.executionContext = executionContext;
     return this;
   }
 
-  /**
+   /**
    * Get executionContext
    * @return executionContext
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIExecutionContext getExecutionContext() {
     return executionContext;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExecutionContext(@javax.annotation.Nullable APIExecutionContext executionContext) {
+  public void setExecutionContext(APIExecutionContext executionContext) {
     this.executionContext = executionContext;
   }
 
@@ -202,13 +171,12 @@ public class APIRollbackOperationRequest {
     return Objects.equals(this.operationId, rollbackOperationRequest.operationId) &&
         Objects.equals(this.source, rollbackOperationRequest.source) &&
         Objects.equals(this.quantity, rollbackOperationRequest.quantity) &&
-        Objects.equals(this.asset, rollbackOperationRequest.asset) &&
         Objects.equals(this.executionContext, rollbackOperationRequest.executionContext);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operationId, source, quantity, asset, executionContext);
+    return Objects.hash(operationId, source, quantity, executionContext);
   }
 
   @Override
@@ -218,7 +186,6 @@ public class APIRollbackOperationRequest {
     sb.append("    operationId: ").append(toIndentedString(operationId)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
-    sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
     sb.append("    executionContext: ").append(toIndentedString(executionContext)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -269,7 +236,7 @@ public class APIRollbackOperationRequest {
 
     // add `operationId` to the URL query string
     if (getOperationId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%soperationId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationId()))));
+      joiner.add(String.format("%soperationId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getOperationId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `source` to the URL query string
@@ -279,12 +246,7 @@ public class APIRollbackOperationRequest {
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
-    }
-
-    // add `asset` to the URL query string
-    if (getAsset() != null) {
-      joiner.add(getAsset().toUrlQueryString(prefix + "asset" + suffix));
+      joiner.add(String.format("%squantity%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getQuantity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `executionContext` to the URL query string

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIIbanAccountDetails
  */
@@ -36,13 +35,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIIbanAccountDetails.JSON_PROPERTY_TYPE,
   APIIbanAccountDetails.JSON_PROPERTY_IBAN
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIIbanAccountDetails {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    IBAN(String.valueOf("iban"));
+    IBAN("iban");
 
     private String value;
 
@@ -72,60 +71,60 @@ public class APIIbanAccountDetails {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_IBAN = "iban";
-  @javax.annotation.Nonnull
   private String iban;
 
   public APIIbanAccountDetails() { 
   }
 
-  public APIIbanAccountDetails type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIIbanAccountDetails type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIIbanAccountDetails iban(@javax.annotation.Nonnull String iban) {
+  public APIIbanAccountDetails iban(String iban) {
     this.iban = iban;
     return this;
   }
 
-  /**
+   /**
    * Get iban
    * @return iban
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_IBAN, required = true)
+  @JsonProperty(JSON_PROPERTY_IBAN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getIban() {
     return iban;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IBAN, required = true)
+  @JsonProperty(JSON_PROPERTY_IBAN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIban(@javax.annotation.Nonnull String iban) {
+  public void setIban(String iban) {
     this.iban = iban;
   }
 
@@ -206,12 +205,12 @@ public class APIIbanAccountDetails {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `iban` to the URL query string
     if (getIban() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%siban%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIban()))));
+      joiner.add(String.format("%siban%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIban()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

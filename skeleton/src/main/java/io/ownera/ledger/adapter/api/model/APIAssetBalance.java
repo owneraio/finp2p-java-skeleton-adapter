@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,12 +28,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIAsset;
 import io.ownera.ledger.adapter.api.model.APIReceipt;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIAssetBalance
  */
@@ -43,128 +42,127 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIAssetBalance.JSON_PROPERTY_HELD,
   APIAssetBalance.JSON_PROPERTY_RECEIPTS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIAssetBalance {
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIAsset asset;
 
   public static final String JSON_PROPERTY_CURRENT = "current";
-  @javax.annotation.Nonnull
   private String current;
 
   public static final String JSON_PROPERTY_AVAILABLE = "available";
-  @javax.annotation.Nonnull
   private String available;
 
   public static final String JSON_PROPERTY_HELD = "held";
-  @javax.annotation.Nonnull
   private String held;
 
   public static final String JSON_PROPERTY_RECEIPTS = "receipts";
-  @javax.annotation.Nullable
   private List<APIReceipt> receipts = new ArrayList<>();
 
   public APIAssetBalance() { 
   }
 
-  public APIAssetBalance asset(@javax.annotation.Nonnull APIAsset asset) {
+  public APIAssetBalance asset(APIAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
+  public void setAsset(APIAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIAssetBalance current(@javax.annotation.Nonnull String current) {
+  public APIAssetBalance current(String current) {
     this.current = current;
     return this;
   }
 
-  /**
+   /**
    * The total amount currently in or owed by the account
    * @return current
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CURRENT, required = true)
+  @JsonProperty(JSON_PROPERTY_CURRENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getCurrent() {
     return current;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENT, required = true)
+  @JsonProperty(JSON_PROPERTY_CURRENT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCurrent(@javax.annotation.Nonnull String current) {
+  public void setCurrent(String current) {
     this.current = current;
   }
 
 
-  public APIAssetBalance available(@javax.annotation.Nonnull String available) {
+  public APIAssetBalance available(String available) {
     this.available = available;
     return this;
   }
 
-  /**
+   /**
    * The amount immediately usable from the account
    * @return available
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = true)
+  @JsonProperty(JSON_PROPERTY_AVAILABLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getAvailable() {
     return available;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AVAILABLE, required = true)
+  @JsonProperty(JSON_PROPERTY_AVAILABLE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAvailable(@javax.annotation.Nonnull String available) {
+  public void setAvailable(String available) {
     this.available = available;
   }
 
 
-  public APIAssetBalance held(@javax.annotation.Nonnull String held) {
+  public APIAssetBalance held(String held) {
     this.held = held;
     return this;
   }
 
-  /**
+   /**
    * The amount pending or on hold within the account
    * @return held
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HELD, required = true)
+  @JsonProperty(JSON_PROPERTY_HELD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getHeld() {
     return held;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HELD, required = true)
+  @JsonProperty(JSON_PROPERTY_HELD)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHeld(@javax.annotation.Nonnull String held) {
+  public void setHeld(String held) {
     this.held = held;
   }
 
 
-  public APIAssetBalance receipts(@javax.annotation.Nullable List<APIReceipt> receipts) {
+  public APIAssetBalance receipts(List<APIReceipt> receipts) {
     this.receipts = receipts;
     return this;
   }
@@ -177,21 +175,22 @@ public class APIAssetBalance {
     return this;
   }
 
-  /**
+   /**
    * list of receipt associated with the balance info
    * @return receipts
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RECEIPTS, required = false)
+  @JsonProperty(JSON_PROPERTY_RECEIPTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public List<APIReceipt> getReceipts() {
     return receipts;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RECEIPTS, required = false)
+  @JsonProperty(JSON_PROPERTY_RECEIPTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setReceipts(@javax.annotation.Nullable List<APIReceipt> receipts) {
+  public void setReceipts(List<APIReceipt> receipts) {
     this.receipts = receipts;
   }
 
@@ -283,25 +282,25 @@ public class APIAssetBalance {
 
     // add `current` to the URL query string
     if (getCurrent() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scurrent%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrent()))));
+      joiner.add(String.format("%scurrent%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCurrent()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `available` to the URL query string
     if (getAvailable() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%savailable%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAvailable()))));
+      joiner.add(String.format("%savailable%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAvailable()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `held` to the URL query string
     if (getHeld() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sheld%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHeld()))));
+      joiner.add(String.format("%sheld%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHeld()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `receipts` to the URL query string
     if (getReceipts() != null) {
       for (int i = 0; i < getReceipts().size(); i++) {
         if (getReceipts().get(i) != null) {
-          joiner.add(getReceipts().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sreceipts%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getReceipts().get(i).toUrlQueryString(String.format("%sreceipts%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

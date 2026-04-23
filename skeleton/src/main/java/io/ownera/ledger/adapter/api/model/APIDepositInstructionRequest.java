@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,14 +26,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIDepositAsset;
-import io.ownera.ledger.adapter.api.model.APIDestination;
+import io.ownera.ledger.adapter.api.model.APIDepositPayoutAccount;
 import io.ownera.ledger.adapter.api.model.APISignature;
-import io.ownera.ledger.adapter.api.model.APISource;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIDepositInstructionRequest
  */
@@ -45,203 +43,203 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIDepositInstructionRequest.JSON_PROPERTY_NONCE,
   APIDepositInstructionRequest.JSON_PROPERTY_SIGNATURE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIDepositInstructionRequest {
   public static final String JSON_PROPERTY_DESTINATION = "destination";
-  @javax.annotation.Nonnull
-  private APIDestination destination;
+  private APIDepositPayoutAccount destination;
 
   public static final String JSON_PROPERTY_OWNER = "owner";
-  @javax.annotation.Nonnull
-  private APISource owner;
+  private APIDepositPayoutAccount owner;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIDepositAsset asset;
 
   public static final String JSON_PROPERTY_AMOUNT = "amount";
-  @javax.annotation.Nullable
   private String amount;
 
   public static final String JSON_PROPERTY_DETAILS = "details";
-  @javax.annotation.Nullable
   private Object details;
 
   public static final String JSON_PROPERTY_NONCE = "nonce";
-  @javax.annotation.Nullable
   private String nonce;
 
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
-  @javax.annotation.Nullable
   private APISignature signature;
 
   public APIDepositInstructionRequest() { 
   }
 
-  public APIDepositInstructionRequest destination(@javax.annotation.Nonnull APIDestination destination) {
+  public APIDepositInstructionRequest destination(APIDepositPayoutAccount destination) {
     this.destination = destination;
     return this;
   }
 
-  /**
+   /**
    * Get destination
    * @return destination
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIDestination getDestination() {
+
+  public APIDepositPayoutAccount getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = true)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDestination(@javax.annotation.Nonnull APIDestination destination) {
+  public void setDestination(APIDepositPayoutAccount destination) {
     this.destination = destination;
   }
 
 
-  public APIDepositInstructionRequest owner(@javax.annotation.Nonnull APISource owner) {
+  public APIDepositInstructionRequest owner(APIDepositPayoutAccount owner) {
     this.owner = owner;
     return this;
   }
 
-  /**
+   /**
    * Get owner
    * @return owner
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
+  @JsonProperty(JSON_PROPERTY_OWNER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APISource getOwner() {
+
+  public APIDepositPayoutAccount getOwner() {
     return owner;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
+  @JsonProperty(JSON_PROPERTY_OWNER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOwner(@javax.annotation.Nonnull APISource owner) {
+  public void setOwner(APIDepositPayoutAccount owner) {
     this.owner = owner;
   }
 
 
-  public APIDepositInstructionRequest asset(@javax.annotation.Nonnull APIDepositAsset asset) {
+  public APIDepositInstructionRequest asset(APIDepositAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIDepositAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIDepositAsset asset) {
+  public void setAsset(APIDepositAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIDepositInstructionRequest amount(@javax.annotation.Nullable String amount) {
+  public APIDepositInstructionRequest amount(String amount) {
     this.amount = amount;
     return this;
   }
 
-  /**
+   /**
    * Amount to deposit
    * @return amount
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
+  @JsonProperty(JSON_PROPERTY_AMOUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getAmount() {
     return amount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_AMOUNT, required = false)
+  @JsonProperty(JSON_PROPERTY_AMOUNT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAmount(@javax.annotation.Nullable String amount) {
+  public void setAmount(String amount) {
     this.amount = amount;
   }
 
 
-  public APIDepositInstructionRequest details(@javax.annotation.Nullable Object details) {
+  public APIDepositInstructionRequest details(Object details) {
     this.details = details;
     return this;
   }
 
-  /**
+   /**
    * Get details
    * @return details
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public Object getDetails() {
     return details;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDetails(@javax.annotation.Nullable Object details) {
+  public void setDetails(Object details) {
     this.details = details;
   }
 
 
-  public APIDepositInstructionRequest nonce(@javax.annotation.Nullable String nonce) {
+  public APIDepositInstructionRequest nonce(String nonce) {
     this.nonce = nonce;
     return this;
   }
 
-  /**
+   /**
    * 32 bytes buffer (24 randomly generated bytes by the client + 8 bytes epoch timestamp seconds) encoded to hex:    const nonce &#x3D; Buffer.alloc(32);   nonce.fill(crypto.randomBytes(24), 0, 24);    const nowEpochSeconds &#x3D; Math.floor(new Date().getTime() / 1000);   const t &#x3D; BigInt(nowEpochSeconds);   nonce.writeBigInt64BE(t, 24); 
    * @return nonce
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
+  @JsonProperty(JSON_PROPERTY_NONCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getNonce() {
     return nonce;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
+  @JsonProperty(JSON_PROPERTY_NONCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNonce(@javax.annotation.Nullable String nonce) {
+  public void setNonce(String nonce) {
     this.nonce = nonce;
   }
 
 
-  public APIDepositInstructionRequest signature(@javax.annotation.Nullable APISignature signature) {
+  public APIDepositInstructionRequest signature(APISignature signature) {
     this.signature = signature;
     return this;
   }
 
-  /**
+   /**
    * Get signature
    * @return signature
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APISignature getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSignature(@javax.annotation.Nullable APISignature signature) {
+  public void setSignature(APISignature signature) {
     this.signature = signature;
   }
 
@@ -347,17 +345,17 @@ public class APIDepositInstructionRequest {
 
     // add `amount` to the URL query string
     if (getAmount() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%samount%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAmount()))));
+      joiner.add(String.format("%samount%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAmount()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
+      joiner.add(String.format("%sdetails%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getDetails()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
+      joiner.add(String.format("%snonce%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getNonce()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `signature` to the URL query string

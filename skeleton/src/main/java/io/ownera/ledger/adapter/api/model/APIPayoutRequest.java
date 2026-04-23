@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,16 +25,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIDestination;
+import io.ownera.ledger.adapter.api.model.APIDepositPayoutAccount;
 import io.ownera.ledger.adapter.api.model.APIPayoutAsset;
 import io.ownera.ledger.adapter.api.model.APIPayoutInstruction;
 import io.ownera.ledger.adapter.api.model.APISignature;
-import io.ownera.ledger.adapter.api.model.APISource;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIPayoutRequest
  */
@@ -46,203 +44,203 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIPayoutRequest.JSON_PROPERTY_NONCE,
   APIPayoutRequest.JSON_PROPERTY_SIGNATURE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIPayoutRequest {
   public static final String JSON_PROPERTY_SOURCE = "source";
-  @javax.annotation.Nonnull
-  private APISource source;
+  private APIDepositPayoutAccount source;
 
   public static final String JSON_PROPERTY_DESTINATION = "destination";
-  @javax.annotation.Nullable
-  private APIDestination destination;
+  private APIDepositPayoutAccount destination;
 
   public static final String JSON_PROPERTY_QUANTITY = "quantity";
-  @javax.annotation.Nonnull
   private String quantity;
 
   public static final String JSON_PROPERTY_PAYOUT_INSTRUCTION = "payoutInstruction";
-  @javax.annotation.Nullable
   private APIPayoutInstruction payoutInstruction;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIPayoutAsset asset;
 
   public static final String JSON_PROPERTY_NONCE = "nonce";
-  @javax.annotation.Nullable
   private String nonce;
 
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
-  @javax.annotation.Nullable
   private APISignature signature;
 
   public APIPayoutRequest() { 
   }
 
-  public APIPayoutRequest source(@javax.annotation.Nonnull APISource source) {
+  public APIPayoutRequest source(APIDepositPayoutAccount source) {
     this.source = source;
     return this;
   }
 
-  /**
+   /**
    * Get source
    * @return source
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = true)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APISource getSource() {
+
+  public APIDepositPayoutAccount getSource() {
     return source;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = true)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSource(@javax.annotation.Nonnull APISource source) {
+  public void setSource(APIDepositPayoutAccount source) {
     this.source = source;
   }
 
 
-  public APIPayoutRequest destination(@javax.annotation.Nullable APIDestination destination) {
+  public APIPayoutRequest destination(APIDepositPayoutAccount destination) {
     this.destination = destination;
     return this;
   }
 
-  /**
+   /**
    * Get destination
    * @return destination
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APIDestination getDestination() {
+
+  public APIDepositPayoutAccount getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDestination(@javax.annotation.Nullable APIDestination destination) {
+  public void setDestination(APIDepositPayoutAccount destination) {
     this.destination = destination;
   }
 
 
-  public APIPayoutRequest quantity(@javax.annotation.Nonnull String quantity) {
+  public APIPayoutRequest quantity(String quantity) {
     this.quantity = quantity;
     return this;
   }
 
-  /**
+   /**
    * How many units of the asset
    * @return quantity
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getQuantity() {
     return quantity;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setQuantity(@javax.annotation.Nonnull String quantity) {
+  public void setQuantity(String quantity) {
     this.quantity = quantity;
   }
 
 
-  public APIPayoutRequest payoutInstruction(@javax.annotation.Nullable APIPayoutInstruction payoutInstruction) {
+  public APIPayoutRequest payoutInstruction(APIPayoutInstruction payoutInstruction) {
     this.payoutInstruction = payoutInstruction;
     return this;
   }
 
-  /**
+   /**
    * Get payoutInstruction
    * @return payoutInstruction
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PAYOUT_INSTRUCTION, required = false)
+  @JsonProperty(JSON_PROPERTY_PAYOUT_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIPayoutInstruction getPayoutInstruction() {
     return payoutInstruction;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PAYOUT_INSTRUCTION, required = false)
+  @JsonProperty(JSON_PROPERTY_PAYOUT_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPayoutInstruction(@javax.annotation.Nullable APIPayoutInstruction payoutInstruction) {
+  public void setPayoutInstruction(APIPayoutInstruction payoutInstruction) {
     this.payoutInstruction = payoutInstruction;
   }
 
 
-  public APIPayoutRequest asset(@javax.annotation.Nonnull APIPayoutAsset asset) {
+  public APIPayoutRequest asset(APIPayoutAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIPayoutAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIPayoutAsset asset) {
+  public void setAsset(APIPayoutAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIPayoutRequest nonce(@javax.annotation.Nullable String nonce) {
+  public APIPayoutRequest nonce(String nonce) {
     this.nonce = nonce;
     return this;
   }
 
-  /**
+   /**
    * 32 bytes buffer (24 randomly generated bytes by the client + 8 bytes epoch timestamp seconds) encoded to hex:    const nonce &#x3D; Buffer.alloc(32);   nonce.fill(crypto.randomBytes(24), 0, 24);    const nowEpochSeconds &#x3D; Math.floor(new Date().getTime() / 1000);   const t &#x3D; BigInt(nowEpochSeconds);   nonce.writeBigInt64BE(t, 24); 
    * @return nonce
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
+  @JsonProperty(JSON_PROPERTY_NONCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getNonce() {
     return nonce;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NONCE, required = false)
+  @JsonProperty(JSON_PROPERTY_NONCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setNonce(@javax.annotation.Nullable String nonce) {
+  public void setNonce(String nonce) {
     this.nonce = nonce;
   }
 
 
-  public APIPayoutRequest signature(@javax.annotation.Nullable APISignature signature) {
+  public APIPayoutRequest signature(APISignature signature) {
     this.signature = signature;
     return this;
   }
 
-  /**
+   /**
    * Get signature
    * @return signature
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APISignature getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSignature(@javax.annotation.Nullable APISignature signature) {
+  public void setSignature(APISignature signature) {
     this.signature = signature;
   }
 
@@ -343,7 +341,7 @@ public class APIPayoutRequest {
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
+      joiner.add(String.format("%squantity%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getQuantity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `payoutInstruction` to the URL query string
@@ -358,7 +356,7 @@ public class APIPayoutRequest {
 
     // add `nonce` to the URL query string
     if (getNonce() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%snonce%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNonce()))));
+      joiner.add(String.format("%snonce%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getNonce()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `signature` to the URL query string

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIAbsolutePollingInterval;
+import io.ownera.ledger.adapter.api.model.APIPollingResultsStrategy;
 import io.ownera.ledger.adapter.api.model.APIRandomPollingInterval;
 import io.ownera.ledger.adapter.api.model.APIRelativePollingInterval;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,10 +56,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 @JsonDeserialize(using = APIPollingResultsStrategyPolling.APIPollingResultsStrategyPollingDeserializer.class)
 @JsonSerialize(using = APIPollingResultsStrategyPolling.APIPollingResultsStrategyPollingSerializer.class)
 public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
@@ -178,7 +178,7 @@ public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIPollingResultsStrategyPolling: %d classes match result, expected 1", match));
+            throw new IOException(String.format("Failed deserialization for APIPollingResultsStrategyPolling: %d classes match result, expected 1", match));
         }
 
         /**
@@ -220,8 +220,11 @@ public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("absolute", APIAbsolutePollingInterval.class);
-        mappings.put("random", APIRandomPollingInterval.class);
+        mappings.put("absolutePollingInterval", APIAbsolutePollingInterval.class);
+        mappings.put("random", APIPollingResultsStrategy.class);
+        mappings.put("randomPollingInterval", APIRandomPollingInterval.class);
         mappings.put("relative", APIRelativePollingInterval.class);
+        mappings.put("relativePollingInterval", APIRelativePollingInterval.class);
         mappings.put("pollingResultsStrategy_polling", APIPollingResultsStrategyPolling.class);
         JSON.registerDiscriminator(APIPollingResultsStrategyPolling.class, "type", mappings);
     }

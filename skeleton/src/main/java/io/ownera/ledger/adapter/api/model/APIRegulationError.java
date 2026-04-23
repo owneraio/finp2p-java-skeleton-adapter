@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIRegulationError
  */
@@ -36,63 +35,63 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIRegulationError.JSON_PROPERTY_REGULATION_TYPE,
   APIRegulationError.JSON_PROPERTY_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIRegulationError {
   public static final String JSON_PROPERTY_REGULATION_TYPE = "regulationType";
-  @javax.annotation.Nonnull
   private String regulationType;
 
   public static final String JSON_PROPERTY_DETAILS = "details";
-  @javax.annotation.Nonnull
   private String details;
 
   public APIRegulationError() { 
   }
 
-  public APIRegulationError regulationType(@javax.annotation.Nonnull String regulationType) {
+  public APIRegulationError regulationType(String regulationType) {
     this.regulationType = regulationType;
     return this;
   }
 
-  /**
+   /**
    * the type of regulation
    * @return regulationType
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_REGULATION_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_REGULATION_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getRegulationType() {
     return regulationType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REGULATION_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_REGULATION_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRegulationType(@javax.annotation.Nonnull String regulationType) {
+  public void setRegulationType(String regulationType) {
     this.regulationType = regulationType;
   }
 
 
-  public APIRegulationError details(@javax.annotation.Nonnull String details) {
+  public APIRegulationError details(String details) {
     this.details = details;
     return this;
   }
 
-  /**
+   /**
    * actionable details of the error
    * @return details
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getDetails() {
     return details;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDetails(@javax.annotation.Nonnull String details) {
+  public void setDetails(String details) {
     this.details = details;
   }
 
@@ -173,12 +172,12 @@ public class APIRegulationError {
 
     // add `regulationType` to the URL query string
     if (getRegulationType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sregulationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getRegulationType()))));
+      joiner.add(String.format("%sregulationType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getRegulationType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `details` to the URL query string
     if (getDetails() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sdetails%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDetails()))));
+      joiner.add(String.format("%sdetails%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getDetails()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

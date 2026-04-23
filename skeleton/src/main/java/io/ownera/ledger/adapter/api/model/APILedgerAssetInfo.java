@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,77 +25,75 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIContractDetails;
-import io.ownera.ledger.adapter.api.model.APILedgerTokenId;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetInfoLedgerReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APILedgerAssetInfo
  */
 @JsonPropertyOrder({
-  APILedgerAssetInfo.JSON_PROPERTY_LEDGER_TOKEN_ID,
+  APILedgerAssetInfo.JSON_PROPERTY_LEDGER_IDENTIFIER,
   APILedgerAssetInfo.JSON_PROPERTY_LEDGER_REFERENCE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APILedgerAssetInfo {
-  public static final String JSON_PROPERTY_LEDGER_TOKEN_ID = "ledgerTokenId";
-  @javax.annotation.Nonnull
-  private APILedgerTokenId ledgerTokenId;
+  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
+  private APILedgerAssetIdentifier ledgerIdentifier;
 
   public static final String JSON_PROPERTY_LEDGER_REFERENCE = "ledgerReference";
-  @javax.annotation.Nullable
-  private APIContractDetails ledgerReference;
+  private APILedgerAssetInfoLedgerReference ledgerReference;
 
   public APILedgerAssetInfo() { 
   }
 
-  public APILedgerAssetInfo ledgerTokenId(@javax.annotation.Nonnull APILedgerTokenId ledgerTokenId) {
-    this.ledgerTokenId = ledgerTokenId;
+  public APILedgerAssetInfo ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
     return this;
   }
 
-  /**
-   * Get ledgerTokenId
-   * @return ledgerTokenId
-   */
+   /**
+   * Get ledgerIdentifier
+   * @return ledgerIdentifier
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_TOKEN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APILedgerTokenId getLedgerTokenId() {
-    return ledgerTokenId;
+
+  public APILedgerAssetIdentifier getLedgerIdentifier() {
+    return ledgerIdentifier;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_TOKEN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLedgerTokenId(@javax.annotation.Nonnull APILedgerTokenId ledgerTokenId) {
-    this.ledgerTokenId = ledgerTokenId;
+  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
   }
 
 
-  public APILedgerAssetInfo ledgerReference(@javax.annotation.Nullable APIContractDetails ledgerReference) {
+  public APILedgerAssetInfo ledgerReference(APILedgerAssetInfoLedgerReference ledgerReference) {
     this.ledgerReference = ledgerReference;
     return this;
   }
 
-  /**
+   /**
    * Get ledgerReference
    * @return ledgerReference
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_REFERENCE, required = false)
+  @JsonProperty(JSON_PROPERTY_LEDGER_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APIContractDetails getLedgerReference() {
+
+  public APILedgerAssetInfoLedgerReference getLedgerReference() {
     return ledgerReference;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_REFERENCE, required = false)
+  @JsonProperty(JSON_PROPERTY_LEDGER_REFERENCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLedgerReference(@javax.annotation.Nullable APIContractDetails ledgerReference) {
+  public void setLedgerReference(APILedgerAssetInfoLedgerReference ledgerReference) {
     this.ledgerReference = ledgerReference;
   }
 
@@ -111,20 +110,20 @@ public class APILedgerAssetInfo {
       return false;
     }
     APILedgerAssetInfo ledgerAssetInfo = (APILedgerAssetInfo) o;
-    return Objects.equals(this.ledgerTokenId, ledgerAssetInfo.ledgerTokenId) &&
+    return Objects.equals(this.ledgerIdentifier, ledgerAssetInfo.ledgerIdentifier) &&
         Objects.equals(this.ledgerReference, ledgerAssetInfo.ledgerReference);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ledgerTokenId, ledgerReference);
+    return Objects.hash(ledgerIdentifier, ledgerReference);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class APILedgerAssetInfo {\n");
-    sb.append("    ledgerTokenId: ").append(toIndentedString(ledgerTokenId)).append("\n");
+    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
     sb.append("    ledgerReference: ").append(toIndentedString(ledgerReference)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -173,9 +172,9 @@ public class APILedgerAssetInfo {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `ledgerTokenId` to the URL query string
-    if (getLedgerTokenId() != null) {
-      joiner.add(getLedgerTokenId().toUrlQueryString(prefix + "ledgerTokenId" + suffix));
+    // add `ledgerIdentifier` to the URL query string
+    if (getLedgerIdentifier() != null) {
+      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
     }
 
     // add `ledgerReference` to the URL query string

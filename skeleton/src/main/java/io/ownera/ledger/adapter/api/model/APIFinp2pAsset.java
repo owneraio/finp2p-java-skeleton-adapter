@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,109 +25,75 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APIFinp2pAsset
+ * describes asset information
  */
 @JsonPropertyOrder({
-  APIFinp2pAsset.JSON_PROPERTY_TYPE,
-  APIFinp2pAsset.JSON_PROPERTY_RESOURCE_ID
+  APIFinp2pAsset.JSON_PROPERTY_ID,
+  APIFinp2pAsset.JSON_PROPERTY_LEDGER_IDENTIFIER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIFinp2pAsset {
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    FINP2P(String.valueOf("finp2p"));
+  public static final String JSON_PROPERTY_ID = "id";
+  private String id;
 
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
-  private TypeEnum type;
-
-  public static final String JSON_PROPERTY_RESOURCE_ID = "resourceId";
-  @javax.annotation.Nonnull
-  private String resourceId;
+  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
+  private APILedgerAssetIdentifier ledgerIdentifier;
 
   public APIFinp2pAsset() { 
   }
 
-  public APIFinp2pAsset type(@javax.annotation.Nonnull TypeEnum type) {
-    this.type = type;
+  public APIFinp2pAsset id(String id) {
+    this.id = id;
     return this;
   }
 
-  /**
-   * Get type
-   * @return type
-   */
+   /**
+   * finp2p resource id format
+   * @return id
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public TypeEnum getType() {
-    return type;
+
+  public String getId() {
+    return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
-    this.type = type;
+  public void setId(String id) {
+    this.id = id;
   }
 
 
-  public APIFinp2pAsset resourceId(@javax.annotation.Nonnull String resourceId) {
-    this.resourceId = resourceId;
+  public APIFinp2pAsset ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
     return this;
   }
 
-  /**
-   * Unique resource ID of the FinP2P asset [format](&#39;https://finp2p.atlassian.net/wiki/spaces/FINP2P/pages/67764240/FinP2P+Network+Interface+Specification#ResourceID-format&#39;) 
-   * @return resourceId
-   */
+   /**
+   * Get ledgerIdentifier
+   * @return ledgerIdentifier
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_RESOURCE_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getResourceId() {
-    return resourceId;
+
+  public APILedgerAssetIdentifier getLedgerIdentifier() {
+    return ledgerIdentifier;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RESOURCE_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setResourceId(@javax.annotation.Nonnull String resourceId) {
-    this.resourceId = resourceId;
+  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
   }
 
 
@@ -142,21 +109,21 @@ public class APIFinp2pAsset {
       return false;
     }
     APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) o;
-    return Objects.equals(this.type, finp2pAsset.type) &&
-        Objects.equals(this.resourceId, finp2pAsset.resourceId);
+    return Objects.equals(this.id, finp2pAsset.id) &&
+        Objects.equals(this.ledgerIdentifier, finp2pAsset.ledgerIdentifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, resourceId);
+    return Objects.hash(id, ledgerIdentifier);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class APIFinp2pAsset {\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    resourceId: ").append(toIndentedString(resourceId)).append("\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -204,14 +171,14 @@ public class APIFinp2pAsset {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+    // add `id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
-    // add `resourceId` to the URL query string
-    if (getResourceId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sresourceId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getResourceId()))));
+    // add `ledgerIdentifier` to the URL query string
+    if (getLedgerIdentifier() != null) {
+      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
     }
 
     return joiner.toString();

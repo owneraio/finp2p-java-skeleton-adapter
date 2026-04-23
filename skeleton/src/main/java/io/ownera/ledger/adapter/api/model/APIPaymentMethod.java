@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIPaymentMethodMethodInstruction;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIPaymentMethod
  */
@@ -38,91 +37,91 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIPaymentMethod.JSON_PROPERTY_CURRENCY,
   APIPaymentMethod.JSON_PROPERTY_METHOD_INSTRUCTION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIPaymentMethod {
   public static final String JSON_PROPERTY_DESCRIPTION = "description";
-  @javax.annotation.Nonnull
   private String description;
 
   public static final String JSON_PROPERTY_CURRENCY = "currency";
-  @javax.annotation.Nonnull
   private String currency;
 
   public static final String JSON_PROPERTY_METHOD_INSTRUCTION = "methodInstruction";
-  @javax.annotation.Nonnull
   private APIPaymentMethodMethodInstruction methodInstruction;
 
   public APIPaymentMethod() { 
   }
 
-  public APIPaymentMethod description(@javax.annotation.Nonnull String description) {
+  public APIPaymentMethod description(String description) {
     this.description = description;
     return this;
   }
 
-  /**
+   /**
    * Get description
    * @return description
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getDescription() {
     return description;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESCRIPTION, required = true)
+  @JsonProperty(JSON_PROPERTY_DESCRIPTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setDescription(@javax.annotation.Nonnull String description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 
 
-  public APIPaymentMethod currency(@javax.annotation.Nonnull String currency) {
+  public APIPaymentMethod currency(String currency) {
     this.currency = currency;
     return this;
   }
 
-  /**
+   /**
    * accepted currency for payment
    * @return currency
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CURRENCY, required = true)
+  @JsonProperty(JSON_PROPERTY_CURRENCY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getCurrency() {
     return currency;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CURRENCY, required = true)
+  @JsonProperty(JSON_PROPERTY_CURRENCY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCurrency(@javax.annotation.Nonnull String currency) {
+  public void setCurrency(String currency) {
     this.currency = currency;
   }
 
 
-  public APIPaymentMethod methodInstruction(@javax.annotation.Nonnull APIPaymentMethodMethodInstruction methodInstruction) {
+  public APIPaymentMethod methodInstruction(APIPaymentMethodMethodInstruction methodInstruction) {
     this.methodInstruction = methodInstruction;
     return this;
   }
 
-  /**
+   /**
    * Get methodInstruction
    * @return methodInstruction
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_METHOD_INSTRUCTION, required = true)
+  @JsonProperty(JSON_PROPERTY_METHOD_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIPaymentMethodMethodInstruction getMethodInstruction() {
     return methodInstruction;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METHOD_INSTRUCTION, required = true)
+  @JsonProperty(JSON_PROPERTY_METHOD_INSTRUCTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMethodInstruction(@javax.annotation.Nonnull APIPaymentMethodMethodInstruction methodInstruction) {
+  public void setMethodInstruction(APIPaymentMethodMethodInstruction methodInstruction) {
     this.methodInstruction = methodInstruction;
   }
 
@@ -205,12 +204,12 @@ public class APIPaymentMethod {
 
     // add `description` to the URL query string
     if (getDescription() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sdescription%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getDescription()))));
+      joiner.add(String.format("%sdescription%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getDescription()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `currency` to the URL query string
     if (getCurrency() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scurrency%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCurrency()))));
+      joiner.add(String.format("%scurrency%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCurrency()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `methodInstruction` to the URL query string

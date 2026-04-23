@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalRequestExecutionPlanProposal;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * execution plan information
  */
@@ -37,63 +36,63 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIExecutionPlanProposalRequestExecutionPlan.JSON_PROPERTY_ID,
   APIExecutionPlanProposalRequestExecutionPlan.JSON_PROPERTY_PROPOSAL
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIExecutionPlanProposalRequestExecutionPlan {
   public static final String JSON_PROPERTY_ID = "id";
-  @javax.annotation.Nonnull
   private String id;
 
   public static final String JSON_PROPERTY_PROPOSAL = "proposal";
-  @javax.annotation.Nonnull
   private APIExecutionPlanProposalRequestExecutionPlanProposal proposal;
 
   public APIExecutionPlanProposalRequestExecutionPlan() { 
   }
 
-  public APIExecutionPlanProposalRequestExecutionPlan id(@javax.annotation.Nonnull String id) {
+  public APIExecutionPlanProposalRequestExecutionPlan id(String id) {
     this.id = id;
     return this;
   }
 
-  /**
+   /**
    * execution plan id
    * @return id
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setId(@javax.annotation.Nonnull String id) {
+  public void setId(String id) {
     this.id = id;
   }
 
 
-  public APIExecutionPlanProposalRequestExecutionPlan proposal(@javax.annotation.Nonnull APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
+  public APIExecutionPlanProposalRequestExecutionPlan proposal(APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
     this.proposal = proposal;
     return this;
   }
 
-  /**
+   /**
    * Get proposal
    * @return proposal
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIExecutionPlanProposalRequestExecutionPlanProposal getProposal() {
     return proposal;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setProposal(@javax.annotation.Nonnull APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
+  public void setProposal(APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
     this.proposal = proposal;
   }
 
@@ -174,7 +173,7 @@ public class APIExecutionPlanProposalRequestExecutionPlan {
 
     // add `id` to the URL query string
     if (getId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
+      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `proposal` to the URL query string

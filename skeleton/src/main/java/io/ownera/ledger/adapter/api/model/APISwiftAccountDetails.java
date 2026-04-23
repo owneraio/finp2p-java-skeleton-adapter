@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APISwiftAccountDetails
  */
@@ -37,13 +36,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APISwiftAccountDetails.JSON_PROPERTY_SWIFT_CODE,
   APISwiftAccountDetails.JSON_PROPERTY_ACCOUNT_NUMBER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APISwiftAccountDetails {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    BIC(String.valueOf("bic"));
+    BIC("bic");
 
     private String value;
 
@@ -73,88 +72,88 @@ public class APISwiftAccountDetails {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_SWIFT_CODE = "swiftCode";
-  @javax.annotation.Nonnull
   private String swiftCode;
 
   public static final String JSON_PROPERTY_ACCOUNT_NUMBER = "accountNumber";
-  @javax.annotation.Nonnull
   private String accountNumber;
 
   public APISwiftAccountDetails() { 
   }
 
-  public APISwiftAccountDetails type(@javax.annotation.Nonnull TypeEnum type) {
+  public APISwiftAccountDetails type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APISwiftAccountDetails swiftCode(@javax.annotation.Nonnull String swiftCode) {
+  public APISwiftAccountDetails swiftCode(String swiftCode) {
     this.swiftCode = swiftCode;
     return this;
   }
 
-  /**
+   /**
    * Get swiftCode
    * @return swiftCode
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SWIFT_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_SWIFT_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getSwiftCode() {
     return swiftCode;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SWIFT_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_SWIFT_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSwiftCode(@javax.annotation.Nonnull String swiftCode) {
+  public void setSwiftCode(String swiftCode) {
     this.swiftCode = swiftCode;
   }
 
 
-  public APISwiftAccountDetails accountNumber(@javax.annotation.Nonnull String accountNumber) {
+  public APISwiftAccountDetails accountNumber(String accountNumber) {
     this.accountNumber = accountNumber;
     return this;
   }
 
-  /**
+   /**
    * Get accountNumber
    * @return accountNumber
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_NUMBER, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT_NUMBER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getAccountNumber() {
     return accountNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT_NUMBER, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT_NUMBER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccountNumber(@javax.annotation.Nonnull String accountNumber) {
+  public void setAccountNumber(String accountNumber) {
     this.accountNumber = accountNumber;
   }
 
@@ -237,17 +236,17 @@ public class APISwiftAccountDetails {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `swiftCode` to the URL query string
     if (getSwiftCode() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sswiftCode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSwiftCode()))));
+      joiner.add(String.format("%sswiftCode%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getSwiftCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `accountNumber` to the URL query string
     if (getAccountNumber() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%saccountNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAccountNumber()))));
+      joiner.add(String.format("%saccountNumber%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAccountNumber()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

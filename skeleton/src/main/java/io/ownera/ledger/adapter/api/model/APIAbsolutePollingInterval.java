@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIAbsolutePollingInterval
  */
@@ -36,13 +35,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIAbsolutePollingInterval.JSON_PROPERTY_TYPE,
   APIAbsolutePollingInterval.JSON_PROPERTY_TIME
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIAbsolutePollingInterval {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    ABSOLUTE(String.valueOf("absolute"));
+    ABSOLUTE("absolute");
 
     private String value;
 
@@ -72,60 +71,60 @@ public class APIAbsolutePollingInterval {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_TIME = "time";
-  @javax.annotation.Nonnull
   private Integer time;
 
   public APIAbsolutePollingInterval() { 
   }
 
-  public APIAbsolutePollingInterval type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIAbsolutePollingInterval type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIAbsolutePollingInterval time(@javax.annotation.Nonnull Integer time) {
+  public APIAbsolutePollingInterval time(Integer time) {
     this.time = time;
     return this;
   }
 
-  /**
+   /**
    * absolute time as epoch time seconds
    * @return time
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TIME, required = true)
+  @JsonProperty(JSON_PROPERTY_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Integer getTime() {
     return time;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIME, required = true)
+  @JsonProperty(JSON_PROPERTY_TIME)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTime(@javax.annotation.Nonnull Integer time) {
+  public void setTime(Integer time) {
     this.time = time;
   }
 
@@ -206,12 +205,12 @@ public class APIAbsolutePollingInterval {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `time` to the URL query string
     if (getTime() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stime%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTime()))));
+      joiner.add(String.format("%stime%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTime()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

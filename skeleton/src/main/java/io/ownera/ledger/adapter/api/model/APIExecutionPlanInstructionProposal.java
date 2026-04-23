@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIExecutionPlanInstructionProposal
  */
@@ -36,13 +35,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIExecutionPlanInstructionProposal.JSON_PROPERTY_PROPOSAL_TYPE,
   APIExecutionPlanInstructionProposal.JSON_PROPERTY_INSTRUCTION_SEQUENCE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIExecutionPlanInstructionProposal {
   /**
    * Gets or Sets proposalType
    */
   public enum ProposalTypeEnum {
-    INSTRUCTION(String.valueOf("instruction"));
+    INSTRUCTION("instruction");
 
     private String value;
 
@@ -72,61 +71,61 @@ public class APIExecutionPlanInstructionProposal {
   }
 
   public static final String JSON_PROPERTY_PROPOSAL_TYPE = "proposalType";
-  @javax.annotation.Nonnull
   private ProposalTypeEnum proposalType;
 
   public static final String JSON_PROPERTY_INSTRUCTION_SEQUENCE = "instructionSequence";
-  @javax.annotation.Nonnull
   private Integer instructionSequence;
 
   public APIExecutionPlanInstructionProposal() { 
   }
 
-  public APIExecutionPlanInstructionProposal proposalType(@javax.annotation.Nonnull ProposalTypeEnum proposalType) {
+  public APIExecutionPlanInstructionProposal proposalType(ProposalTypeEnum proposalType) {
     this.proposalType = proposalType;
     return this;
   }
 
-  /**
+   /**
    * Get proposalType
    * @return proposalType
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public ProposalTypeEnum getProposalType() {
     return proposalType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROPOSAL_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_PROPOSAL_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setProposalType(@javax.annotation.Nonnull ProposalTypeEnum proposalType) {
+  public void setProposalType(ProposalTypeEnum proposalType) {
     this.proposalType = proposalType;
   }
 
 
-  public APIExecutionPlanInstructionProposal instructionSequence(@javax.annotation.Nonnull Integer instructionSequence) {
+  public APIExecutionPlanInstructionProposal instructionSequence(Integer instructionSequence) {
     this.instructionSequence = instructionSequence;
     return this;
   }
 
-  /**
+   /**
    * sequence number of the instruction completion event
    * minimum: 1
    * @return instructionSequence
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_INSTRUCTION_SEQUENCE, required = true)
+  @JsonProperty(JSON_PROPERTY_INSTRUCTION_SEQUENCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Integer getInstructionSequence() {
     return instructionSequence;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INSTRUCTION_SEQUENCE, required = true)
+  @JsonProperty(JSON_PROPERTY_INSTRUCTION_SEQUENCE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setInstructionSequence(@javax.annotation.Nonnull Integer instructionSequence) {
+  public void setInstructionSequence(Integer instructionSequence) {
     this.instructionSequence = instructionSequence;
   }
 
@@ -207,12 +206,12 @@ public class APIExecutionPlanInstructionProposal {
 
     // add `proposalType` to the URL query string
     if (getProposalType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sproposalType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getProposalType()))));
+      joiner.add(String.format("%sproposalType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getProposalType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `instructionSequence` to the URL query string
     if (getInstructionSequence() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sinstructionSequence%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getInstructionSequence()))));
+      joiner.add(String.format("%sinstructionSequence%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getInstructionSequence()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

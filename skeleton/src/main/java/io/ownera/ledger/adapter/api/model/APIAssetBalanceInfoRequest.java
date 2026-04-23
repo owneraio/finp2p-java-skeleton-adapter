@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,12 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIAsset;
 import io.ownera.ledger.adapter.api.model.APIBalanceMarker;
-import io.ownera.ledger.adapter.api.model.APIFinIdAccount;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIFinIdAccountBase;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIAssetBalanceInfoRequest
  */
@@ -40,91 +39,91 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIAssetBalanceInfoRequest.JSON_PROPERTY_ASSET,
   APIAssetBalanceInfoRequest.JSON_PROPERTY_MARKER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIAssetBalanceInfoRequest {
   public static final String JSON_PROPERTY_ACCOUNT = "account";
-  @javax.annotation.Nonnull
-  private APIFinIdAccount account;
+  private APIFinIdAccountBase account;
 
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
   private APIAsset asset;
 
   public static final String JSON_PROPERTY_MARKER = "marker";
-  @javax.annotation.Nullable
   private APIBalanceMarker marker;
 
   public APIAssetBalanceInfoRequest() { 
   }
 
-  public APIAssetBalanceInfoRequest account(@javax.annotation.Nonnull APIFinIdAccount account) {
+  public APIAssetBalanceInfoRequest account(APIFinIdAccountBase account) {
     this.account = account;
     return this;
   }
 
-  /**
+   /**
    * Get account
    * @return account
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIFinIdAccount getAccount() {
+
+  public APIFinIdAccountBase getAccount() {
     return account;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(@javax.annotation.Nonnull APIFinIdAccount account) {
+  public void setAccount(APIFinIdAccountBase account) {
     this.account = account;
   }
 
 
-  public APIAssetBalanceInfoRequest asset(@javax.annotation.Nonnull APIAsset asset) {
+  public APIAssetBalanceInfoRequest asset(APIAsset asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIAsset getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
+  public void setAsset(APIAsset asset) {
     this.asset = asset;
   }
 
 
-  public APIAssetBalanceInfoRequest marker(@javax.annotation.Nullable APIBalanceMarker marker) {
+  public APIAssetBalanceInfoRequest marker(APIBalanceMarker marker) {
     this.marker = marker;
     return this;
   }
 
-  /**
+   /**
    * Get marker
    * @return marker
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_MARKER, required = false)
+  @JsonProperty(JSON_PROPERTY_MARKER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIBalanceMarker getMarker() {
     return marker;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MARKER, required = false)
+  @JsonProperty(JSON_PROPERTY_MARKER)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMarker(@javax.annotation.Nullable APIBalanceMarker marker) {
+  public void setMarker(APIBalanceMarker marker) {
     this.marker = marker;
   }
 
