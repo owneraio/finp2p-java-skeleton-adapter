@@ -35,7 +35,7 @@ public class Mappers {
         return new Asset(asset.getResourceId(), AssetType.FINP2P);
     }
 
-    public static AssetBind fromAPI(@Nullable APILedgerTokenId tokenId) {
+    public static AssetBind fromAPI(@Nullable APILedgerAssetBinding tokenId) {
         if (tokenId == null) {
             return null;
         }
@@ -114,7 +114,7 @@ public class Mappers {
         }
     }
 
-    public static FinIdAccount fromAPI(APIFinIdAccount account) {
+    public static FinIdAccount fromAPI(APIFinIdAccountBase account) {
         return new FinIdAccount(account.getFinId());
     }
 
@@ -130,8 +130,8 @@ public class Mappers {
     }
 
     public static DestinationAccount fromAPI(APIDestinationAccount account) {
-        if (account.getActualInstance() instanceof APIFinIdAccount) {
-            APIFinIdAccount finIdAccount = (APIFinIdAccount) account.getActualInstance();
+        if (account.getActualInstance() instanceof APIFinIdAccountBase) {
+            APIFinIdAccountBase finIdAccount = (APIFinIdAccountBase) account.getActualInstance();
             return fromAPI(finIdAccount);
 
         } else if (account.getActualInstance() instanceof APICryptoWalletAccount) {
@@ -145,7 +145,7 @@ public class Mappers {
         }
     }
 
-    public static Destination destinationFromAPI(APIFinIdAccount account) {
+    public static Destination destinationFromAPI(APIFinIdAccountBase account) {
         return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
     }
 
@@ -254,7 +254,7 @@ public class Mappers {
             operation.cid("");
             operation.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerTokenId(new APILedgerTokenId()
+                            .ledgerTokenId(new APILedgerAssetBinding()
                                     .tokenId(success.result.tokenId)
                             )
                             .ledgerReference(toAPI(success.result.reference))
@@ -286,7 +286,7 @@ public class Mappers {
             response.setCid("");
             response.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerTokenId(new APILedgerTokenId()
+                            .ledgerTokenId(new APILedgerAssetBinding()
                                     .tokenId(success.result.tokenId)
                             )
                             .ledgerReference(toAPI(success.result.reference))
@@ -570,9 +570,9 @@ public class Mappers {
         return apiDestination;
     }
 
-    private static APIFinIdAccount toAPI(FinIdAccount account) {
-        return new APIFinIdAccount()
-                .type(APIFinIdAccount.TypeEnum.FIN_ID)
+    private static APIFinIdAccountBase toAPI(FinIdAccount account) {
+        return new APIFinIdAccountBase()
+                .type(APIFinIdAccountBase.TypeEnum.FIN_ID)
                 .finId(account.finId);
     }
 
@@ -827,7 +827,7 @@ public class Mappers {
 
     // --- Balance mapping ---
 
-    public static APIAssetBalanceInfoResponse balanceToAPI(APIAsset asset, APIFinIdAccount account, Balance balance) {
+    public static APIAssetBalanceInfoResponse balanceToAPI(APIAsset asset, APIFinIdAccountBase account, Balance balance) {
         return new APIAssetBalanceInfoResponse()
                 .account(account)
                 .asset(asset)
