@@ -169,8 +169,7 @@ public class Controller {
                         request.getMetadata(),
                         request.getName(),
                         request.getIssuerId(),
-                        fromAPI(request.getDenomination()),
-                        null // assetIdentifier removed in 0.28
+                        fromAPI(request.getDenomination())
                 ),
                 cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
         );

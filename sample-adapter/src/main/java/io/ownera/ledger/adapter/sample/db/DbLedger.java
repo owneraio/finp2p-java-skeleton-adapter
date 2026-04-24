@@ -32,7 +32,7 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
     public AssetCreationStatus createAsset(String idempotencyKey, Asset asset,
                                            @Nullable AssetBind assetBind, @Nullable Object assetMetadata,
                                            @Nullable String assetName, @Nullable String issuerId,
-                                           @Nullable AssetDenomination assetDenomination, @Nullable AssetIdentifier assetIdentifier) throws TokenServiceException {
+                                           @Nullable AssetDenomination assetDenomination) throws TokenServiceException {
         logger.info("Create asset operation: asset={}", asset);
         String tokenId;
         if (assetBind == null || assetBind.tokenIdentifier == null) {
