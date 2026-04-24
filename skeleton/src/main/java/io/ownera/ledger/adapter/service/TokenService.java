@@ -10,8 +10,7 @@ public interface TokenService {
             String idempotencyKey, Asset asset,
             @Nullable AssetBind assetBind, @Nullable Object assetMetadata,
             @Nullable String assetName, @Nullable String issuerId,
-            @Nullable AssetDenomination assetDenomination, @Nullable AssetIdentifier assetIdentifier
-
+            @Nullable AssetDenomination assetDenomination
     ) throws TokenServiceException;
 
     ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount, @Nullable ExecutionContext exCtx) throws TokenServiceException;
