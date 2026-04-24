@@ -83,6 +83,23 @@ public class Mappers {
         return new FinIdAccount(account.getFinId());
     }
 
+    public static FinIdAccount finIdAccountFromAPI(APIAccount account) {
+        return new FinIdAccount(account.getFinId());
+    }
+
+    // --- DepositPayoutAccount (used by /payments endpoints; keeps a separate top-level asset) ---
+
+    public static Source sourceFromAPI(APIDepositPayoutAccount account) {
+        return new Source(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    public static Destination destinationFromAPI(@Nullable APIDepositPayoutAccount account) {
+        if (account == null) {
+            return null;
+        }
+        return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
     public static Source sourceFromAPI(APIAccount account) {
         DestinationAccount ledgerAccount = ledgerAccountFromAPI(account);
         SourceAccount src = (ledgerAccount instanceof SourceAccount)
