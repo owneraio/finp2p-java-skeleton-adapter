@@ -23,7 +23,7 @@ public abstract class AbstractEscrowOperationsTest {
     void shouldHoldAndReleaseFunds() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -47,7 +47,7 @@ public abstract class AbstractEscrowOperationsTest {
     @Test
     void shouldHoldAndRedeemTokens() {
         String investor = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -68,7 +68,7 @@ public abstract class AbstractEscrowOperationsTest {
     void shouldRollbackHeldFunds() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -85,7 +85,7 @@ public abstract class AbstractEscrowOperationsTest {
     void shouldPartiallyReleaseFunds() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));

@@ -158,7 +158,7 @@ public class APIDepositAsset extends AbstractOpenApiSchema {
          */
         @Override
         public APIDepositAsset getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIDepositAsset cannot be null");
+            return null;
         }
     }
 

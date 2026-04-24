@@ -132,7 +132,7 @@ public class APILedgerAssetInfoLedgerReference extends AbstractOpenApiSchema {
          */
         @Override
         public APILedgerAssetInfoLedgerReference getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APILedgerAssetInfoLedgerReference cannot be null");
+            return null;
         }
     }
 

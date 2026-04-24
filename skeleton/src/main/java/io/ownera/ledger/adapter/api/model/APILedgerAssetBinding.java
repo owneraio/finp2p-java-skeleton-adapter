@@ -131,7 +131,7 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
          */
         @Override
         public APILedgerAssetBinding getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APILedgerAssetBinding cannot be null");
+            return null;
         }
     }
 

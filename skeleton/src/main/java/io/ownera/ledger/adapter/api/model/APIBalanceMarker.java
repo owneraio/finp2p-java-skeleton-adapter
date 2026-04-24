@@ -158,7 +158,7 @@ public class APIBalanceMarker extends AbstractOpenApiSchema {
          */
         @Override
         public APIBalanceMarker getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIBalanceMarker cannot be null");
+            return null;
         }
     }
 

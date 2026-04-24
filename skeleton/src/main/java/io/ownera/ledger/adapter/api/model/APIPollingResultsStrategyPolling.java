@@ -186,7 +186,7 @@ public class APIPollingResultsStrategyPolling extends AbstractOpenApiSchema {
          */
         @Override
         public APIPollingResultsStrategyPolling getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIPollingResultsStrategyPolling cannot be null");
+            return null;
         }
     }
 

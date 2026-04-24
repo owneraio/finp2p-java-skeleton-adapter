@@ -159,7 +159,7 @@ public class APIProofPolicy extends AbstractOpenApiSchema {
          */
         @Override
         public APIProofPolicy getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIProofPolicy cannot be null");
+            return null;
         }
     }
 

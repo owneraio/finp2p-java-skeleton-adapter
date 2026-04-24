@@ -23,7 +23,7 @@ public abstract class AbstractInsufficientBalanceTest {
     void shouldFailTransferExceedingBalance() {
         String seller = randomFinId();
         String buyer = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, seller, "100"));
@@ -39,7 +39,7 @@ public abstract class AbstractInsufficientBalanceTest {
     void shouldFailTransferExactBalancePlusOne() {
         String seller = randomFinId();
         String buyer = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, seller, "500"));
@@ -54,7 +54,7 @@ public abstract class AbstractInsufficientBalanceTest {
     @Test
     void shouldFailRedeemExceedingBalance() {
         String investor = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, investor, "100"));
@@ -68,7 +68,7 @@ public abstract class AbstractInsufficientBalanceTest {
     @Test
     void shouldFailRedeemFromZeroBalance() {
         String investor = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
 
@@ -82,7 +82,7 @@ public abstract class AbstractInsufficientBalanceTest {
     void shouldFailHoldExceedingBalance() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String opId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -98,7 +98,7 @@ public abstract class AbstractInsufficientBalanceTest {
     void shouldFailHoldFromZeroBalance() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String opId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -113,7 +113,7 @@ public abstract class AbstractInsufficientBalanceTest {
     void shouldFailSecondHoldAfterPartialConsumption() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, buyer, "1000"));
@@ -132,7 +132,7 @@ public abstract class AbstractInsufficientBalanceTest {
         String owner = randomFinId();
         String recipient1 = randomFinId();
         String recipient2 = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, owner, "100"));

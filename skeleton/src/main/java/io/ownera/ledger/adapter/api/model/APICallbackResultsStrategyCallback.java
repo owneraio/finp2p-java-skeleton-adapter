@@ -131,7 +131,7 @@ public class APICallbackResultsStrategyCallback extends AbstractOpenApiSchema {
          */
         @Override
         public APICallbackResultsStrategyCallback getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APICallbackResultsStrategyCallback cannot be null");
+            return null;
         }
     }
 

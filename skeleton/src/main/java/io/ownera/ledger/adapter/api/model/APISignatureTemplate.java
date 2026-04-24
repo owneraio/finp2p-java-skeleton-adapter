@@ -166,7 +166,7 @@ public class APISignatureTemplate extends AbstractOpenApiSchema {
          */
         @Override
         public APISignatureTemplate getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APISignatureTemplate cannot be null");
+            return null;
         }
     }
 

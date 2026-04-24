@@ -185,7 +185,7 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
          */
         @Override
         public APIExecutionPlanProposalRequestExecutionPlanProposal getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIExecutionPlanProposalRequestExecutionPlanProposal cannot be null");
+            return null;
         }
     }
 

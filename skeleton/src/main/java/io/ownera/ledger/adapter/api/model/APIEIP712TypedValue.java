@@ -229,7 +229,7 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
          */
         @Override
         public APIEIP712TypedValue getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIEIP712TypedValue cannot be null");
+            return null;
         }
     }
 

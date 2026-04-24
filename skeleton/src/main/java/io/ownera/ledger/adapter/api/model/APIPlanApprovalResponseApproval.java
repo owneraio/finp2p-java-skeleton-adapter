@@ -159,7 +159,7 @@ public class APIPlanApprovalResponseApproval extends AbstractOpenApiSchema {
          */
         @Override
         public APIPlanApprovalResponseApproval getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIPlanApprovalResponseApproval cannot be null");
+            return null;
         }
     }
 
