@@ -129,13 +129,16 @@ public class Mappers {
 
     /**
      * Extract ledger account (wallet) from an APIAccount, falling back to FinIdAccount if none.
+     * Maps to a generic {@link LedgerAccount} carrying the type discriminator from the API
+     * (aligns with Node.js skeleton's LedgerAccount {type, address}).
      */
     private static DestinationAccount ledgerAccountFromAPI(APIAccount account) {
         if (account.getLedgerAccount() != null) {
             Object actual = account.getLedgerAccount().getActualInstance();
             if (actual instanceof APIWalletLedgerAccount) {
                 APIWalletLedgerAccount wallet = (APIWalletLedgerAccount) actual;
-                return new CryptocurrencyWallet(wallet.getAddress());
+                String type = wallet.getType() != null ? wallet.getType() : "wallet";
+                return new LedgerAccount(type, wallet.getAddress());
             }
         }
         return new FinIdAccount(account.getFinId());
@@ -572,13 +575,9 @@ public class Mappers {
         if (asset != null) {
             account.asset(toAPIAsset(asset));
         }
-        if (source.account instanceof CryptocurrencyWallet) {
-            CryptocurrencyWallet wallet = (CryptocurrencyWallet) source.account;
-            account.ledgerAccount(new APIAccountLedgerAccount(
-                    new APIWalletLedgerAccount()
-                            .type("wallet")
-                            .address(wallet.address)
-            ));
+        APIAccountLedgerAccount ledger = toAPILedger(source.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
         }
         return account;
     }
@@ -591,15 +590,23 @@ public class Mappers {
         if (asset != null) {
             account.asset(toAPIAsset(asset));
         }
-        if (destination.account instanceof CryptocurrencyWallet) {
-            CryptocurrencyWallet wallet = (CryptocurrencyWallet) destination.account;
-            account.ledgerAccount(new APIAccountLedgerAccount(
-                    new APIWalletLedgerAccount()
-                            .type("wallet")
-                            .address(wallet.address)
-            ));
+        APIAccountLedgerAccount ledger = toAPILedger(destination.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
         }
         return account;
+    }
+
+    private static APIAccountLedgerAccount toAPILedger(@Nullable Object account) {
+        if (account instanceof LedgerAccount) {
+            LedgerAccount la = (LedgerAccount) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(la.type).address(la.address));
+        }
+        if (account instanceof CryptocurrencyWallet) {
+            CryptocurrencyWallet wallet = (CryptocurrencyWallet) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type("wallet").address(wallet.address));
+        }
+        return null;
     }
 
     private static APIFinIdAccountBase toAPI(FinIdAccount account) {
