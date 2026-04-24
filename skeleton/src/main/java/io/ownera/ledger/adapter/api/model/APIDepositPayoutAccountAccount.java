@@ -131,7 +131,7 @@ public class APIDepositPayoutAccountAccount extends AbstractOpenApiSchema {
          */
         @Override
         public APIDepositPayoutAccountAccount getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIDepositPayoutAccountAccount cannot be null");
+            return null;
         }
     }
 

@@ -131,7 +131,7 @@ public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
          */
         @Override
         public APIAccountLedgerAccount getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIAccountLedgerAccount cannot be null");
+            return null;
         }
     }
 

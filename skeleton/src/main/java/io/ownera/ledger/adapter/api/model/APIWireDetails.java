@@ -185,7 +185,7 @@ public class APIWireDetails extends AbstractOpenApiSchema {
          */
         @Override
         public APIWireDetails getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIWireDetails cannot be null");
+            return null;
         }
     }
 

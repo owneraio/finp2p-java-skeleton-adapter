@@ -23,7 +23,7 @@ public abstract class AbstractTokenLifecycleTest {
     void shouldIssueTransferAndVerifyBalances() {
         String issuer = randomFinId();
         String buyer = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
 
@@ -46,7 +46,7 @@ public abstract class AbstractTokenLifecycleTest {
     @Test
     void shouldIssueAndRedeemTokens() {
         String issuer = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
 
@@ -66,7 +66,7 @@ public abstract class AbstractTokenLifecycleTest {
         String alice = randomFinId();
         String bob = randomFinId();
         String charlie = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, alice, "1000"));
