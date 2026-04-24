@@ -19,11 +19,23 @@ public class Mappers {
         if (asset == null) {
             throw new MappingException("Asset is required");
         }
-        return new Asset(asset.getResourceId(), AssetType.FINP2P);
+        return new Asset(asset.getResourceId(), AssetType.FINP2P, fromAPI(asset.getLedgerIdentifier()));
     }
 
     public static Asset fromAPI(APIFinp2pAssetBase asset) {
         return new Asset(asset.getResourceId(), AssetType.FINP2P);
+    }
+
+    public static LedgerAssetIdentifier fromAPI(@Nullable APILedgerAssetIdentifier identifier) {
+        if (identifier == null) {
+            return null;
+        }
+        Object actual = identifier.getActualInstance();
+        if (actual instanceof APILedgerAssetIdentifierTypeCAIP19) {
+            APILedgerAssetIdentifierTypeCAIP19 caip19 = (APILedgerAssetIdentifierTypeCAIP19) actual;
+            return new LedgerAssetIdentifier(caip19.getNetwork(), caip19.getTokenId(), caip19.getStandard());
+        }
+        return null;
     }
 
     public static AssetBind fromAPI(@Nullable APILedgerAssetBinding binding) {
