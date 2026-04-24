@@ -161,7 +161,7 @@ public class APIPlanRejectedFailure extends AbstractOpenApiSchema {
          */
         @Override
         public APIPlanRejectedFailure getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIPlanRejectedFailure cannot be null");
+            return null;
         }
     }
 

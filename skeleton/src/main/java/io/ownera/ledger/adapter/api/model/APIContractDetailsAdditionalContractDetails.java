@@ -103,7 +103,7 @@ public class APIContractDetailsAdditionalContractDetails extends AbstractOpenApi
          */
         @Override
         public APIContractDetailsAdditionalContractDetails getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIContractDetailsAdditionalContractDetails cannot be null");
+            return null;
         }
     }
 

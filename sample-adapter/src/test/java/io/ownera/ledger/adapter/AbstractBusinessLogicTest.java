@@ -22,7 +22,7 @@ public abstract class AbstractBusinessLogicTest {
     @Test
     void shouldFailRollbackOnNonExistentHold() {
         String buyer = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, buyer, "1000"));
@@ -35,7 +35,7 @@ public abstract class AbstractBusinessLogicTest {
     void shouldFailReleaseOnNonExistentOperationId() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         api.issue(issueRequest(asset, buyer, "1000"));
@@ -48,7 +48,7 @@ public abstract class AbstractBusinessLogicTest {
     void shouldFailDoubleRelease() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -67,7 +67,7 @@ public abstract class AbstractBusinessLogicTest {
     void shouldFailDoubleRollback() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -86,7 +86,7 @@ public abstract class AbstractBusinessLogicTest {
     void shouldFailRollbackAfterRelease() {
         String buyer = randomFinId();
         String seller = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
         String operationId = randomId();
 
         api.createAsset(createAssetRequest(asset));
@@ -102,7 +102,7 @@ public abstract class AbstractBusinessLogicTest {
     @Test
     void shouldRetrieveReceiptByTransactionId() {
         String finId = randomFinId();
-        APIFinp2pAsset asset = finp2pAsset();
+        APIAsset asset = finp2pAsset();
 
         api.createAsset(createAssetRequest(asset));
         APIReceiptOperation issueOp = api.issue(issueRequest(asset, finId, "100"));

@@ -213,7 +213,7 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
          */
         @Override
         public APIOperationStatus getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIOperationStatus cannot be null");
+            return null;
         }
     }
 

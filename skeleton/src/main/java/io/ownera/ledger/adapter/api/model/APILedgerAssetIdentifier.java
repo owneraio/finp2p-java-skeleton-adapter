@@ -131,7 +131,7 @@ public class APILedgerAssetIdentifier extends AbstractOpenApiSchema {
          */
         @Override
         public APILedgerAssetIdentifier getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APILedgerAssetIdentifier cannot be null");
+            return null;
         }
     }
 

@@ -160,7 +160,7 @@ public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenA
          */
         @Override
         public APIOperationMetadataOperationResponseStrategy getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIOperationMetadataOperationResponseStrategy cannot be null");
+            return null;
         }
     }
 

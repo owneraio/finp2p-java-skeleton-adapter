@@ -213,7 +213,7 @@ public class APIPaymentMethodMethodInstruction extends AbstractOpenApiSchema {
          */
         @Override
         public APIPaymentMethodMethodInstruction getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIPaymentMethodMethodInstruction cannot be null");
+            return null;
         }
     }
 
