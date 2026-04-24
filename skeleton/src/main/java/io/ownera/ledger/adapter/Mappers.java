@@ -19,11 +19,23 @@ public class Mappers {
         if (asset == null) {
             throw new MappingException("Asset is required");
         }
-        return new Asset(asset.getResourceId(), AssetType.FINP2P);
+        return new Asset(asset.getResourceId(), AssetType.FINP2P, fromAPI(asset.getLedgerIdentifier()));
     }
 
     public static Asset fromAPI(APIFinp2pAssetBase asset) {
         return new Asset(asset.getResourceId(), AssetType.FINP2P);
+    }
+
+    public static LedgerAssetIdentifier fromAPI(@Nullable APILedgerAssetIdentifier identifier) {
+        if (identifier == null) {
+            return null;
+        }
+        Object actual = identifier.getActualInstance();
+        if (actual instanceof APILedgerAssetIdentifierTypeCAIP19) {
+            APILedgerAssetIdentifierTypeCAIP19 caip19 = (APILedgerAssetIdentifierTypeCAIP19) actual;
+            return new LedgerAssetIdentifier(caip19.getNetwork(), caip19.getTokenId(), caip19.getStandard());
+        }
+        return null;
     }
 
     public static AssetBind fromAPI(@Nullable APILedgerAssetBinding binding) {
@@ -117,13 +129,16 @@ public class Mappers {
 
     /**
      * Extract ledger account (wallet) from an APIAccount, falling back to FinIdAccount if none.
+     * Maps to a generic {@link LedgerAccount} carrying the type discriminator from the API
+     * (aligns with Node.js skeleton's LedgerAccount {type, address}).
      */
     private static DestinationAccount ledgerAccountFromAPI(APIAccount account) {
         if (account.getLedgerAccount() != null) {
             Object actual = account.getLedgerAccount().getActualInstance();
             if (actual instanceof APIWalletLedgerAccount) {
                 APIWalletLedgerAccount wallet = (APIWalletLedgerAccount) actual;
-                return new CryptocurrencyWallet(wallet.getAddress());
+                String type = wallet.getType() != null ? wallet.getType() : "wallet";
+                return new LedgerAccount(type, wallet.getAddress());
             }
         }
         return new FinIdAccount(account.getFinId());
@@ -141,6 +156,27 @@ public class Mappers {
 
     public static Destination destinationFromAPI(APIFinIdAccountBase account) {
         return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    // --- Plan proposal mapping ---
+
+    public static PlanProposal proposalFromAPI(@Nullable APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
+        if (proposal == null) {
+            return PlanProposalCancel.INSTANCE; // unknown proposal defaults to cancel-shaped
+        }
+        Object actual = proposal.getActualInstance();
+        if (actual instanceof APIExecutionPlanCancellationProposal) {
+            return PlanProposalCancel.INSTANCE;
+        }
+        if (actual instanceof APIExecutionPlanResetProposal) {
+            APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) actual;
+            return new PlanProposalReset(reset.getProposedSequence() != null ? reset.getProposedSequence() : 0);
+        }
+        if (actual instanceof APIExecutionPlanInstructionProposal) {
+            APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) actual;
+            return new PlanProposalInstruction(instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0);
+        }
+        throw new MappingException("Unsupported proposal type: " + actual.getClass().getName());
     }
 
     public static ExecutionContext fromAPI(@Nullable APIExecutionContext ctx) {
@@ -539,13 +575,9 @@ public class Mappers {
         if (asset != null) {
             account.asset(toAPIAsset(asset));
         }
-        if (source.account instanceof CryptocurrencyWallet) {
-            CryptocurrencyWallet wallet = (CryptocurrencyWallet) source.account;
-            account.ledgerAccount(new APIAccountLedgerAccount(
-                    new APIWalletLedgerAccount()
-                            .type("wallet")
-                            .address(wallet.address)
-            ));
+        APIAccountLedgerAccount ledger = toAPILedger(source.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
         }
         return account;
     }
@@ -558,15 +590,23 @@ public class Mappers {
         if (asset != null) {
             account.asset(toAPIAsset(asset));
         }
-        if (destination.account instanceof CryptocurrencyWallet) {
-            CryptocurrencyWallet wallet = (CryptocurrencyWallet) destination.account;
-            account.ledgerAccount(new APIAccountLedgerAccount(
-                    new APIWalletLedgerAccount()
-                            .type("wallet")
-                            .address(wallet.address)
-            ));
+        APIAccountLedgerAccount ledger = toAPILedger(destination.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
         }
         return account;
+    }
+
+    private static APIAccountLedgerAccount toAPILedger(@Nullable Object account) {
+        if (account instanceof LedgerAccount) {
+            LedgerAccount la = (LedgerAccount) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(la.type).address(la.address));
+        }
+        if (account instanceof CryptocurrencyWallet) {
+            CryptocurrencyWallet wallet = (CryptocurrencyWallet) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type("wallet").address(wallet.address));
+        }
+        return null;
     }
 
     private static APIFinIdAccountBase toAPI(FinIdAccount account) {

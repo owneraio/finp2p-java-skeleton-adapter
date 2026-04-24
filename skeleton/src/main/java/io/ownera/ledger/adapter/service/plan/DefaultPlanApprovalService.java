@@ -141,8 +141,8 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     }
 
     @Override
-    public void proposalStatus(String planId, String status, String requestType) {
-        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, requestType);
+    public void proposalStatus(String planId, PlanProposal proposal, ProposalStatus status) {
+        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, proposal.getClass().getSimpleName());
     }
 
     private PlanApprovalStatus validatePlan(String idempotencyKey, String planId, Execution execution) {
