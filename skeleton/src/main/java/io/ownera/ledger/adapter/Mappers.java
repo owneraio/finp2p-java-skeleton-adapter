@@ -155,6 +155,27 @@ public class Mappers {
         return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
     }
 
+    // --- Plan proposal mapping ---
+
+    public static PlanProposal proposalFromAPI(@Nullable APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
+        if (proposal == null) {
+            return PlanProposalCancel.INSTANCE; // unknown proposal defaults to cancel-shaped
+        }
+        Object actual = proposal.getActualInstance();
+        if (actual instanceof APIExecutionPlanCancellationProposal) {
+            return PlanProposalCancel.INSTANCE;
+        }
+        if (actual instanceof APIExecutionPlanResetProposal) {
+            APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) actual;
+            return new PlanProposalReset(reset.getProposedSequence() != null ? reset.getProposedSequence() : 0);
+        }
+        if (actual instanceof APIExecutionPlanInstructionProposal) {
+            APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) actual;
+            return new PlanProposalInstruction(instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0);
+        }
+        throw new MappingException("Unsupported proposal type: " + actual.getClass().getName());
+    }
+
     public static ExecutionContext fromAPI(@Nullable APIExecutionContext ctx) {
         if (ctx == null) {
             return null;

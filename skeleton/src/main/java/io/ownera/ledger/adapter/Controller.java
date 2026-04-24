@@ -142,12 +142,12 @@ public class Controller {
             @RequestBody APIExecutionPlanProposalStatusRequest request
     ) {
         String planId = request.getRequest().getExecutionPlan().getId();
-        String status = request.getStatus() != null ? request.getStatus().getValue() : "unknown";
-        String requestType = request.getRequest().getExecutionPlan().getProposal() != null
-                ? request.getRequest().getExecutionPlan().getProposal().getActualInstance().getClass().getSimpleName()
-                : "unknown";
-        logger.info("Proposal status: planId={}, status={}, type={}", planId, status, requestType);
-        planApprovalService.proposalStatus(planId, status, requestType);
+        PlanProposal proposal = proposalFromAPI(request.getRequest().getExecutionPlan().getProposal());
+        ProposalStatus status = "rejected".equalsIgnoreCase(
+                request.getStatus() != null ? request.getStatus().getValue() : null)
+                ? ProposalStatus.REJECTED : ProposalStatus.APPROVED;
+        logger.info("Proposal status: planId={}, status={}, type={}", planId, status, proposal.getClass().getSimpleName());
+        planApprovalService.proposalStatus(planId, proposal, status);
         return ResponseEntity.noContent().build();
     }
 
