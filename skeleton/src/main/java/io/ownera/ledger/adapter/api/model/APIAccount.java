@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,82 +25,110 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIDestinationAccount;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIAccountLedgerAccount;
+import io.ownera.ledger.adapter.api.model.APIAsset;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * describes destination for remote operations operations
+ * APIAccount
  */
 @JsonPropertyOrder({
-  APIDestination.JSON_PROPERTY_FIN_ID,
-  APIDestination.JSON_PROPERTY_ACCOUNT
+  APIAccount.JSON_PROPERTY_ASSET,
+  APIAccount.JSON_PROPERTY_FIN_ID,
+  APIAccount.JSON_PROPERTY_LEDGER_ACCOUNT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APIDestination {
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIAccount {
+  public static final String JSON_PROPERTY_ASSET = "asset";
+  private APIAsset asset;
+
   public static final String JSON_PROPERTY_FIN_ID = "finId";
-  @javax.annotation.Nonnull
   private String finId;
 
-  public static final String JSON_PROPERTY_ACCOUNT = "account";
-  @javax.annotation.Nonnull
-  private APIDestinationAccount account;
+  public static final String JSON_PROPERTY_LEDGER_ACCOUNT = "ledgerAccount";
+  private APIAccountLedgerAccount ledgerAccount;
 
-  public APIDestination() { 
+  public APIAccount() { 
   }
 
-  public APIDestination finId(@javax.annotation.Nonnull String finId) {
+  public APIAccount asset(APIAsset asset) {
+    this.asset = asset;
+    return this;
+  }
+
+   /**
+   * Get asset
+   * @return asset
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public APIAsset getAsset() {
+    return asset;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ASSET)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAsset(APIAsset asset) {
+    this.asset = asset;
+  }
+
+
+  public APIAccount finId(String finId) {
     this.finId = finId;
     return this;
   }
 
-  /**
+   /**
    * Existing owner hex representation of a secp256k1 public key 33 bytes compressed
    * @return finId
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getFinId() {
     return finId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFinId(@javax.annotation.Nonnull String finId) {
+  public void setFinId(String finId) {
     this.finId = finId;
   }
 
 
-  public APIDestination account(@javax.annotation.Nonnull APIDestinationAccount account) {
-    this.account = account;
+  public APIAccount ledgerAccount(APIAccountLedgerAccount ledgerAccount) {
+    this.ledgerAccount = ledgerAccount;
     return this;
   }
 
-  /**
-   * Get account
-   * @return account
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIDestinationAccount getAccount() {
-    return account;
+   /**
+   * Get ledgerAccount
+   * @return ledgerAccount
+  **/
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_LEDGER_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public APIAccountLedgerAccount getLedgerAccount() {
+    return ledgerAccount;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ACCOUNT, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAccount(@javax.annotation.Nonnull APIDestinationAccount account) {
-    this.account = account;
+  @JsonProperty(JSON_PROPERTY_LEDGER_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLedgerAccount(APIAccountLedgerAccount ledgerAccount) {
+    this.ledgerAccount = ledgerAccount;
   }
 
 
   /**
-   * Return true if this destination object is equal to o.
+   * Return true if this account object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -109,22 +138,24 @@ public class APIDestination {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIDestination destination = (APIDestination) o;
-    return Objects.equals(this.finId, destination.finId) &&
-        Objects.equals(this.account, destination.account);
+    APIAccount account = (APIAccount) o;
+    return Objects.equals(this.asset, account.asset) &&
+        Objects.equals(this.finId, account.finId) &&
+        Objects.equals(this.ledgerAccount, account.ledgerAccount);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(finId, account);
+    return Objects.hash(asset, finId, ledgerAccount);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIDestination {\n");
+    sb.append("class APIAccount {\n");
+    sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
     sb.append("    finId: ").append(toIndentedString(finId)).append("\n");
-    sb.append("    account: ").append(toIndentedString(account)).append("\n");
+    sb.append("    ledgerAccount: ").append(toIndentedString(ledgerAccount)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -172,14 +203,19 @@ public class APIDestination {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `finId` to the URL query string
-    if (getFinId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
+    // add `asset` to the URL query string
+    if (getAsset() != null) {
+      joiner.add(getAsset().toUrlQueryString(prefix + "asset" + suffix));
     }
 
-    // add `account` to the URL query string
-    if (getAccount() != null) {
-      joiner.add(getAccount().toUrlQueryString(prefix + "account" + suffix));
+    // add `finId` to the URL query string
+    if (getFinId() != null) {
+      joiner.add(String.format("%sfinId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getFinId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `ledgerAccount` to the URL query string
+    if (getLedgerAccount() != null) {
+      joiner.add(getLedgerAccount().toUrlQueryString(prefix + "ledgerAccount" + suffix));
     }
 
     return joiner.toString();

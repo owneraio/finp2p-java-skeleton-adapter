@@ -5,7 +5,6 @@ import io.ownera.ledger.adapter.service.model.*;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,33 +12,42 @@ import static java.util.stream.Collectors.toList;
 
 public class Mappers {
 
+    // --- Asset mapping ---
+    // 0.28: APIAsset is flat (resourceId + ledgerIdentifier); no more polymorphic fiat/cryptocurrency variants.
+
     public static Asset fromAPI(APIAsset asset) {
-        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
-            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
-            return new Asset(finp2pAsset.getResourceId(), AssetType.FINP2P);
-
-        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
-            APIFiatAsset finp2pAsset = (APIFiatAsset) asset.getActualInstance();
-            return new Asset(finp2pAsset.getCode(), AssetType.FIAT);
-
-        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
-            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
-            return new Asset(cryptoAsset.getCode(), AssetType.CRYPTOCURRENCY);
-
-        } else {
-            throw new MappingException("Unsupported asset type: " + asset.getActualInstance().getClass().getName());
+        if (asset == null) {
+            throw new MappingException("Asset is required");
         }
+        return new Asset(asset.getResourceId(), AssetType.FINP2P, fromAPI(asset.getLedgerIdentifier()));
     }
 
-    public static Asset fromAPI(APIFinp2pAsset asset) {
+    public static Asset fromAPI(APIFinp2pAssetBase asset) {
         return new Asset(asset.getResourceId(), AssetType.FINP2P);
     }
 
-    public static AssetBind fromAPI(@Nullable APILedgerTokenId tokenId) {
-        if (tokenId == null) {
+    public static LedgerAssetIdentifier fromAPI(@Nullable APILedgerAssetIdentifier identifier) {
+        if (identifier == null) {
             return null;
         }
-        return new AssetBind(new TokenIdentifier(tokenId.getTokenId()));
+        Object actual = identifier.getActualInstance();
+        if (actual instanceof APILedgerAssetIdentifierTypeCAIP19) {
+            APILedgerAssetIdentifierTypeCAIP19 caip19 = (APILedgerAssetIdentifierTypeCAIP19) actual;
+            return new LedgerAssetIdentifier(caip19.getNetwork(), caip19.getTokenId(), caip19.getStandard());
+        }
+        return null;
+    }
+
+    public static AssetBind fromAPI(@Nullable APILedgerAssetBinding binding) {
+        if (binding == null) {
+            return null;
+        }
+        Object actual = binding.getActualInstance();
+        if (actual instanceof APILedgerAssetIdentifierTypeCAIP19) {
+            APILedgerAssetIdentifierTypeCAIP19 caip19 = (APILedgerAssetIdentifierTypeCAIP19) actual;
+            return new AssetBind(new TokenIdentifier(caip19.getTokenId()));
+        }
+        return null;
     }
 
     public static AssetDenomination fromAPI(@Nullable APIAssetDenomination denomination) {
@@ -62,91 +70,113 @@ public class Mappers {
         }
     }
 
-    public static AssetIdentifier fromAPI(@Nullable APIAssetIdentifier identifier) {
-        if (identifier == null) {
-            return null;
-        }
-        return new AssetIdentifier(fromAPI(identifier.getAssetIdentifierType()), identifier.getAssetIdentifierValue());
-    }
-
-    public static AssetIdentifierType fromAPI(APIAssetIdentifierType type) {
-        switch (type) {
-            case ISIN:
-                return AssetIdentifierType.ISIN;
-            case CUSIP:
-                return AssetIdentifierType.CUSIP;
-            case SEDOL:
-                return AssetIdentifierType.SEDOL;
-            case DTI:
-                return AssetIdentifierType.DTI;
-            case CMU:
-                return AssetIdentifierType.CMU;
-            case FIGI:
-                return AssetIdentifierType.FIGI;
-            case CUSTOM:
-                return AssetIdentifierType.CUSTOM;
-            case ISO4217:
-                return AssetIdentifierType.ISO4217;
-            default:
-                throw new MappingException("Unsupported asset identifier type: " + type);
-        }
-    }
-
+    // --- DepositAsset mapping ---
+    // 0.28: only finp2p + custom variants
 
     public static DepositAsset fromAPI(APIDepositAsset asset) {
-        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
-            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
+        Object actual = asset.getActualInstance();
+        if (actual instanceof APIFinp2pAssetWithType) {
+            APIFinp2pAssetWithType finp2pAsset = (APIFinp2pAssetWithType) actual;
             return new DepositAsset(finp2pAsset.getResourceId(), DepositAssetType.FINP2P);
 
-        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
-            APIFiatAsset finp2pAsset = (APIFiatAsset) asset.getActualInstance();
-            return new DepositAsset(finp2pAsset.getCode(), DepositAssetType.FIAT);
-
-        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
-            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
-            return new DepositAsset(cryptoAsset.getCode(), DepositAssetType.CRYPTOCURRENCY);
-
-        } else if (asset.getActualInstance() instanceof APICustomAsset) {
+        } else if (actual instanceof APICustomAsset) {
             return new DepositAsset("", DepositAssetType.CUSTOM);
 
         } else {
-            throw new MappingException("Unsupported asset type: " + asset.getActualInstance().getClass().getName());
+            throw new MappingException("Unsupported deposit asset type: " + actual.getClass().getName());
         }
     }
 
-    public static FinIdAccount fromAPI(APIFinIdAccount account) {
+    // --- Account mapping ---
+    // 0.28: Source/Destination/DestinationAccount are merged into APIAccount.
+    // APIAccount carries finId + asset + ledgerAccount (APIAccountLedgerAccount polymorphic).
+
+    public static FinIdAccount fromAPI(APIFinIdAccountBase account) {
         return new FinIdAccount(account.getFinId());
     }
 
-    public static Source fromAPI(APISource account) {
+    public static FinIdAccount finIdAccountFromAPI(APIAccount account) {
+        return new FinIdAccount(account.getFinId());
+    }
+
+    // --- DepositPayoutAccount (used by /payments endpoints; keeps a separate top-level asset) ---
+
+    public static Source sourceFromAPI(APIDepositPayoutAccount account) {
         return new Source(account.getFinId(), new FinIdAccount(account.getFinId()));
     }
 
-    public static Destination fromAPI(@Nullable APIDestination account) {
+    public static Destination destinationFromAPI(@Nullable APIDepositPayoutAccount account) {
         if (account == null) {
             return null;
         }
-        return new Destination(account.getFinId(), fromAPI(account.getAccount()));
-    }
-
-    public static DestinationAccount fromAPI(APIDestinationAccount account) {
-        if (account.getActualInstance() instanceof APIFinIdAccount) {
-            APIFinIdAccount finIdAccount = (APIFinIdAccount) account.getActualInstance();
-            return fromAPI(finIdAccount);
-
-        } else if (account.getActualInstance() instanceof APICryptoWalletAccount) {
-            APICryptoWalletAccount cryptoWalletAccount = (APICryptoWalletAccount) account.getActualInstance();
-            return new CryptocurrencyWallet(cryptoWalletAccount.getAddress());
-        } else if (account.getActualInstance() instanceof APIFiatAccount) {
-            APIFiatAccount fiatAccount = (APIFiatAccount) account.getActualInstance();
-            return new IbanIdentifier(fiatAccount.getCode());
-        } else {
-            throw new MappingException("Unsupported destination account type: " + account.getActualInstance().getClass().getName());
-        }
-    }
-
-    public static Destination destinationFromAPI(APIFinIdAccount account) {
         return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    public static Source sourceFromAPI(APIAccount account) {
+        DestinationAccount ledgerAccount = ledgerAccountFromAPI(account);
+        SourceAccount src = (ledgerAccount instanceof SourceAccount)
+                ? (SourceAccount) ledgerAccount
+                : new FinIdAccount(account.getFinId());
+        return new Source(account.getFinId(), src);
+    }
+
+    public static Destination destinationFromAPI(@Nullable APIAccount account) {
+        if (account == null) {
+            return null;
+        }
+        return new Destination(account.getFinId(), ledgerAccountFromAPI(account));
+    }
+
+    /**
+     * Extract ledger account (wallet) from an APIAccount, falling back to FinIdAccount if none.
+     * Maps to a generic {@link LedgerAccount} carrying the type discriminator from the API
+     * (aligns with Node.js skeleton's LedgerAccount {type, address}).
+     */
+    private static DestinationAccount ledgerAccountFromAPI(APIAccount account) {
+        if (account.getLedgerAccount() != null) {
+            Object actual = account.getLedgerAccount().getActualInstance();
+            if (actual instanceof APIWalletLedgerAccount) {
+                APIWalletLedgerAccount wallet = (APIWalletLedgerAccount) actual;
+                String type = wallet.getType() != null ? wallet.getType() : "wallet";
+                return new LedgerAccount(type, wallet.getAddress());
+            }
+        }
+        return new FinIdAccount(account.getFinId());
+    }
+
+    /**
+     * Extract asset from an APIAccount (embedded since 0.28).
+     */
+    public static Asset assetFromAPI(APIAccount account) {
+        if (account.getAsset() == null) {
+            throw new MappingException("Asset missing from account");
+        }
+        return fromAPI(account.getAsset());
+    }
+
+    public static Destination destinationFromAPI(APIFinIdAccountBase account) {
+        return new Destination(account.getFinId(), new FinIdAccount(account.getFinId()));
+    }
+
+    // --- Plan proposal mapping ---
+
+    public static PlanProposal proposalFromAPI(@Nullable APIExecutionPlanProposalRequestExecutionPlanProposal proposal) {
+        if (proposal == null) {
+            return PlanProposalCancel.INSTANCE; // unknown proposal defaults to cancel-shaped
+        }
+        Object actual = proposal.getActualInstance();
+        if (actual instanceof APIExecutionPlanCancellationProposal) {
+            return PlanProposalCancel.INSTANCE;
+        }
+        if (actual instanceof APIExecutionPlanResetProposal) {
+            APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) actual;
+            return new PlanProposalReset(reset.getProposedSequence() != null ? reset.getProposedSequence() : 0);
+        }
+        if (actual instanceof APIExecutionPlanInstructionProposal) {
+            APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) actual;
+            return new PlanProposalInstruction(instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0);
+        }
+        throw new MappingException("Unsupported proposal type: " + actual.getClass().getName());
     }
 
     public static ExecutionContext fromAPI(@Nullable APIExecutionContext ctx) {
@@ -155,6 +185,8 @@ public class Mappers {
         }
         return new ExecutionContext(ctx.getExecutionPlanId(), ctx.getInstructionSequenceNumber());
     }
+
+    // --- Plan approval response ---
 
     public static APIExecutionPlanApprovalOperation toAPI(PlanApprovalStatus status) {
         if (status instanceof PendingPlan) {
@@ -174,7 +206,7 @@ public class Mappers {
                                             .status(APIPlanRejected.StatusEnum.REJECTED)
                                             .failure(new APIPlanRejectedFailure(
                                                             new APIValidationFailure()
-                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATION_FAILURE)
+                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATIONFAILURE)
                                                                     .code(rejected.details.code)
                                                                     .message(rejected.details.message)
                                                     )
@@ -212,7 +244,7 @@ public class Mappers {
                                             .status(APIPlanRejected.StatusEnum.REJECTED)
                                             .failure(new APIPlanRejectedFailure(
                                                             new APIValidationFailure()
-                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATION_FAILURE)
+                                                                    .failureType(APIValidationFailure.FailureTypeEnum.VALIDATIONFAILURE)
                                                                     .code(rejected.details.code)
                                                                     .message(rejected.details.message)
                                                     )
@@ -231,6 +263,8 @@ public class Mappers {
             throw new MappingException("Unsupported plan approval status: " + status.getClass().getName());
         }
     }
+
+    // --- Asset creation response ---
 
     public static APICreateAssetOperation toAPI(AssetCreationStatus status) {
         APICreateAssetOperation operation = new APICreateAssetOperation();
@@ -254,10 +288,10 @@ public class Mappers {
             operation.cid("");
             operation.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerTokenId(new APILedgerTokenId()
-                                    .tokenId(success.result.tokenId)
-                            )
-                            .ledgerReference(toAPI(success.result.reference))
+                            .ledgerIdentifier(new APILedgerAssetIdentifier(
+                                    new APILedgerAssetIdentifierTypeCAIP19()
+                                            .tokenId(success.result.tokenId)
+                            ))
                     ));
 
         }
@@ -286,10 +320,10 @@ public class Mappers {
             response.setCid("");
             response.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerTokenId(new APILedgerTokenId()
-                                    .tokenId(success.result.tokenId)
-                            )
-                            .ledgerReference(toAPI(success.result.reference))
+                            .ledgerIdentifier(new APILedgerAssetIdentifier(
+                                    new APILedgerAssetIdentifierTypeCAIP19()
+                                            .tokenId(success.result.tokenId)
+                            ))
                     ));
 
         }
@@ -305,6 +339,8 @@ public class Mappers {
                 .code(code));
         return response;
     }
+
+    // --- Deposit operation response ---
 
     public static APIDepositOperation toAPI(DepositOperation status) {
         APIDepositOperation operation = new APIDepositOperation();
@@ -325,7 +361,6 @@ public class Mappers {
             SuccessfulDepositOperation success = (SuccessfulDepositOperation) status;
             DepositInstruction instr = success.depositInstruction;
             operation.response(new APIDepositInstruction()
-                    .account(toAPI(instr.destination))
                     .description(instr.description)
                     .paymentOptions(instr.paymentOptions.stream().map(Mappers::toAPI).collect(toList()))
                     .details(instr.details)
@@ -357,7 +392,6 @@ public class Mappers {
             response.isCompleted(true);
             response.cid("");
             response.response(new APIDepositInstruction()
-                    .account(toAPI(instr.destination))
                     .description(instr.description)
                     .paymentOptions(instr.paymentOptions.stream().map(Mappers::toAPI).collect(toList()))
                     .details(instr.details)
@@ -379,31 +413,28 @@ public class Mappers {
             return null;
         }
         if (instruction instanceof WireTransfer) {
-            WireTransfer wt = (WireTransfer) instruction;
             return new APIPaymentMethodMethodInstruction(
                     new APIWireTransfer()
-                            .type(APIWireTransfer.TypeEnum.WIRE_TRANSFER)
+                            .type(APIWireTransfer.TypeEnum.WIRETRANSFER)
             );
 
         } else if (instruction instanceof WireTransferUsa) {
-            WireTransferUsa wtu = (WireTransferUsa) instruction;
             return new APIPaymentMethodMethodInstruction(
                     new APIWireTransferUSA()
-                            .type(APIWireTransferUSA.TypeEnum.WIRE_TRANSFER_USA)
+                            .type(APIWireTransferUSA.TypeEnum.WIRETRANSFERUSA)
             );
 
         } else if (instruction instanceof CryptoTransfer) {
-            CryptoTransfer ct = (CryptoTransfer) instruction;
             return new APIPaymentMethodMethodInstruction(
                     new APICryptoTransfer()
-                            .type(APICryptoTransfer.TypeEnum.CRYPTO_TRANSFER)
+                            .type(APICryptoTransfer.TypeEnum.CRYPTOTRANSFER)
             );
 
         } else if (instruction instanceof PaymentInstruction) {
             PaymentInstruction pi = (PaymentInstruction) instruction;
             return new APIPaymentMethodMethodInstruction(
                     new APIPaymentInstructions()
-                            .type(APIPaymentInstructions.TypeEnum.PAYMENT_INSTRUCTIONS)
+                            .type(APIPaymentInstructions.TypeEnum.PAYMENTINSTRUCTIONS)
                             .instruction(pi.instruction)
             );
 
@@ -412,11 +443,13 @@ public class Mappers {
         }
     }
 
+    // --- Operation status response ---
+
     public static APIOperationStatus toAPI(OperationStatus opStatus) {
         if (opStatus instanceof AssetCreationStatus) {
             AssetCreationStatus assetCreationStatus = (AssetCreationStatus) opStatus;
             return new APIOperationStatus(new APIOperationStatusCreateAsset()
-                    .type(APIOperationStatusCreateAsset.TypeEnum.CREATE_ASSET)
+                    .type(APIOperationStatusCreateAsset.TypeEnum.CREATEASSET)
                     .operation(toAPI(assetCreationStatus))
             );
         } else if (opStatus instanceof DepositOperation) {
@@ -502,18 +535,15 @@ public class Mappers {
         return response;
     }
 
-
     public static APIReceipt toAPI(Receipt receipt) {
         return new APIReceipt()
                 .id(receipt.id)
                 .operationType(toAPI(receipt.operationType))
-                .source(toAPI(receipt.source))
-                .destination(toAPI(receipt.destination))
-                .asset(toAPI(receipt.asset))
+                .source(toAPI(receipt.source, receipt.asset))
+                .destination(toAPI(receipt.destination, receipt.asset))
                 .quantity(receipt.quantity)
                 .transactionDetails(toAPI(receipt.transactionDetails))
                 .tradeDetails(toAPI(receipt.tradeDetails))
-                .proof(toAPI(receipt.proof))
                 .timestamp(receipt.timestamp);
     }
 
@@ -528,70 +558,66 @@ public class Mappers {
             case HOLD:
                 return APIOperationType.HOLD;
             case RELEASE:
-                return APIOperationType.RELEASE;
             case ROLLBACK:
-                return APIOperationType.ROLLBACK;
+                return APIOperationType.RELEASE;
             default:
                 throw new MappingException("Unsupported operation type: " + type);
         }
     }
 
-    private static APISource toAPI(@Nullable Source source) {
+    // --- Source/Destination → APIAccount (embeds asset since 0.28) ---
+
+    private static APIAccount toAPI(@Nullable Source source, @Nullable Asset asset) {
         if (source == null) {
             return null;
         }
-        APISource apiSource = new APISource()
-                .finId(source.finId);
-        if (source.account instanceof FinIdAccount) {
-            FinIdAccount finIdAccount = (FinIdAccount) source.account;
-            apiSource.account(toAPI(finIdAccount));
+        APIAccount account = new APIAccount().finId(source.finId);
+        if (asset != null) {
+            account.asset(toAPIAsset(asset));
         }
-        return apiSource;
+        APIAccountLedgerAccount ledger = toAPILedger(source.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
+        }
+        return account;
     }
 
-    private static APIDestination toAPI(@Nullable Destination destination) {
+    private static APIAccount toAPI(@Nullable Destination destination, @Nullable Asset asset) {
         if (destination == null) {
             return null;
         }
-        APIDestination apiDestination = new APIDestination()
-                .finId(destination.finId);
-        if (destination.account instanceof FinIdAccount) {
-            FinIdAccount finIdAccount = (FinIdAccount) destination.account;
-            apiDestination.account(new APIDestinationAccount(toAPI(finIdAccount)));
-
-        } else if (destination.account instanceof CryptocurrencyWallet) {
-            CryptocurrencyWallet cryptocurrencyWallet = (CryptocurrencyWallet) destination.account;
-            apiDestination.account(new APIDestinationAccount(toAPI(cryptocurrencyWallet)));
-        } else if (destination.account instanceof IbanIdentifier) {
-            IbanIdentifier ibanIdentifier = (IbanIdentifier) destination.account;
-            apiDestination.account(new APIDestinationAccount(toAPI(ibanIdentifier)));
+        APIAccount account = new APIAccount().finId(destination.finId);
+        if (asset != null) {
+            account.asset(toAPIAsset(asset));
         }
-
-        return apiDestination;
+        APIAccountLedgerAccount ledger = toAPILedger(destination.account);
+        if (ledger != null) {
+            account.ledgerAccount(ledger);
+        }
+        return account;
     }
 
-    private static APIFinIdAccount toAPI(FinIdAccount account) {
-        return new APIFinIdAccount()
-                .type(APIFinIdAccount.TypeEnum.FIN_ID)
+    private static APIAccountLedgerAccount toAPILedger(@Nullable Object account) {
+        if (account instanceof LedgerAccount) {
+            LedgerAccount la = (LedgerAccount) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(la.type).address(la.address));
+        }
+        if (account instanceof CryptocurrencyWallet) {
+            CryptocurrencyWallet wallet = (CryptocurrencyWallet) account;
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type("wallet").address(wallet.address));
+        }
+        return null;
+    }
+
+    private static APIFinIdAccountBase toAPI(FinIdAccount account) {
+        return new APIFinIdAccountBase()
+                .type(APIFinIdAccountBase.TypeEnum.FINID)
                 .finId(account.finId);
     }
 
-    private static APICryptoWalletAccount toAPI(CryptocurrencyWallet account) {
-        return new APICryptoWalletAccount()
-                .type(APICryptoWalletAccount.TypeEnum.CRYPTO_WALLET)
-                .address(account.address);
-    }
-
-    private static APIFiatAccount toAPI(IbanIdentifier account) {
-        return new APIFiatAccount()
-                .type(APIFiatAccount.TypeEnum.FIAT_ACCOUNT)
-                .code(account.code);
-    }
-
-    private static APIAsset toAPI(Asset asset) {
-        return new APIAsset(new APIFinp2pAsset()
-                .type(APIFinp2pAsset.TypeEnum.FINP2P)
-                .resourceId(asset.assetId));
+    private static APIAsset toAPIAsset(Asset asset) {
+        return new APIAsset()
+                .resourceId(asset.assetId);
     }
 
     private static APITransactionDetails toAPI(@Nullable TransactionDetails details) {
@@ -601,7 +627,6 @@ public class Mappers {
         return new APITransactionDetails()
                 .transactionId(details.transactionId)
                 .operationId(details.operationId);
-
     }
 
     private static APIReceiptTradeDetails toAPI(TradeDetails details) {
@@ -614,38 +639,9 @@ public class Mappers {
                     .executionPlanId(details.executionContext.planId));
         }
         return apiDetails;
-
     }
 
-    private static APIProofPolicy toAPI(@Nullable ProofPolicy policy) {
-        if (policy == null) {
-            return new APIProofPolicy(
-                    new APINoProofPolicy()
-                            .type(APINoProofPolicy.TypeEnum.NO_PROOF_POLICY)
-            );
-        }
-        if (policy instanceof NoProofPolicy) {
-            return new APIProofPolicy(
-                    new APINoProofPolicy()
-                            .type(APINoProofPolicy.TypeEnum.NO_PROOF_POLICY)
-            );
-
-        } else if (policy instanceof SignatureProofPolicy) {
-            SignatureProofPolicy signature = (SignatureProofPolicy) policy;
-            return new APIProofPolicy(new APISignatureProofPolicy()
-                    .type(APISignatureProofPolicy.TypeEnum.SIGNATURE_PROOF_POLICY)
-                    .signature(new APISignature()
-                            .signature(signature.signature)
-                            .hashFunc(toAPI(signature.hashFunction))
-                            .template(toAPI(signature.template)))
-
-            );
-
-        } else {
-            throw new MappingException("Unsupported proof policy type: " + policy.getClass().getName());
-        }
-
-    }
+    // --- Signature & template mapping ---
 
     public static Signature fromAPI(@Nullable APISignature signature) {
         if (signature == null) {
@@ -657,7 +653,6 @@ public class Mappers {
                 fromAPI(signature.getHashFunc())
         );
     }
-
 
     public static SignatureTemplate fromAPI(APISignatureTemplate signatureTemplate) {
         if (signatureTemplate.getActualInstance() instanceof APIHashListTemplate) {
@@ -726,10 +721,9 @@ public class Mappers {
         );
     }
 
-
     public static APIHashListTemplate toAPI(HashListTemplate template) {
         return new APIHashListTemplate()
-                .type(APIHashListTemplate.TypeEnum.HASH_LIST)
+                .type(APIHashListTemplate.TypeEnum.HASHLIST)
                 .hash(template.hash)
                 .hashGroups(template.hashGroups.stream().map(Mappers::toAPI).collect(toList()));
     }
@@ -738,7 +732,6 @@ public class Mappers {
         return new APIEIP712Template()
                 .type(APIEIP712Template.TypeEnum.EIP712);
     }
-
 
     public static HashGroup fromAPI(APIHashGroup hashGroup) {
         return new HashGroup(
@@ -805,29 +798,18 @@ public class Mappers {
         }
     }
 
-    // --- PayoutAsset mapping ---
+    // --- PayoutAsset mapping (0.28: finp2p only) ---
 
     public static Asset fromAPI(APIPayoutAsset asset) {
-        if (asset.getActualInstance() instanceof APIFinp2pAsset) {
-            APIFinp2pAsset finp2pAsset = (APIFinp2pAsset) asset.getActualInstance();
-            return new Asset(finp2pAsset.getResourceId(), AssetType.FINP2P);
-
-        } else if (asset.getActualInstance() instanceof APIFiatAsset) {
-            APIFiatAsset fiatAsset = (APIFiatAsset) asset.getActualInstance();
-            return new Asset(fiatAsset.getCode(), AssetType.FIAT);
-
-        } else if (asset.getActualInstance() instanceof APICryptocurrencyAsset) {
-            APICryptocurrencyAsset cryptoAsset = (APICryptocurrencyAsset) asset.getActualInstance();
-            return new Asset(cryptoAsset.getCode(), AssetType.CRYPTOCURRENCY);
-
-        } else {
-            throw new MappingException("Unsupported payout asset type: " + asset.getActualInstance().getClass().getName());
+        if (asset == null) {
+            throw new MappingException("Payout asset is required");
         }
+        return new Asset(asset.getId(), AssetType.FINP2P);
     }
 
     // --- Balance mapping ---
 
-    public static APIAssetBalanceInfoResponse balanceToAPI(APIAsset asset, APIFinIdAccount account, Balance balance) {
+    public static APIAssetBalanceInfoResponse balanceToAPI(APIAsset asset, APIFinIdAccountBase account, Balance balance) {
         return new APIAssetBalanceInfoResponse()
                 .account(account)
                 .asset(asset)
@@ -890,34 +872,14 @@ public class Mappers {
             strategy = new APIOperationMetadataOperationResponseStrategy(
                     new APICallbackResultsStrategy()
                             .type(APICallbackResultsStrategy.TypeEnum.CALLBACK)
-                            .callback(new APICallbackEndpoint()
-                                    .type(APICallbackEndpoint.TypeEnum.ENDPOINT)
-                            )
+                            .callback(new APICallbackResultsStrategyCallback(
+                                    new APICallbackEndpoint()
+                                            .type(APICallbackEndpoint.TypeEnum.ENDPOINT)
+                            ))
             );
         } else {
             return null;
         }
         return new APIOperationMetadata().operationResponseStrategy(strategy);
     }
-
-    // --- LedgerReference mapping ---
-
-    private static APIContractDetails toAPI(@Nullable LedgerReference reference) {
-        if (reference == null) {
-            return null;
-        }
-        APIContractDetails details = new APIContractDetails()
-                .type(APIContractDetails.TypeEnum.CONTRACT_DETAILS)
-                .network(reference.network)
-                .address(reference.address)
-                .tokenStandard(reference.tokenStandard);
-        if (reference.additionalContractDetails != null) {
-            details.additionalContractDetails(new APIFinP2PEVMOperatorDetails()
-                    .finP2POperatorContractAddress(reference.additionalContractDetails.finP2POperatorContractAddress)
-                    .allowanceRequired(reference.additionalContractDetails.allowanceRequired)
-            );
-        }
-        return details;
-    }
-
 }

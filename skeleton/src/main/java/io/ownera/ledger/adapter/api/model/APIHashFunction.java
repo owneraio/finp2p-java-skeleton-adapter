@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -60,9 +61,6 @@ public enum APIHashFunction {
 
   @JsonCreator
   public static APIHashFunction fromValue(String value) {
-    if (value == null || value.isEmpty()) {
-      return UNSPECIFIED;
-    }
     for (APIHashFunction b : APIHashFunction.values()) {
       if (b.value.equals(value)) {
         return b;
@@ -82,7 +80,7 @@ public enum APIHashFunction {
       prefix = "";
     }
 
-    return String.format(java.util.Locale.ROOT, "%s=%s", prefix, this.toString());
+    return String.format("%s=%s", prefix, this.toString());
   }
 
 }

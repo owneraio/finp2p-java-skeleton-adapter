@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIBalanceMarkerTransactionBlock
  */
@@ -37,13 +36,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIBalanceMarkerTransactionBlock.JSON_PROPERTY_BLOCK_NUMBER,
   APIBalanceMarkerTransactionBlock.JSON_PROPERTY_TRANSACTION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIBalanceMarkerTransactionBlock {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    TRANSACTION_BLOCK(String.valueOf("transactionBlock"));
+    TRANSACTIONBLOCK("transactionBlock");
 
     private String value;
 
@@ -73,88 +72,88 @@ public class APIBalanceMarkerTransactionBlock {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_BLOCK_NUMBER = "blockNumber";
-  @javax.annotation.Nonnull
   private Long blockNumber;
 
   public static final String JSON_PROPERTY_TRANSACTION = "transaction";
-  @javax.annotation.Nonnull
   private String transaction;
 
   public APIBalanceMarkerTransactionBlock() { 
   }
 
-  public APIBalanceMarkerTransactionBlock type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIBalanceMarkerTransactionBlock type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIBalanceMarkerTransactionBlock blockNumber(@javax.annotation.Nonnull Long blockNumber) {
+  public APIBalanceMarkerTransactionBlock blockNumber(Long blockNumber) {
     this.blockNumber = blockNumber;
     return this;
   }
 
-  /**
+   /**
    * Get blockNumber
    * @return blockNumber
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_BLOCK_NUMBER, required = true)
+  @JsonProperty(JSON_PROPERTY_BLOCK_NUMBER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Long getBlockNumber() {
     return blockNumber;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_BLOCK_NUMBER, required = true)
+  @JsonProperty(JSON_PROPERTY_BLOCK_NUMBER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setBlockNumber(@javax.annotation.Nonnull Long blockNumber) {
+  public void setBlockNumber(Long blockNumber) {
     this.blockNumber = blockNumber;
   }
 
 
-  public APIBalanceMarkerTransactionBlock transaction(@javax.annotation.Nonnull String transaction) {
+  public APIBalanceMarkerTransactionBlock transaction(String transaction) {
     this.transaction = transaction;
     return this;
   }
 
-  /**
+   /**
    * Get transaction
    * @return transaction
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION, required = true)
+  @JsonProperty(JSON_PROPERTY_TRANSACTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getTransaction() {
     return transaction;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION, required = true)
+  @JsonProperty(JSON_PROPERTY_TRANSACTION)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTransaction(@javax.annotation.Nonnull String transaction) {
+  public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
 
@@ -237,17 +236,17 @@ public class APIBalanceMarkerTransactionBlock {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `blockNumber` to the URL query string
     if (getBlockNumber() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sblockNumber%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getBlockNumber()))));
+      joiner.add(String.format("%sblockNumber%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getBlockNumber()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `transaction` to the URL query string
     if (getTransaction() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stransaction%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTransaction()))));
+      joiner.add(String.format("%stransaction%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTransaction()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

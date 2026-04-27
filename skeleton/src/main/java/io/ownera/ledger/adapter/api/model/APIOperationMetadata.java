@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,46 +26,44 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIOperationMetadataOperationResponseStrategy;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * additional metadata regarding the operation
  */
 @JsonPropertyOrder({
   APIOperationMetadata.JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIOperationMetadata {
   public static final String JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY = "operationResponseStrategy";
-  @javax.annotation.Nullable
   private APIOperationMetadataOperationResponseStrategy operationResponseStrategy;
 
   public APIOperationMetadata() { 
   }
 
-  public APIOperationMetadata operationResponseStrategy(@javax.annotation.Nullable APIOperationMetadataOperationResponseStrategy operationResponseStrategy) {
+  public APIOperationMetadata operationResponseStrategy(APIOperationMetadataOperationResponseStrategy operationResponseStrategy) {
     this.operationResponseStrategy = operationResponseStrategy;
     return this;
   }
 
-  /**
+   /**
    * Get operationResponseStrategy
    * @return operationResponseStrategy
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIOperationMetadataOperationResponseStrategy getOperationResponseStrategy() {
     return operationResponseStrategy;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_RESPONSE_STRATEGY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationResponseStrategy(@javax.annotation.Nullable APIOperationMetadataOperationResponseStrategy operationResponseStrategy) {
+  public void setOperationResponseStrategy(APIOperationMetadataOperationResponseStrategy operationResponseStrategy) {
     this.operationResponseStrategy = operationResponseStrategy;
   }
 

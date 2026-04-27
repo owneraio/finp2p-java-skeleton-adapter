@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APISignature;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APISignatureProofPolicy
  */
@@ -37,13 +36,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APISignatureProofPolicy.JSON_PROPERTY_TYPE,
   APISignatureProofPolicy.JSON_PROPERTY_SIGNATURE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APISignatureProofPolicy {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    SIGNATURE_PROOF_POLICY(String.valueOf("signatureProofPolicy"));
+    SIGNATUREPROOFPOLICY("signatureProofPolicy");
 
     private String value;
 
@@ -73,60 +72,60 @@ public class APISignatureProofPolicy {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
-  @javax.annotation.Nullable
   private APISignature signature;
 
   public APISignatureProofPolicy() { 
   }
 
-  public APISignatureProofPolicy type(@javax.annotation.Nonnull TypeEnum type) {
+  public APISignatureProofPolicy type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APISignatureProofPolicy signature(@javax.annotation.Nullable APISignature signature) {
+  public APISignatureProofPolicy signature(APISignature signature) {
     this.signature = signature;
     return this;
   }
 
-  /**
+   /**
    * Get signature
    * @return signature
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APISignature getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = false)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSignature(@javax.annotation.Nullable APISignature signature) {
+  public void setSignature(APISignature signature) {
     this.signature = signature;
   }
 
@@ -207,7 +206,7 @@ public class APISignatureProofPolicy {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `signature` to the URL query string

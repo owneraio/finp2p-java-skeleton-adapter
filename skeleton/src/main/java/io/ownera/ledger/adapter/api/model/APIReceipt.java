@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,24 +25,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIAsset;
-import io.ownera.ledger.adapter.api.model.APIDestination;
+import io.ownera.ledger.adapter.api.model.APIAccount;
 import io.ownera.ledger.adapter.api.model.APIOperationType;
 import io.ownera.ledger.adapter.api.model.APIProofPolicy;
 import io.ownera.ledger.adapter.api.model.APIReceiptTradeDetails;
-import io.ownera.ledger.adapter.api.model.APISource;
 import io.ownera.ledger.adapter.api.model.APITransactionDetails;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIReceipt
  */
 @JsonPropertyOrder({
   APIReceipt.JSON_PROPERTY_ID,
-  APIReceipt.JSON_PROPERTY_ASSET,
   APIReceipt.JSON_PROPERTY_QUANTITY,
   APIReceipt.JSON_PROPERTY_TIMESTAMP,
   APIReceipt.JSON_PROPERTY_SOURCE,
@@ -51,287 +47,259 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIReceipt.JSON_PROPERTY_TRADE_DETAILS,
   APIReceipt.JSON_PROPERTY_PROOF
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIReceipt {
   public static final String JSON_PROPERTY_ID = "id";
-  @javax.annotation.Nonnull
   private String id;
 
-  public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
-  private APIAsset asset;
-
   public static final String JSON_PROPERTY_QUANTITY = "quantity";
-  @javax.annotation.Nonnull
   private String quantity;
 
   public static final String JSON_PROPERTY_TIMESTAMP = "timestamp";
-  @javax.annotation.Nonnull
   private Long timestamp;
 
   public static final String JSON_PROPERTY_SOURCE = "source";
-  @javax.annotation.Nullable
-  private APISource source;
+  private APIAccount source;
 
   public static final String JSON_PROPERTY_DESTINATION = "destination";
-  @javax.annotation.Nullable
-  private APIDestination destination;
+  private APIAccount destination;
 
   public static final String JSON_PROPERTY_TRANSACTION_DETAILS = "transactionDetails";
-  @javax.annotation.Nullable
   private APITransactionDetails transactionDetails;
 
   public static final String JSON_PROPERTY_OPERATION_TYPE = "operationType";
-  @javax.annotation.Nullable
   private APIOperationType operationType;
 
   public static final String JSON_PROPERTY_TRADE_DETAILS = "tradeDetails";
-  @javax.annotation.Nonnull
   private APIReceiptTradeDetails tradeDetails;
 
   public static final String JSON_PROPERTY_PROOF = "proof";
-  @javax.annotation.Nullable
   private APIProofPolicy proof;
 
   public APIReceipt() { 
   }
 
-  public APIReceipt id(@javax.annotation.Nonnull String id) {
+  public APIReceipt id(String id) {
     this.id = id;
     return this;
   }
 
-  /**
+   /**
    * the receipt id
    * @return id
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getId() {
     return id;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setId(@javax.annotation.Nonnull String id) {
+  public void setId(String id) {
     this.id = id;
   }
 
 
-  public APIReceipt asset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
-    return this;
-  }
-
-  /**
-   * Get asset
-   * @return asset
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIAsset getAsset() {
-    return asset;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
-  }
-
-
-  public APIReceipt quantity(@javax.annotation.Nonnull String quantity) {
+  public APIReceipt quantity(String quantity) {
     this.quantity = quantity;
     return this;
   }
 
-  /**
+   /**
    * How many units of the asset tokens
    * @return quantity
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getQuantity() {
     return quantity;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_QUANTITY, required = true)
+  @JsonProperty(JSON_PROPERTY_QUANTITY)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setQuantity(@javax.annotation.Nonnull String quantity) {
+  public void setQuantity(String quantity) {
     this.quantity = quantity;
   }
 
 
-  public APIReceipt timestamp(@javax.annotation.Nonnull Long timestamp) {
+  public APIReceipt timestamp(Long timestamp) {
     this.timestamp = timestamp;
     return this;
   }
 
-  /**
+   /**
    * transaction timestamp
    * @return timestamp
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = true)
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Long getTimestamp() {
     return timestamp;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TIMESTAMP, required = true)
+  @JsonProperty(JSON_PROPERTY_TIMESTAMP)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTimestamp(@javax.annotation.Nonnull Long timestamp) {
+  public void setTimestamp(Long timestamp) {
     this.timestamp = timestamp;
   }
 
 
-  public APIReceipt source(@javax.annotation.Nullable APISource source) {
+  public APIReceipt source(APIAccount source) {
     this.source = source;
     return this;
   }
 
-  /**
+   /**
    * Get source
    * @return source
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APISource getSource() {
+
+  public APIAccount getSource() {
     return source;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SOURCE, required = false)
+  @JsonProperty(JSON_PROPERTY_SOURCE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSource(@javax.annotation.Nullable APISource source) {
+  public void setSource(APIAccount source) {
     this.source = source;
   }
 
 
-  public APIReceipt destination(@javax.annotation.Nullable APIDestination destination) {
+  public APIReceipt destination(APIAccount destination) {
     this.destination = destination;
     return this;
   }
 
-  /**
+   /**
    * Get destination
    * @return destination
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APIDestination getDestination() {
+
+  public APIAccount getDestination() {
     return destination;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DESTINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DESTINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDestination(@javax.annotation.Nullable APIDestination destination) {
+  public void setDestination(APIAccount destination) {
     this.destination = destination;
   }
 
 
-  public APIReceipt transactionDetails(@javax.annotation.Nullable APITransactionDetails transactionDetails) {
+  public APIReceipt transactionDetails(APITransactionDetails transactionDetails) {
     this.transactionDetails = transactionDetails;
     return this;
   }
 
-  /**
+   /**
    * Get transactionDetails
    * @return transactionDetails
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_TRANSACTION_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APITransactionDetails getTransactionDetails() {
     return transactionDetails;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRANSACTION_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_TRANSACTION_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTransactionDetails(@javax.annotation.Nullable APITransactionDetails transactionDetails) {
+  public void setTransactionDetails(APITransactionDetails transactionDetails) {
     this.transactionDetails = transactionDetails;
   }
 
 
-  public APIReceipt operationType(@javax.annotation.Nullable APIOperationType operationType) {
+  public APIReceipt operationType(APIOperationType operationType) {
     this.operationType = operationType;
     return this;
   }
 
-  /**
+   /**
    * Get operationType
    * @return operationType
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_TYPE, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIOperationType getOperationType() {
     return operationType;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_TYPE, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationType(@javax.annotation.Nullable APIOperationType operationType) {
+  public void setOperationType(APIOperationType operationType) {
     this.operationType = operationType;
   }
 
 
-  public APIReceipt tradeDetails(@javax.annotation.Nonnull APIReceiptTradeDetails tradeDetails) {
+  public APIReceipt tradeDetails(APIReceiptTradeDetails tradeDetails) {
     this.tradeDetails = tradeDetails;
     return this;
   }
 
-  /**
+   /**
    * Get tradeDetails
    * @return tradeDetails
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TRADE_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_TRADE_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIReceiptTradeDetails getTradeDetails() {
     return tradeDetails;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TRADE_DETAILS, required = true)
+  @JsonProperty(JSON_PROPERTY_TRADE_DETAILS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTradeDetails(@javax.annotation.Nonnull APIReceiptTradeDetails tradeDetails) {
+  public void setTradeDetails(APIReceiptTradeDetails tradeDetails) {
     this.tradeDetails = tradeDetails;
   }
 
 
-  public APIReceipt proof(@javax.annotation.Nullable APIProofPolicy proof) {
+  public APIReceipt proof(APIProofPolicy proof) {
     this.proof = proof;
     return this;
   }
 
-  /**
+   /**
    * Get proof
    * @return proof
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_PROOF, required = false)
+  @JsonProperty(JSON_PROPERTY_PROOF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIProofPolicy getProof() {
     return proof;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_PROOF, required = false)
+  @JsonProperty(JSON_PROPERTY_PROOF)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setProof(@javax.annotation.Nullable APIProofPolicy proof) {
+  public void setProof(APIProofPolicy proof) {
     this.proof = proof;
   }
 
@@ -349,7 +317,6 @@ public class APIReceipt {
     }
     APIReceipt receipt = (APIReceipt) o;
     return Objects.equals(this.id, receipt.id) &&
-        Objects.equals(this.asset, receipt.asset) &&
         Objects.equals(this.quantity, receipt.quantity) &&
         Objects.equals(this.timestamp, receipt.timestamp) &&
         Objects.equals(this.source, receipt.source) &&
@@ -362,7 +329,7 @@ public class APIReceipt {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, asset, quantity, timestamp, source, destination, transactionDetails, operationType, tradeDetails, proof);
+    return Objects.hash(id, quantity, timestamp, source, destination, transactionDetails, operationType, tradeDetails, proof);
   }
 
   @Override
@@ -370,7 +337,6 @@ public class APIReceipt {
     StringBuilder sb = new StringBuilder();
     sb.append("class APIReceipt {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
     sb.append("    quantity: ").append(toIndentedString(quantity)).append("\n");
     sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
@@ -428,22 +394,17 @@ public class APIReceipt {
 
     // add `id` to the URL query string
     if (getId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getId()))));
-    }
-
-    // add `asset` to the URL query string
-    if (getAsset() != null) {
-      joiner.add(getAsset().toUrlQueryString(prefix + "asset" + suffix));
+      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `quantity` to the URL query string
     if (getQuantity() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%squantity%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getQuantity()))));
+      joiner.add(String.format("%squantity%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getQuantity()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `timestamp` to the URL query string
     if (getTimestamp() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stimestamp%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTimestamp()))));
+      joiner.add(String.format("%stimestamp%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTimestamp()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `source` to the URL query string
@@ -463,7 +424,7 @@ public class APIReceipt {
 
     // add `operationType` to the URL query string
     if (getOperationType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%soperationType%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getOperationType()))));
+      joiner.add(String.format("%soperationType%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getOperationType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `tradeDetails` to the URL query string

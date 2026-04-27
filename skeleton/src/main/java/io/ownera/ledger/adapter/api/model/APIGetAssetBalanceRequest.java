@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,78 +25,46 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIAsset;
-import io.ownera.ledger.adapter.api.model.APISource;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIAccount;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIGetAssetBalanceRequest
  */
 @JsonPropertyOrder({
-  APIGetAssetBalanceRequest.JSON_PROPERTY_OWNER,
-  APIGetAssetBalanceRequest.JSON_PROPERTY_ASSET
+  APIGetAssetBalanceRequest.JSON_PROPERTY_OWNER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIGetAssetBalanceRequest {
   public static final String JSON_PROPERTY_OWNER = "owner";
-  @javax.annotation.Nonnull
-  private APISource owner;
-
-  public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
-  private APIAsset asset;
+  private APIAccount owner;
 
   public APIGetAssetBalanceRequest() { 
   }
 
-  public APIGetAssetBalanceRequest owner(@javax.annotation.Nonnull APISource owner) {
+  public APIGetAssetBalanceRequest owner(APIAccount owner) {
     this.owner = owner;
     return this;
   }
 
-  /**
+   /**
    * Get owner
    * @return owner
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
+  @JsonProperty(JSON_PROPERTY_OWNER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APISource getOwner() {
+
+  public APIAccount getOwner() {
     return owner;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OWNER, required = true)
+  @JsonProperty(JSON_PROPERTY_OWNER)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setOwner(@javax.annotation.Nonnull APISource owner) {
+  public void setOwner(APIAccount owner) {
     this.owner = owner;
-  }
-
-
-  public APIGetAssetBalanceRequest asset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
-    return this;
-  }
-
-  /**
-   * Get asset
-   * @return asset
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIAsset getAsset() {
-    return asset;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
-    this.asset = asset;
   }
 
 
@@ -111,13 +80,12 @@ public class APIGetAssetBalanceRequest {
       return false;
     }
     APIGetAssetBalanceRequest getAssetBalanceRequest = (APIGetAssetBalanceRequest) o;
-    return Objects.equals(this.owner, getAssetBalanceRequest.owner) &&
-        Objects.equals(this.asset, getAssetBalanceRequest.asset);
+    return Objects.equals(this.owner, getAssetBalanceRequest.owner);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(owner, asset);
+    return Objects.hash(owner);
   }
 
   @Override
@@ -125,7 +93,6 @@ public class APIGetAssetBalanceRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class APIGetAssetBalanceRequest {\n");
     sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
-    sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -176,11 +143,6 @@ public class APIGetAssetBalanceRequest {
     // add `owner` to the URL query string
     if (getOwner() != null) {
       joiner.add(getOwner().toUrlQueryString(prefix + "owner" + suffix));
-    }
-
-    // add `asset` to the URL query string
-    if (getAsset() != null) {
-      joiner.add(getAsset().toUrlQueryString(prefix + "asset" + suffix));
     }
 
     return joiner.toString();

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,12 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIRegulationError;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIReceiptOperationErrorInformation
  */
@@ -40,72 +39,71 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIReceiptOperationErrorInformation.JSON_PROPERTY_MESSAGE,
   APIReceiptOperationErrorInformation.JSON_PROPERTY_REGULATION_ERROR_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIReceiptOperationErrorInformation {
   public static final String JSON_PROPERTY_CODE = "code";
-  @javax.annotation.Nonnull
   private Integer code;
 
   public static final String JSON_PROPERTY_MESSAGE = "message";
-  @javax.annotation.Nonnull
   private String message;
 
   public static final String JSON_PROPERTY_REGULATION_ERROR_DETAILS = "regulationErrorDetails";
-  @javax.annotation.Nullable
   private List<APIRegulationError> regulationErrorDetails = new ArrayList<>();
 
   public APIReceiptOperationErrorInformation() { 
   }
 
-  public APIReceiptOperationErrorInformation code(@javax.annotation.Nonnull Integer code) {
+  public APIReceiptOperationErrorInformation code(Integer code) {
     this.code = code;
     return this;
   }
 
-  /**
+   /**
    * 1 for failure in regApps validation, 4 failure in signature verification
    * @return code
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Integer getCode() {
     return code;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(@javax.annotation.Nonnull Integer code) {
+  public void setCode(Integer code) {
     this.code = code;
   }
 
 
-  public APIReceiptOperationErrorInformation message(@javax.annotation.Nonnull String message) {
+  public APIReceiptOperationErrorInformation message(String message) {
     this.message = message;
     return this;
   }
 
-  /**
+   /**
    * Get message
    * @return message
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getMessage() {
     return message;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_MESSAGE, required = true)
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setMessage(@javax.annotation.Nonnull String message) {
+  public void setMessage(String message) {
     this.message = message;
   }
 
 
-  public APIReceiptOperationErrorInformation regulationErrorDetails(@javax.annotation.Nullable List<APIRegulationError> regulationErrorDetails) {
+  public APIReceiptOperationErrorInformation regulationErrorDetails(List<APIRegulationError> regulationErrorDetails) {
     this.regulationErrorDetails = regulationErrorDetails;
     return this;
   }
@@ -118,21 +116,22 @@ public class APIReceiptOperationErrorInformation {
     return this;
   }
 
-  /**
+   /**
    * Get regulationErrorDetails
    * @return regulationErrorDetails
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_REGULATION_ERROR_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_REGULATION_ERROR_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public List<APIRegulationError> getRegulationErrorDetails() {
     return regulationErrorDetails;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_REGULATION_ERROR_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_REGULATION_ERROR_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRegulationErrorDetails(@javax.annotation.Nullable List<APIRegulationError> regulationErrorDetails) {
+  public void setRegulationErrorDetails(List<APIRegulationError> regulationErrorDetails) {
     this.regulationErrorDetails = regulationErrorDetails;
   }
 
@@ -215,20 +214,20 @@ public class APIReceiptOperationErrorInformation {
 
     // add `code` to the URL query string
     if (getCode() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+      joiner.add(String.format("%scode%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `message` to the URL query string
     if (getMessage() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%smessage%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getMessage()))));
+      joiner.add(String.format("%smessage%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getMessage()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `regulationErrorDetails` to the URL query string
     if (getRegulationErrorDetails() != null) {
       for (int i = 0; i < getRegulationErrorDetails().size(); i++) {
         if (getRegulationErrorDetails().get(i) != null) {
-          joiner.add(getRegulationErrorDetails().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sregulationErrorDetails%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getRegulationErrorDetails().get(i).toUrlQueryString(String.format("%sregulationErrorDetails%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }

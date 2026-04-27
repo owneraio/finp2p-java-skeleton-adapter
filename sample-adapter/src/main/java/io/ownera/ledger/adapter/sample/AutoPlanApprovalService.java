@@ -3,6 +3,8 @@ package io.ownera.ledger.adapter.sample;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
 import io.ownera.ledger.adapter.service.model.ApprovedPlan;
 import io.ownera.ledger.adapter.service.model.PlanApprovalStatus;
+import io.ownera.ledger.adapter.service.model.PlanProposal;
+import io.ownera.ledger.adapter.service.model.ProposalStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class AutoPlanApprovalService implements PlanApprovalService {
     }
 
     @Override
-    public void proposalStatus(String planId, String status, String requestType) {
-        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, requestType);
+    public void proposalStatus(String planId, PlanProposal proposal, ProposalStatus status) {
+        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, proposal.getClass().getSimpleName());
     }
 }

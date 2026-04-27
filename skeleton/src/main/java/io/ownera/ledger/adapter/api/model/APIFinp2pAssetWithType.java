@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,25 +25,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APIFiatAccount
+ * APIFinp2pAssetWithType
  */
 @JsonPropertyOrder({
-  APIFiatAccount.JSON_PROPERTY_TYPE,
-  APIFiatAccount.JSON_PROPERTY_CODE
+  APIFinp2pAssetWithType.JSON_PROPERTY_TYPE,
+  APIFinp2pAssetWithType.JSON_PROPERTY_RESOURCE_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APIFiatAccount {
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIFinp2pAssetWithType {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    FIAT_ACCOUNT(String.valueOf("fiatAccount"));
+    FINP2P("finp2p");
 
     private String value;
 
@@ -72,66 +71,66 @@ public class APIFiatAccount {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_CODE = "code";
-  @javax.annotation.Nonnull
-  private String code;
+  public static final String JSON_PROPERTY_RESOURCE_ID = "resourceId";
+  private String resourceId;
 
-  public APIFiatAccount() { 
+  public APIFinp2pAssetWithType() { 
   }
 
-  public APIFiatAccount type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIFinp2pAssetWithType type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIFiatAccount code(@javax.annotation.Nonnull String code) {
-    this.code = code;
+  public APIFinp2pAssetWithType resourceId(String resourceId) {
+    this.resourceId = resourceId;
     return this;
   }
 
-  /**
-   * IBAN or other code to represent a fiat account
-   * @return code
-   */
+   /**
+   * unique resource ID of the FinP2P asset
+   * @return resourceId
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_RESOURCE_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getCode() {
-    return code;
+
+  public String getResourceId() {
+    return resourceId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_RESOURCE_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(@javax.annotation.Nonnull String code) {
-    this.code = code;
+  public void setResourceId(String resourceId) {
+    this.resourceId = resourceId;
   }
 
 
   /**
-   * Return true if this fiatAccount object is equal to o.
+   * Return true if this finp2pAssetWithType object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -141,22 +140,22 @@ public class APIFiatAccount {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIFiatAccount fiatAccount = (APIFiatAccount) o;
-    return Objects.equals(this.type, fiatAccount.type) &&
-        Objects.equals(this.code, fiatAccount.code);
+    APIFinp2pAssetWithType finp2pAssetWithType = (APIFinp2pAssetWithType) o;
+    return Objects.equals(this.type, finp2pAssetWithType.type) &&
+        Objects.equals(this.resourceId, finp2pAssetWithType.resourceId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, code);
+    return Objects.hash(type, resourceId);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIFiatAccount {\n");
+    sb.append("class APIFinp2pAssetWithType {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    resourceId: ").append(toIndentedString(resourceId)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -206,12 +205,12 @@ public class APIFiatAccount {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
-    // add `code` to the URL query string
-    if (getCode() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+    // add `resourceId` to the URL query string
+    if (getResourceId() != null) {
+      joiner.add(String.format("%sresourceId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getResourceId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

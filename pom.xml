@@ -14,7 +14,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ownera.java.sdk.version>0.27.10</ownera.java.sdk.version>
+        <ownera.java.sdk.version>0.28.5</ownera.java.sdk.version>
         <jooq.version>3.19.7</jooq.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>

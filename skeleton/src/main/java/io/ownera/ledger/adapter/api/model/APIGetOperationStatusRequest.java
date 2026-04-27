@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,46 +25,44 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIGetOperationStatusRequest
  */
 @JsonPropertyOrder({
   APIGetOperationStatusRequest.JSON_PROPERTY_CID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIGetOperationStatusRequest {
   public static final String JSON_PROPERTY_CID = "cid";
-  @javax.annotation.Nullable
   private String cid;
 
   public APIGetOperationStatusRequest() { 
   }
 
-  public APIGetOperationStatusRequest cid(@javax.annotation.Nullable String cid) {
+  public APIGetOperationStatusRequest cid(String cid) {
     this.cid = cid;
     return this;
   }
 
-  /**
+   /**
    * correlation id of an operation
    * @return cid
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_CID, required = false)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getCid() {
     return cid;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CID, required = false)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setCid(@javax.annotation.Nullable String cid) {
+  public void setCid(String cid) {
     this.cid = cid;
   }
 
@@ -142,7 +141,7 @@ public class APIGetOperationStatusRequest {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
+      joiner.add(String.format("%scid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCid()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

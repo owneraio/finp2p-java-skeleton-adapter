@@ -142,12 +142,12 @@ public class Controller {
             @RequestBody APIExecutionPlanProposalStatusRequest request
     ) {
         String planId = request.getRequest().getExecutionPlan().getId();
-        String status = request.getStatus() != null ? request.getStatus().getValue() : "unknown";
-        String requestType = request.getRequest().getExecutionPlan().getProposal() != null
-                ? request.getRequest().getExecutionPlan().getProposal().getActualInstance().getClass().getSimpleName()
-                : "unknown";
-        logger.info("Proposal status: planId={}, status={}, type={}", planId, status, requestType);
-        planApprovalService.proposalStatus(planId, status, requestType);
+        PlanProposal proposal = proposalFromAPI(request.getRequest().getExecutionPlan().getProposal());
+        ProposalStatus status = "rejected".equalsIgnoreCase(
+                request.getStatus() != null ? request.getStatus().getValue() : null)
+                ? ProposalStatus.REJECTED : ProposalStatus.APPROVED;
+        logger.info("Proposal status: planId={}, status={}, type={}", planId, status, proposal.getClass().getSimpleName());
+        planApprovalService.proposalStatus(planId, proposal, status);
         return ResponseEntity.noContent().build();
     }
 
@@ -169,8 +169,7 @@ public class Controller {
                         request.getMetadata(),
                         request.getName(),
                         request.getIssuerId(),
-                        fromAPI(request.getDenomination()),
-                        fromAPI(request.getAssetIdentifier())
+                        fromAPI(request.getDenomination())
                 ),
                 cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
         );
@@ -187,8 +186,8 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Issue assets: {}", request);
 
-        Asset asset = fromAPI(request.getAsset());
-        FinIdAccount destination = fromAPI(request.getDestination());
+        FinIdAccount destination = finIdAccountFromAPI(request.getDestination());
+        Asset asset = assetFromAPI(request.getDestination());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
         transactionHook.ifPresent(h -> h.preTransaction(
@@ -215,9 +214,9 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Transfer assets: {}", request);
 
-        Source source = fromAPI(request.getSource());
-        Destination destination = fromAPI(request.getDestination());
-        Asset asset = fromAPI(request.getAsset());
+        Source source = sourceFromAPI(request.getSource());
+        Destination destination = destinationFromAPI(request.getDestination());
+        Asset asset = assetFromAPI(request.getSource());
         Signature sig = fromAPI(request.getSignature());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
@@ -251,8 +250,8 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Redeem assets: {}", request);
 
-        FinIdAccount source = fromAPI(request.getSource());
-        Asset asset = fromAPI(request.getAsset());
+        FinIdAccount source = finIdAccountFromAPI(request.getSource());
+        Asset asset = assetFromAPI(request.getSource());
         Signature sig = fromAPI(request.getSignature());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
@@ -282,10 +281,11 @@ public class Controller {
 
     @PostMapping(value = "/api/assets/getBalance", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<APIGetAssetBalanceResponse> getBalance(@RequestBody APIGetAssetBalanceRequest request) {
-        Asset asset = fromAPI(request.getAsset());
+        // 0.28: asset is embedded in the APIAccount (owner)
+        Asset asset = assetFromAPI(request.getOwner());
         String balance = tokenService.getBalance(asset, request.getOwner().getFinId());
         return ResponseEntity.status(HttpStatus.OK).body(new APIGetAssetBalanceResponse()
-                .asset(request.getAsset())
+                .asset(request.getOwner().getAsset())
                 .balance(balance));
     }
 
@@ -323,9 +323,9 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Hold assets: {}", request);
 
-        Source source = fromAPI(request.getSource());
-        Destination destination = fromAPI(request.getDestination());
-        Asset asset = fromAPI(request.getAsset());
+        Source source = sourceFromAPI(request.getSource());
+        Destination destination = destinationFromAPI(request.getDestination());
+        Asset asset = assetFromAPI(request.getSource());
         Signature sig = fromAPI(request.getSignature());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
@@ -359,9 +359,9 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Release assets: {}", request);
 
-        Source source = fromAPI(request.getSource());
-        Destination destination = fromAPI(request.getDestination());
-        Asset asset = fromAPI(request.getAsset());
+        Source source = sourceFromAPI(request.getSource());
+        Destination destination = destinationFromAPI(request.getDestination());
+        Asset asset = assetFromAPI(request.getSource());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
         transactionHook.ifPresent(h -> h.preTransaction(
@@ -389,8 +389,8 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Rollback assets: {}", request);
 
-        Source source = fromAPI(request.getSource());
-        Asset asset = fromAPI(request.getAsset());
+        Source source = sourceFromAPI(request.getSource());
+        Asset asset = assetFromAPI(request.getSource());
         ExecutionContext exCtx = fromAPI(request.getExecutionContext());
 
         transactionHook.ifPresent(h -> h.preTransaction(
@@ -429,8 +429,8 @@ public class Controller {
                 "depositInstruction", computeInputsHash("depositInstruction", ik, request.toString()),
                 () -> paymentService.getDepositInstruction(
                         ik,
-                        fromAPI(request.getOwner()),
-                        fromAPI(request.getDestination()),
+                        sourceFromAPI(request.getOwner()),
+                        destinationFromAPI(request.getDestination()),
                         fromAPI(request.getAsset()),
                         request.getAmount(),
                         request.getDetails(),
@@ -450,9 +450,9 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Payout: {}", request);
 
-        Source source = fromAPI(request.getSource());
-        Destination destination = fromAPI(request.getDestination());
-        Asset asset = fromAPI(request.getAsset());
+        Source source = sourceFromAPI(request.getSource());
+        Destination destination = destinationFromAPI(request.getDestination());
+        Asset asset = fromAPI(request.getAsset()); // payout: asset is top-level APIPayoutAsset
         Signature sig = fromAPI(request.getSignature());
 
         // Uncomment to enable signature verification:

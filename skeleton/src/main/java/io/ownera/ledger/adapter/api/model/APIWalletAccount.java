@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,114 +25,79 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APIFiatAsset
+ * APIWalletAccount
  */
 @JsonPropertyOrder({
-  APIFiatAsset.JSON_PROPERTY_TYPE,
-  APIFiatAsset.JSON_PROPERTY_CODE
+  APIWalletAccount.JSON_PROPERTY_TYPE,
+  APIWalletAccount.JSON_PROPERTY_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APIFiatAsset {
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    FIAT(String.valueOf("fiat"));
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIWalletAccount {
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
-  private TypeEnum type;
+  private String type;
 
-  public static final String JSON_PROPERTY_CODE = "code";
-  @javax.annotation.Nonnull
-  private String code;
+  public static final String JSON_PROPERTY_ADDRESS = "address";
+  private String address;
 
-  public APIFiatAsset() { 
+  public APIWalletAccount() { 
   }
 
-  public APIFiatAsset type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIWalletAccount type(String type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public TypeEnum getType() {
+
+  public String getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(String type) {
     this.type = type;
   }
 
 
-  public APIFiatAsset code(@javax.annotation.Nonnull String code) {
-    this.code = code;
+  public APIWalletAccount address(String address) {
+    this.address = address;
     return this;
   }
 
-  /**
-   * unique identifier code of the fiat currency - based on ISO-4217
-   * @return code
-   */
+   /**
+   * address of the wallet
+   * @return address
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getCode() {
-    return code;
+
+  public String getAddress() {
+    return address;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CODE, required = true)
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCode(@javax.annotation.Nonnull String code) {
-    this.code = code;
+  public void setAddress(String address) {
+    this.address = address;
   }
 
 
   /**
-   * Return true if this fiatAsset object is equal to o.
+   * Return true if this walletAccount object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -141,22 +107,22 @@ public class APIFiatAsset {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIFiatAsset fiatAsset = (APIFiatAsset) o;
-    return Objects.equals(this.type, fiatAsset.type) &&
-        Objects.equals(this.code, fiatAsset.code);
+    APIWalletAccount walletAccount = (APIWalletAccount) o;
+    return Objects.equals(this.type, walletAccount.type) &&
+        Objects.equals(this.address, walletAccount.address);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, code);
+    return Objects.hash(type, address);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIFiatAsset {\n");
+    sb.append("class APIWalletAccount {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -206,12 +172,12 @@ public class APIFiatAsset {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
-    // add `code` to the URL query string
-    if (getCode() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scode%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCode()))));
+    // add `address` to the URL query string
+    if (getAddress() != null) {
+      joiner.add(String.format("%saddress%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,114 +25,80 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIDepositPayoutAccountAccount;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
- * APIFinIdAccount
+ * APIDepositPayoutAccount
  */
 @JsonPropertyOrder({
-  APIFinIdAccount.JSON_PROPERTY_TYPE,
-  APIFinIdAccount.JSON_PROPERTY_FIN_ID
+  APIDepositPayoutAccount.JSON_PROPERTY_FIN_ID,
+  APIDepositPayoutAccount.JSON_PROPERTY_ACCOUNT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
-public class APIFinIdAccount {
-  /**
-   * Gets or Sets type
-   */
-  public enum TypeEnum {
-    FIN_ID(String.valueOf("finId"));
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
-  private TypeEnum type;
-
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+public class APIDepositPayoutAccount {
   public static final String JSON_PROPERTY_FIN_ID = "finId";
-  @javax.annotation.Nonnull
   private String finId;
 
-  public APIFinIdAccount() { 
+  public static final String JSON_PROPERTY_ACCOUNT = "account";
+  private APIDepositPayoutAccountAccount account;
+
+  public APIDepositPayoutAccount() { 
   }
 
-  public APIFinIdAccount type(@javax.annotation.Nonnull TypeEnum type) {
-    this.type = type;
-    return this;
-  }
-
-  /**
-   * Get type
-   * @return type
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public TypeEnum getType() {
-    return type;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
-    this.type = type;
-  }
-
-
-  public APIFinIdAccount finId(@javax.annotation.Nonnull String finId) {
+  public APIDepositPayoutAccount finId(String finId) {
     this.finId = finId;
     return this;
   }
 
-  /**
+   /**
    * Existing owner hex representation of a secp256k1 public key 33 bytes compressed
    * @return finId
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getFinId() {
     return finId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIN_ID, required = true)
+  @JsonProperty(JSON_PROPERTY_FIN_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFinId(@javax.annotation.Nonnull String finId) {
+  public void setFinId(String finId) {
     this.finId = finId;
   }
 
 
+  public APIDepositPayoutAccount account(APIDepositPayoutAccountAccount account) {
+    this.account = account;
+    return this;
+  }
+
+   /**
+   * Get account
+   * @return account
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public APIDepositPayoutAccountAccount getAccount() {
+    return account;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setAccount(APIDepositPayoutAccountAccount account) {
+    this.account = account;
+  }
+
+
   /**
-   * Return true if this finIdAccount object is equal to o.
+   * Return true if this depositPayoutAccount object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -141,22 +108,22 @@ public class APIFinIdAccount {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIFinIdAccount finIdAccount = (APIFinIdAccount) o;
-    return Objects.equals(this.type, finIdAccount.type) &&
-        Objects.equals(this.finId, finIdAccount.finId);
+    APIDepositPayoutAccount depositPayoutAccount = (APIDepositPayoutAccount) o;
+    return Objects.equals(this.finId, depositPayoutAccount.finId) &&
+        Objects.equals(this.account, depositPayoutAccount.account);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, finId);
+    return Objects.hash(finId, account);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIFinIdAccount {\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("class APIDepositPayoutAccount {\n");
     sb.append("    finId: ").append(toIndentedString(finId)).append("\n");
+    sb.append("    account: ").append(toIndentedString(account)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -204,14 +171,14 @@ public class APIFinIdAccount {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `type` to the URL query string
-    if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
     // add `finId` to the URL query string
     if (getFinId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sfinId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getFinId()))));
+      joiner.add(String.format("%sfinId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getFinId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `account` to the URL query string
+    if (getAccount() != null) {
+      joiner.add(getAccount().toUrlQueryString(prefix + "account" + suffix));
     }
 
     return joiner.toString();

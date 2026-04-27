@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,7 +35,6 @@ import io.ownera.ledger.adapter.api.model.APIEIP712Types;
 import io.ownera.ledger.adapter.api.model.APIHashGroup;
 import io.ownera.ledger.adapter.api.model.APIHashListTemplate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,10 +62,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 @JsonDeserialize(using = APISignatureTemplate.APISignatureTemplateDeserializer.class)
 @JsonSerialize(using = APISignatureTemplate.APISignatureTemplateSerializer.class)
 public class APISignatureTemplate extends AbstractOpenApiSchema {
@@ -159,7 +158,7 @@ public class APISignatureTemplate extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APISignatureTemplate: %d classes match result, expected 1", match));
+            throw new IOException(String.format("Failed deserialization for APISignatureTemplate: %d classes match result, expected 1", match));
         }
 
         /**
@@ -167,7 +166,7 @@ public class APISignatureTemplate extends AbstractOpenApiSchema {
          */
         @Override
         public APISignatureTemplate getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APISignatureTemplate cannot be null");
+            return null;
         }
     }
 
@@ -195,7 +194,9 @@ public class APISignatureTemplate extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("EIP712", APIEIP712Template.class);
+        mappings.put("EIP712Template", APIEIP712Template.class);
         mappings.put("hashList", APIHashListTemplate.class);
+        mappings.put("hashListTemplate", APIHashListTemplate.class);
         mappings.put("signatureTemplate", APISignatureTemplate.class);
         JSON.registerDiscriminator(APISignatureTemplate.class, "type", mappings);
     }

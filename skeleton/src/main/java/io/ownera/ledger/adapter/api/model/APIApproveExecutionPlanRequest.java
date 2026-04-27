@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,46 +26,44 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIApproveExecutionPlanRequestExecutionPlan;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIApproveExecutionPlanRequest
  */
 @JsonPropertyOrder({
   APIApproveExecutionPlanRequest.JSON_PROPERTY_EXECUTION_PLAN
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIApproveExecutionPlanRequest {
   public static final String JSON_PROPERTY_EXECUTION_PLAN = "executionPlan";
-  @javax.annotation.Nonnull
   private APIApproveExecutionPlanRequestExecutionPlan executionPlan;
 
   public APIApproveExecutionPlanRequest() { 
   }
 
-  public APIApproveExecutionPlanRequest executionPlan(@javax.annotation.Nonnull APIApproveExecutionPlanRequestExecutionPlan executionPlan) {
+  public APIApproveExecutionPlanRequest executionPlan(APIApproveExecutionPlanRequestExecutionPlan executionPlan) {
     this.executionPlan = executionPlan;
     return this;
   }
 
-  /**
+   /**
    * Get executionPlan
    * @return executionPlan
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_PLAN, required = true)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_PLAN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIApproveExecutionPlanRequestExecutionPlan getExecutionPlan() {
     return executionPlan;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_PLAN, required = true)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_PLAN)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setExecutionPlan(@javax.annotation.Nonnull APIApproveExecutionPlanRequestExecutionPlan executionPlan) {
+  public void setExecutionPlan(APIApproveExecutionPlanRequestExecutionPlan executionPlan) {
     this.executionPlan = executionPlan;
   }
 

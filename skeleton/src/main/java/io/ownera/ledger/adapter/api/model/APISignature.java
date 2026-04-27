@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,11 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIHashFunction;
 import io.ownera.ledger.adapter.api.model.APISignatureTemplate;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * represent a signature template information
  */
@@ -39,91 +38,91 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APISignature.JSON_PROPERTY_TEMPLATE,
   APISignature.JSON_PROPERTY_HASH_FUNC
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APISignature {
   public static final String JSON_PROPERTY_SIGNATURE = "signature";
-  @javax.annotation.Nonnull
   private String signature;
 
   public static final String JSON_PROPERTY_TEMPLATE = "template";
-  @javax.annotation.Nonnull
   private APISignatureTemplate template;
 
   public static final String JSON_PROPERTY_HASH_FUNC = "hashFunc";
-  @javax.annotation.Nonnull
   private APIHashFunction hashFunc;
 
   public APISignature() { 
   }
 
-  public APISignature signature(@javax.annotation.Nonnull String signature) {
+  public APISignature signature(String signature) {
     this.signature = signature;
     return this;
   }
 
-  /**
+   /**
    * hex representation of the signature
    * @return signature
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getSignature() {
     return signature;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_SIGNATURE, required = true)
+  @JsonProperty(JSON_PROPERTY_SIGNATURE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setSignature(@javax.annotation.Nonnull String signature) {
+  public void setSignature(String signature) {
     this.signature = signature;
   }
 
 
-  public APISignature template(@javax.annotation.Nonnull APISignatureTemplate template) {
+  public APISignature template(APISignatureTemplate template) {
     this.template = template;
     return this;
   }
 
-  /**
+   /**
    * Get template
    * @return template
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE, required = true)
+  @JsonProperty(JSON_PROPERTY_TEMPLATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APISignatureTemplate getTemplate() {
     return template;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TEMPLATE, required = true)
+  @JsonProperty(JSON_PROPERTY_TEMPLATE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTemplate(@javax.annotation.Nonnull APISignatureTemplate template) {
+  public void setTemplate(APISignatureTemplate template) {
     this.template = template;
   }
 
 
-  public APISignature hashFunc(@javax.annotation.Nonnull APIHashFunction hashFunc) {
+  public APISignature hashFunc(APIHashFunction hashFunc) {
     this.hashFunc = hashFunc;
     return this;
   }
 
-  /**
+   /**
    * Get hashFunc
    * @return hashFunc
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HASH_FUNC, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH_FUNC)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public APIHashFunction getHashFunc() {
     return hashFunc;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HASH_FUNC, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH_FUNC)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHashFunc(@javax.annotation.Nonnull APIHashFunction hashFunc) {
+  public void setHashFunc(APIHashFunction hashFunc) {
     this.hashFunc = hashFunc;
   }
 
@@ -206,7 +205,7 @@ public class APISignature {
 
     // add `signature` to the URL query string
     if (getSignature() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%ssignature%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getSignature()))));
+      joiner.add(String.format("%ssignature%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getSignature()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `template` to the URL query string
@@ -216,7 +215,7 @@ public class APISignature {
 
     // add `hashFunc` to the URL query string
     if (getHashFunc() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%shashFunc%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHashFunc()))));
+      joiner.add(String.format("%shashFunc%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHashFunc()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

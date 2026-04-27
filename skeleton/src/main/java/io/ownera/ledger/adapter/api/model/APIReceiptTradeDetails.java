@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIReceiptExecutionContext;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIReceiptTradeDetails
  */
@@ -38,91 +37,91 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIReceiptTradeDetails.JSON_PROPERTY_INTENT_VERSION,
   APIReceiptTradeDetails.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIReceiptTradeDetails {
   public static final String JSON_PROPERTY_INTENT_ID = "intentId";
-  @javax.annotation.Nullable
   private String intentId;
 
   public static final String JSON_PROPERTY_INTENT_VERSION = "intentVersion";
-  @javax.annotation.Nullable
   private String intentVersion;
 
   public static final String JSON_PROPERTY_EXECUTION_CONTEXT = "executionContext";
-  @javax.annotation.Nullable
   private APIReceiptExecutionContext executionContext;
 
   public APIReceiptTradeDetails() { 
   }
 
-  public APIReceiptTradeDetails intentId(@javax.annotation.Nullable String intentId) {
+  public APIReceiptTradeDetails intentId(String intentId) {
     this.intentId = intentId;
     return this;
   }
 
-  /**
+   /**
    * Get intentId
    * @return intentId
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INTENT_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_INTENT_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getIntentId() {
     return intentId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INTENT_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_INTENT_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIntentId(@javax.annotation.Nullable String intentId) {
+  public void setIntentId(String intentId) {
     this.intentId = intentId;
   }
 
 
-  public APIReceiptTradeDetails intentVersion(@javax.annotation.Nullable String intentVersion) {
+  public APIReceiptTradeDetails intentVersion(String intentVersion) {
     this.intentVersion = intentVersion;
     return this;
   }
 
-  /**
+   /**
    * Get intentVersion
    * @return intentVersion
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_INTENT_VERSION, required = false)
+  @JsonProperty(JSON_PROPERTY_INTENT_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getIntentVersion() {
     return intentVersion;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_INTENT_VERSION, required = false)
+  @JsonProperty(JSON_PROPERTY_INTENT_VERSION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIntentVersion(@javax.annotation.Nullable String intentVersion) {
+  public void setIntentVersion(String intentVersion) {
     this.intentVersion = intentVersion;
   }
 
 
-  public APIReceiptTradeDetails executionContext(@javax.annotation.Nullable APIReceiptExecutionContext executionContext) {
+  public APIReceiptTradeDetails executionContext(APIReceiptExecutionContext executionContext) {
     this.executionContext = executionContext;
     return this;
   }
 
-  /**
+   /**
    * Get executionContext
    * @return executionContext
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIReceiptExecutionContext getExecutionContext() {
     return executionContext;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_EXECUTION_CONTEXT, required = false)
+  @JsonProperty(JSON_PROPERTY_EXECUTION_CONTEXT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setExecutionContext(@javax.annotation.Nullable APIReceiptExecutionContext executionContext) {
+  public void setExecutionContext(APIReceiptExecutionContext executionContext) {
     this.executionContext = executionContext;
   }
 
@@ -205,12 +204,12 @@ public class APIReceiptTradeDetails {
 
     // add `intentId` to the URL query string
     if (getIntentId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sintentId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentId()))));
+      joiner.add(String.format("%sintentId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIntentId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `intentVersion` to the URL query string
     if (getIntentVersion() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sintentVersion%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIntentVersion()))));
+      joiner.add(String.format("%sintentVersion%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIntentVersion()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `executionContext` to the URL query string

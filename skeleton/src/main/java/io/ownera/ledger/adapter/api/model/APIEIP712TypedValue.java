@@ -17,12 +17,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
-import java.util.List;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,10 +47,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import io.ownera.ledger.adapter.api.ApiClient;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 @JsonDeserialize(using = APIEIP712TypedValue.APIEIP712TypedValueDeserializer.class)
 @JsonSerialize(using = APIEIP712TypedValue.APIEIP712TypedValueSerializer.class)
 public class APIEIP712TypedValue extends AbstractOpenApiSchema {
@@ -222,7 +221,7 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
                 ret.setActualInstance(deserialized);
                 return ret;
             }
-            throw new IOException(String.format(java.util.Locale.ROOT, "Failed deserialization for APIEIP712TypedValue: %d classes match result, expected 1", match));
+            throw new IOException(String.format("Failed deserialization for APIEIP712TypedValue: %d classes match result, expected 1", match));
         }
 
         /**
@@ -230,7 +229,7 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
          */
         @Override
         public APIEIP712TypedValue getNullValue(DeserializationContext ctxt) throws JsonMappingException {
-            throw new JsonMappingException(ctxt.getParser(), "APIEIP712TypedValue cannot be null");
+            return null;
         }
     }
 
@@ -358,8 +357,7 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
      * @return The actual instance of `List<APIEIP712TypedValue>`
      * @throws ClassCastException if the instance is not `List<APIEIP712TypedValue>`
      */
-    @SuppressWarnings("unchecked")
-    public List<APIEIP712TypedValue> getListAPIEIP712TypedValue() throws ClassCastException {
+    public List<APIEIP712TypedValue> getListValue() throws ClassCastException {
         return (List<APIEIP712TypedValue>)super.getActualInstance();
     }
 
@@ -370,8 +368,7 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
      * @return The actual instance of `Map<String, APIEIP712TypedValue>`
      * @throws ClassCastException if the instance is not `Map<String, APIEIP712TypedValue>`
      */
-    @SuppressWarnings("unchecked")
-    public Map<String, APIEIP712TypedValue> getMapStringAPIEIP712TypedValue() throws ClassCastException {
+    public Map<String, APIEIP712TypedValue> getMapValue() throws ClassCastException {
         return (Map<String, APIEIP712TypedValue>)super.getActualInstance();
     }
 
@@ -422,41 +419,47 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
 
     if (getActualInstance() instanceof String) {
         if (getActualInstance() != null) {
-          joiner.add(String.format(java.util.Locale.ROOT, "%sone_of_0%s=%s", prefix, suffix, ApiClient.urlEncode(String.valueOf(getActualInstance()))));
+          joiner.add(String.format("%sone_of_0%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
         }
         return joiner.toString();
     }
     if (getActualInstance() instanceof Integer) {
         if (getActualInstance() != null) {
-          joiner.add(String.format(java.util.Locale.ROOT, "%sone_of_1%s=%s", prefix, suffix, ApiClient.urlEncode(String.valueOf(getActualInstance()))));
+          joiner.add(String.format("%sone_of_1%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
         }
         return joiner.toString();
     }
     if (getActualInstance() instanceof Boolean) {
         if (getActualInstance() != null) {
-          joiner.add(String.format(java.util.Locale.ROOT, "%sone_of_2%s=%s", prefix, suffix, ApiClient.urlEncode(String.valueOf(getActualInstance()))));
+          joiner.add(String.format("%sone_of_2%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof String) {
+        if (getActualInstance() != null) {
+          joiner.add(String.format("%sone_of_3%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
         }
         return joiner.toString();
     }
     if (getActualInstance() instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, APIEIP712TypedValue> map = (Map<String, APIEIP712TypedValue>)getActualInstance();
-        for (String _key : map.keySet()) {
-            if (map.get(_key) != null) {
-              joiner.add(map.get(_key).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sone_of_4%s%s", prefix, suffix,
-                  "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%s%s", containerPrefix, _key, containerSuffix))));
+        if (getActualInstance() != null) {
+          for (String _key : ((Map<String, APIEIP712TypedValue>)getActualInstance()).keySet()) {
+            if (((Map<String, APIEIP712TypedValue>)getActualInstance()).get(_key) != null) {
+              joiner.add(((Map<String, APIEIP712TypedValue>)getActualInstance()).get(_key).toUrlQueryString(String.format("%sone_of_4%s%s", prefix, suffix,
+                  "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix))));
             }
+          }
         }
         return joiner.toString();
     }
     if (getActualInstance() instanceof List) {
-        @SuppressWarnings("unchecked")
-        List<APIEIP712TypedValue> list = (List<APIEIP712TypedValue>)getActualInstance();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) != null) {
-              joiner.add(list.get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sone_of_5%s%s", prefix, suffix,
-              "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+        if (getActualInstance() != null) {
+          for (int i = 0; i < ((List<APIEIP712TypedValue>)getActualInstance()).size(); i++) {
+            if (((List<APIEIP712TypedValue>)getActualInstance()).get(i) != null) {
+              joiner.add(((List<APIEIP712TypedValue>)getActualInstance()).get(i).toUrlQueryString(String.format("%sone_of_5%s%s", prefix, suffix,
+              "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
             }
+          }
         }
         return joiner.toString();
     }

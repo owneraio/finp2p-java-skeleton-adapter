@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,11 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIDepositInstruction;
 import io.ownera.ledger.adapter.api.model.APIOperationMetadata;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIDepositOperation
  */
@@ -41,147 +40,147 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIDepositOperation.JSON_PROPERTY_ERROR,
   APIDepositOperation.JSON_PROPERTY_RESPONSE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIDepositOperation {
   public static final String JSON_PROPERTY_CID = "cid";
-  @javax.annotation.Nonnull
   private String cid;
 
   public static final String JSON_PROPERTY_IS_COMPLETED = "isCompleted";
-  @javax.annotation.Nonnull
   private Boolean isCompleted = false;
 
   public static final String JSON_PROPERTY_OPERATION_METADATA = "operationMetadata";
-  @javax.annotation.Nullable
   private APIOperationMetadata operationMetadata;
 
   public static final String JSON_PROPERTY_ERROR = "error";
-  @javax.annotation.Nullable
   private Object error;
 
   public static final String JSON_PROPERTY_RESPONSE = "response";
-  @javax.annotation.Nullable
   private APIDepositInstruction response;
 
   public APIDepositOperation() { 
   }
 
-  public APIDepositOperation cid(@javax.annotation.Nonnull String cid) {
+  public APIDepositOperation cid(String cid) {
     this.cid = cid;
     return this;
   }
 
-  /**
+   /**
    * unique correlation id which identify the operation
    * @return cid
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getCid() {
     return cid;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCid(@javax.annotation.Nonnull String cid) {
+  public void setCid(String cid) {
     this.cid = cid;
   }
 
 
-  public APIDepositOperation isCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
+  public APIDepositOperation isCompleted(Boolean isCompleted) {
     this.isCompleted = isCompleted;
     return this;
   }
 
-  /**
+   /**
    * flag indicating if the operation completed, if true then error or response must be present (but not both)
    * @return isCompleted
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
+  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Boolean getIsCompleted() {
     return isCompleted;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
+  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIsCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
+  public void setIsCompleted(Boolean isCompleted) {
     this.isCompleted = isCompleted;
   }
 
 
-  public APIDepositOperation operationMetadata(@javax.annotation.Nullable APIOperationMetadata operationMetadata) {
+  public APIDepositOperation operationMetadata(APIOperationMetadata operationMetadata) {
     this.operationMetadata = operationMetadata;
     return this;
   }
 
-  /**
+   /**
    * Get operationMetadata
    * @return operationMetadata
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_METADATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIOperationMetadata getOperationMetadata() {
     return operationMetadata;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_METADATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationMetadata(@javax.annotation.Nullable APIOperationMetadata operationMetadata) {
+  public void setOperationMetadata(APIOperationMetadata operationMetadata) {
     this.operationMetadata = operationMetadata;
   }
 
 
-  public APIDepositOperation error(@javax.annotation.Nullable Object error) {
+  public APIDepositOperation error(Object error) {
     this.error = error;
     return this;
   }
 
-  /**
+   /**
    * Get error
    * @return error
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ERROR, required = false)
+  @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public Object getError() {
     return error;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ERROR, required = false)
+  @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setError(@javax.annotation.Nullable Object error) {
+  public void setError(Object error) {
     this.error = error;
   }
 
 
-  public APIDepositOperation response(@javax.annotation.Nullable APIDepositInstruction response) {
+  public APIDepositOperation response(APIDepositInstruction response) {
     this.response = response;
     return this;
   }
 
-  /**
+   /**
    * Get response
    * @return response
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_RESPONSE, required = false)
+  @JsonProperty(JSON_PROPERTY_RESPONSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIDepositInstruction getResponse() {
     return response;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_RESPONSE, required = false)
+  @JsonProperty(JSON_PROPERTY_RESPONSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setResponse(@javax.annotation.Nullable APIDepositInstruction response) {
+  public void setResponse(APIDepositInstruction response) {
     this.response = response;
   }
 
@@ -268,12 +267,12 @@ public class APIDepositOperation {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
+      joiner.add(String.format("%scid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCid()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `isCompleted` to the URL query string
     if (getIsCompleted() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sisCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsCompleted()))));
+      joiner.add(String.format("%sisCompleted%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIsCompleted()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `operationMetadata` to the URL query string
@@ -283,7 +282,7 @@ public class APIDepositOperation {
 
     // add `error` to the URL query string
     if (getError() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%serror%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getError()))));
+      joiner.add(String.format("%serror%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getError()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `response` to the URL query string

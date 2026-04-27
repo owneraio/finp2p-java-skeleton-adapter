@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,17 +25,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIAsset;
 import io.ownera.ledger.adapter.api.model.APIAssetDenomination;
-import io.ownera.ledger.adapter.api.model.APIAssetIdentifier;
-import io.ownera.ledger.adapter.api.model.APILedgerTokenId;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIFinp2pAssetBase;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetBinding;
 import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APICreateAssetRequest
  */
@@ -44,43 +42,32 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICreateAssetRequest.JSON_PROPERTY_LEDGER_ASSET_BINDING,
   APICreateAssetRequest.JSON_PROPERTY_NAME,
   APICreateAssetRequest.JSON_PROPERTY_ISSUER_ID,
-  APICreateAssetRequest.JSON_PROPERTY_DENOMINATION,
-  APICreateAssetRequest.JSON_PROPERTY_ASSET_IDENTIFIER
+  APICreateAssetRequest.JSON_PROPERTY_DENOMINATION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APICreateAssetRequest {
   public static final String JSON_PROPERTY_METADATA = "metadata";
-  @javax.annotation.Nullable
   private Map<String, Object> metadata = new HashMap<>();
 
   public static final String JSON_PROPERTY_ASSET = "asset";
-  @javax.annotation.Nonnull
-  private APIAsset asset;
+  private APIFinp2pAssetBase asset;
 
   public static final String JSON_PROPERTY_LEDGER_ASSET_BINDING = "ledgerAssetBinding";
-  @javax.annotation.Nullable
-  private APILedgerTokenId ledgerAssetBinding;
+  private APILedgerAssetBinding ledgerAssetBinding;
 
   public static final String JSON_PROPERTY_NAME = "name";
-  @javax.annotation.Nullable
   private String name;
 
   public static final String JSON_PROPERTY_ISSUER_ID = "issuerId";
-  @javax.annotation.Nullable
   private String issuerId;
 
   public static final String JSON_PROPERTY_DENOMINATION = "denomination";
-  @javax.annotation.Nullable
   private APIAssetDenomination denomination;
-
-  public static final String JSON_PROPERTY_ASSET_IDENTIFIER = "assetIdentifier";
-  @javax.annotation.Nullable
-  private APIAssetIdentifier assetIdentifier;
 
   public APICreateAssetRequest() { 
   }
 
-  public APICreateAssetRequest metadata(@javax.annotation.Nullable Map<String, Object> metadata) {
+  public APICreateAssetRequest metadata(Map<String, Object> metadata) {
     this.metadata = metadata;
     return this;
   }
@@ -93,166 +80,148 @@ public class APICreateAssetRequest {
     return this;
   }
 
-  /**
+   /**
    * The asset metadata
    * @return metadata
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_METADATA)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
   public Map<String, Object> getMetadata() {
     return metadata;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_METADATA)
   @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMetadata(@javax.annotation.Nullable Map<String, Object> metadata) {
+  public void setMetadata(Map<String, Object> metadata) {
     this.metadata = metadata;
   }
 
 
-  public APICreateAssetRequest asset(@javax.annotation.Nonnull APIAsset asset) {
+  public APICreateAssetRequest asset(APIFinp2pAssetBase asset) {
     this.asset = asset;
     return this;
   }
 
-  /**
+   /**
    * Get asset
    * @return asset
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public APIAsset getAsset() {
+
+  public APIFinp2pAssetBase getAsset() {
     return asset;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ASSET, required = true)
+  @JsonProperty(JSON_PROPERTY_ASSET)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAsset(@javax.annotation.Nonnull APIAsset asset) {
+  public void setAsset(APIFinp2pAssetBase asset) {
     this.asset = asset;
   }
 
 
-  public APICreateAssetRequest ledgerAssetBinding(@javax.annotation.Nullable APILedgerTokenId ledgerAssetBinding) {
+  public APICreateAssetRequest ledgerAssetBinding(APILedgerAssetBinding ledgerAssetBinding) {
     this.ledgerAssetBinding = ledgerAssetBinding;
     return this;
   }
 
-  /**
+   /**
    * Get ledgerAssetBinding
    * @return ledgerAssetBinding
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_ASSET_BINDING, required = false)
+  @JsonProperty(JSON_PROPERTY_LEDGER_ASSET_BINDING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APILedgerTokenId getLedgerAssetBinding() {
+
+  public APILedgerAssetBinding getLedgerAssetBinding() {
     return ledgerAssetBinding;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_LEDGER_ASSET_BINDING, required = false)
+  @JsonProperty(JSON_PROPERTY_LEDGER_ASSET_BINDING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setLedgerAssetBinding(@javax.annotation.Nullable APILedgerTokenId ledgerAssetBinding) {
+  public void setLedgerAssetBinding(APILedgerAssetBinding ledgerAssetBinding) {
     this.ledgerAssetBinding = ledgerAssetBinding;
   }
 
 
-  public APICreateAssetRequest name(@javax.annotation.Nullable String name) {
+  public APICreateAssetRequest name(String name) {
     this.name = name;
     return this;
   }
 
-  /**
+   /**
    * The name of the asset
    * @return name
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getName() {
     return name;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NAME, required = false)
+  @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setName(@javax.annotation.Nullable String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
 
-  public APICreateAssetRequest issuerId(@javax.annotation.Nullable String issuerId) {
+  public APICreateAssetRequest issuerId(String issuerId) {
     this.issuerId = issuerId;
     return this;
   }
 
-  /**
+   /**
    * Owner resource id
    * @return issuerId
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ISSUER_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_ISSUER_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getIssuerId() {
     return issuerId;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ISSUER_ID, required = false)
+  @JsonProperty(JSON_PROPERTY_ISSUER_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIssuerId(@javax.annotation.Nullable String issuerId) {
+  public void setIssuerId(String issuerId) {
     this.issuerId = issuerId;
   }
 
 
-  public APICreateAssetRequest denomination(@javax.annotation.Nullable APIAssetDenomination denomination) {
+  public APICreateAssetRequest denomination(APIAssetDenomination denomination) {
     this.denomination = denomination;
     return this;
   }
 
-  /**
+   /**
    * Get denomination
    * @return denomination
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_DENOMINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DENOMINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIAssetDenomination getDenomination() {
     return denomination;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_DENOMINATION, required = false)
+  @JsonProperty(JSON_PROPERTY_DENOMINATION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDenomination(@javax.annotation.Nullable APIAssetDenomination denomination) {
+  public void setDenomination(APIAssetDenomination denomination) {
     this.denomination = denomination;
-  }
-
-
-  public APICreateAssetRequest assetIdentifier(@javax.annotation.Nullable APIAssetIdentifier assetIdentifier) {
-    this.assetIdentifier = assetIdentifier;
-    return this;
-  }
-
-  /**
-   * Get assetIdentifier
-   * @return assetIdentifier
-   */
-  @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ASSET_IDENTIFIER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APIAssetIdentifier getAssetIdentifier() {
-    return assetIdentifier;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_ASSET_IDENTIFIER, required = false)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAssetIdentifier(@javax.annotation.Nullable APIAssetIdentifier assetIdentifier) {
-    this.assetIdentifier = assetIdentifier;
   }
 
 
@@ -273,13 +242,12 @@ public class APICreateAssetRequest {
         Objects.equals(this.ledgerAssetBinding, createAssetRequest.ledgerAssetBinding) &&
         Objects.equals(this.name, createAssetRequest.name) &&
         Objects.equals(this.issuerId, createAssetRequest.issuerId) &&
-        Objects.equals(this.denomination, createAssetRequest.denomination) &&
-        Objects.equals(this.assetIdentifier, createAssetRequest.assetIdentifier);
+        Objects.equals(this.denomination, createAssetRequest.denomination);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(metadata, asset, ledgerAssetBinding, name, issuerId, denomination, assetIdentifier);
+    return Objects.hash(metadata, asset, ledgerAssetBinding, name, issuerId, denomination);
   }
 
   @Override
@@ -292,7 +260,6 @@ public class APICreateAssetRequest {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    issuerId: ").append(toIndentedString(issuerId)).append("\n");
     sb.append("    denomination: ").append(toIndentedString(denomination)).append("\n");
-    sb.append("    assetIdentifier: ").append(toIndentedString(assetIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -343,9 +310,9 @@ public class APICreateAssetRequest {
     // add `metadata` to the URL query string
     if (getMetadata() != null) {
       for (String _key : getMetadata().keySet()) {
-        joiner.add(String.format(java.util.Locale.ROOT, "%smetadata%s%s=%s", prefix, suffix,
-            "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, _key, containerSuffix),
-            getMetadata().get(_key), ApiClient.urlEncode(ApiClient.valueToString(getMetadata().get(_key)))));
+        joiner.add(String.format("%smetadata%s%s=%s", prefix, suffix,
+            "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, _key, containerSuffix),
+            getMetadata().get(_key), URLEncoder.encode(String.valueOf(getMetadata().get(_key)), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
       }
     }
 
@@ -361,22 +328,17 @@ public class APICreateAssetRequest {
 
     // add `name` to the URL query string
     if (getName() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sname%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getName()))));
+      joiner.add(String.format("%sname%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getName()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `issuerId` to the URL query string
     if (getIssuerId() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sissuerId%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIssuerId()))));
+      joiner.add(String.format("%sissuerId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIssuerId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `denomination` to the URL query string
     if (getDenomination() != null) {
       joiner.add(getDenomination().toUrlQueryString(prefix + "denomination" + suffix));
-    }
-
-    // add `assetIdentifier` to the URL query string
-    if (getAssetIdentifier() != null) {
-      joiner.add(getAssetIdentifier().toUrlQueryString(prefix + "assetIdentifier" + suffix));
     }
 
     return joiner.toString();

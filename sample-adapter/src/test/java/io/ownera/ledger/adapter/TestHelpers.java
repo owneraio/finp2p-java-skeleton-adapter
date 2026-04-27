@@ -88,11 +88,10 @@ public class TestHelpers {
         return resp.getBody();
     }
 
-    public APIGetAssetBalanceResponse getBalance(APIFinp2pAsset asset, String finId) {
+    public APIGetAssetBalanceResponse getBalance(APIAsset asset, String finId) {
+        // 0.28: owner is APIAccount with embedded asset
         APIGetAssetBalanceRequest req = new APIGetAssetBalanceRequest()
-                .asset(new APIAsset(asset))
-                .owner(new APISource().finId(finId)
-                        .account(new APIFinIdAccount().finId(finId).type(APIFinIdAccount.TypeEnum.FIN_ID)));
+                .owner(new APIAccount().finId(finId).asset(asset));
         ResponseEntity<APIGetAssetBalanceResponse> resp =
                 rest.postForEntity("/api/assets/getBalance", req, APIGetAssetBalanceResponse.class);
         assertEquals(200, resp.getStatusCodeValue());
@@ -108,7 +107,7 @@ public class TestHelpers {
 
     // --- Assertion helpers ---
 
-    public void assertBalance(String finId, APIFinp2pAsset asset, String expectedBalance) {
+    public void assertBalance(String finId, APIAsset asset, String expectedBalance) {
         APIGetAssetBalanceResponse balance = getBalance(asset, finId);
         assertNotNull(balance);
         assertEquals(expectedBalance, balance.getBalance(),
@@ -136,106 +135,94 @@ public class TestHelpers {
 
     // --- Request builders ---
 
-    public static APIFinp2pAsset finp2pAsset() {
-        return new APIFinp2pAsset()
-                .type(APIFinp2pAsset.TypeEnum.FINP2P)
+    /**
+     * 0.28: APIAsset is flat (resourceId + optional ledgerIdentifier), no more polymorphism.
+     */
+    public static APIAsset finp2pAsset() {
+        return new APIAsset()
                 .resourceId("bank101:102:unique-" + randomId());
     }
 
-    public static APIIssueAssetsRequest issueRequest(APIFinp2pAsset asset, String finId, String quantity) {
+    /**
+     * 0.28: Issue destination is APIAccount with embedded asset.
+     */
+    public static APIIssueAssetsRequest issueRequest(APIAsset asset, String finId, String quantity) {
         return new APIIssueAssetsRequest()
-                .asset(asset)
-                .destination(new APIFinIdAccount().finId(finId).type(APIFinIdAccount.TypeEnum.FIN_ID))
+                .destination(new APIAccount().finId(finId).asset(asset))
                 .quantity(quantity);
     }
 
-    public static APITransferAssetRequest transferRequest(APIFinp2pAsset asset,
+    /**
+     * 0.28: Transfer source/destination are APIAccount (with embedded asset); no top-level asset.
+     */
+    public static APITransferAssetRequest transferRequest(APIAsset asset,
                                                           String fromFinId, String toFinId, String quantity) {
         return new APITransferAssetRequest()
                 .nonce(randomId())
-                .asset(new APIAsset(asset))
-                .source(new APISource().finId(fromFinId)
-                        .account(new APIFinIdAccount().finId(fromFinId).type(APIFinIdAccount.TypeEnum.FIN_ID)))
-                .destination(new APIDestination().finId(toFinId)
-                        .account(new APIDestinationAccount(
-                                new APIFinIdAccount().finId(toFinId).type(APIFinIdAccount.TypeEnum.FIN_ID))))
+                .source(new APIAccount().finId(fromFinId).asset(asset))
+                .destination(new APIAccount().finId(toFinId).asset(asset))
                 .quantity(quantity)
-                .signature(new APISignature()
-                        .signature("0000")
-                        .hashFunc(APIHashFunction.KECCAK_256)
-                        .template(new APISignatureTemplate(
-                                new APIHashListTemplate()
-                                        .type(APIHashListTemplate.TypeEnum.HASH_LIST)
-                                        .hash("0000"))));
+                .signature(defaultSignature());
     }
 
-    public static APIHoldOperationRequest holdRequest(APIFinp2pAsset asset,
+    public static APIHoldOperationRequest holdRequest(APIAsset asset,
                                                       String sourceFinId, String destFinId,
                                                       String quantity, String operationId) {
         return new APIHoldOperationRequest()
                 .nonce(randomId())
-                .asset(new APIAsset(asset))
-                .source(new APISource().finId(sourceFinId)
-                        .account(new APIFinIdAccount().finId(sourceFinId).type(APIFinIdAccount.TypeEnum.FIN_ID)))
-                .destination(new APIDestination().finId(destFinId)
-                        .account(new APIDestinationAccount(
-                                new APIFinIdAccount().finId(destFinId).type(APIFinIdAccount.TypeEnum.FIN_ID))))
+                .source(new APIAccount().finId(sourceFinId).asset(asset))
+                .destination(new APIAccount().finId(destFinId).asset(asset))
                 .quantity(quantity)
                 .operationId(operationId)
-                .signature(new APISignature()
-                        .signature("0000")
-                        .hashFunc(APIHashFunction.KECCAK_256)
-                        .template(new APISignatureTemplate(
-                                new APIHashListTemplate()
-                                        .type(APIHashListTemplate.TypeEnum.HASH_LIST)
-                                        .hash("0000"))));
+                .signature(defaultSignature());
     }
 
-    public static APIReleaseOperationRequest releaseRequest(APIFinp2pAsset asset,
+    public static APIReleaseOperationRequest releaseRequest(APIAsset asset,
                                                             String sourceFinId, String destFinId,
                                                             String quantity, String operationId) {
         return new APIReleaseOperationRequest()
-                .asset(new APIAsset(asset))
-                .source(new APISource().finId(sourceFinId)
-                        .account(new APIFinIdAccount().finId(sourceFinId).type(APIFinIdAccount.TypeEnum.FIN_ID)))
-                .destination(new APIDestination().finId(destFinId)
-                        .account(new APIDestinationAccount(
-                                new APIFinIdAccount().finId(destFinId).type(APIFinIdAccount.TypeEnum.FIN_ID))))
+                .source(new APIAccount().finId(sourceFinId).asset(asset))
+                .destination(new APIAccount().finId(destFinId).asset(asset))
                 .quantity(quantity)
                 .operationId(operationId);
     }
 
-    public static APIRollbackOperationRequest rollbackRequest(APIFinp2pAsset asset,
+    public static APIRollbackOperationRequest rollbackRequest(APIAsset asset,
                                                               String sourceFinId,
                                                               String quantity, String operationId) {
         return new APIRollbackOperationRequest()
-                .asset(new APIAsset(asset))
-                .source(new APISource().finId(sourceFinId)
-                        .account(new APIFinIdAccount().finId(sourceFinId).type(APIFinIdAccount.TypeEnum.FIN_ID)))
+                .source(new APIAccount().finId(sourceFinId).asset(asset))
                 .quantity(quantity)
                 .operationId(operationId);
     }
 
-    public static APIRedeemAssetsRequest redeemRequest(APIFinp2pAsset asset,
+    /**
+     * 0.28: Redeem source is APIAccount with embedded asset.
+     */
+    public static APIRedeemAssetsRequest redeemRequest(APIAsset asset,
                                                        String sourceFinId, String quantity, String operationId) {
         return new APIRedeemAssetsRequest()
                 .nonce(randomId())
-                .asset(asset)
-                .source(new APIFinIdAccount().finId(sourceFinId).type(APIFinIdAccount.TypeEnum.FIN_ID))
+                .source(new APIAccount().finId(sourceFinId).asset(asset))
                 .quantity(quantity)
                 .operationId(operationId)
-                .signature(new APISignature()
-                        .signature("0000")
-                        .hashFunc(APIHashFunction.KECCAK_256)
-                        .template(new APISignatureTemplate(
-                                new APIHashListTemplate()
-                                        .type(APIHashListTemplate.TypeEnum.HASH_LIST)
-                                        .hash("0000"))));
+                .signature(defaultSignature());
     }
 
-    public static APICreateAssetRequest createAssetRequest(APIFinp2pAsset asset) {
+    public static APICreateAssetRequest createAssetRequest(APIAsset asset) {
+        // 0.28: createAsset takes APIFinp2pAssetBase (not full APIAsset)
         return new APICreateAssetRequest()
-                .asset(new APIAsset(asset));
+                .asset(new APIFinp2pAssetBase().resourceId(asset.getResourceId()));
+    }
+
+    private static APISignature defaultSignature() {
+        return new APISignature()
+                .signature("0000")
+                .hashFunc(APIHashFunction.KECCAK_256)
+                .template(new APISignatureTemplate(
+                        new APIHashListTemplate()
+                                .type(APIHashListTemplate.TypeEnum.HASHLIST)
+                                .hash("0000")));
     }
 
     private <T> HttpEntity<T> withIdempotencyKey(T body) {

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,11 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIOperationMetadata;
 import io.ownera.ledger.adapter.api.model.APIPlanApprovalResponseApproval;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIApproveExecutionPlanResponse
  */
@@ -40,119 +39,119 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIApproveExecutionPlanResponse.JSON_PROPERTY_OPERATION_METADATA,
   APIApproveExecutionPlanResponse.JSON_PROPERTY_APPROVAL
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIApproveExecutionPlanResponse {
   public static final String JSON_PROPERTY_CID = "cid";
-  @javax.annotation.Nonnull
   private String cid;
 
   public static final String JSON_PROPERTY_IS_COMPLETED = "isCompleted";
-  @javax.annotation.Nonnull
   private Boolean isCompleted = false;
 
   public static final String JSON_PROPERTY_OPERATION_METADATA = "operationMetadata";
-  @javax.annotation.Nullable
   private APIOperationMetadata operationMetadata;
 
   public static final String JSON_PROPERTY_APPROVAL = "approval";
-  @javax.annotation.Nullable
   private APIPlanApprovalResponseApproval approval;
 
   public APIApproveExecutionPlanResponse() { 
   }
 
-  public APIApproveExecutionPlanResponse cid(@javax.annotation.Nonnull String cid) {
+  public APIApproveExecutionPlanResponse cid(String cid) {
     this.cid = cid;
     return this;
   }
 
-  /**
+   /**
    * unique correlation id which identify the operation
    * @return cid
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getCid() {
     return cid;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CID, required = true)
+  @JsonProperty(JSON_PROPERTY_CID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setCid(@javax.annotation.Nonnull String cid) {
+  public void setCid(String cid) {
     this.cid = cid;
   }
 
 
-  public APIApproveExecutionPlanResponse isCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
+  public APIApproveExecutionPlanResponse isCompleted(Boolean isCompleted) {
     this.isCompleted = isCompleted;
     return this;
   }
 
-  /**
+   /**
    * flag indicating if the operation completed, if true then error or response must be present (but not both)
    * @return isCompleted
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
+  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public Boolean getIsCompleted() {
     return isCompleted;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_IS_COMPLETED, required = true)
+  @JsonProperty(JSON_PROPERTY_IS_COMPLETED)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setIsCompleted(@javax.annotation.Nonnull Boolean isCompleted) {
+  public void setIsCompleted(Boolean isCompleted) {
     this.isCompleted = isCompleted;
   }
 
 
-  public APIApproveExecutionPlanResponse operationMetadata(@javax.annotation.Nullable APIOperationMetadata operationMetadata) {
+  public APIApproveExecutionPlanResponse operationMetadata(APIOperationMetadata operationMetadata) {
     this.operationMetadata = operationMetadata;
     return this;
   }
 
-  /**
+   /**
    * Get operationMetadata
    * @return operationMetadata
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_METADATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIOperationMetadata getOperationMetadata() {
     return operationMetadata;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_OPERATION_METADATA, required = false)
+  @JsonProperty(JSON_PROPERTY_OPERATION_METADATA)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setOperationMetadata(@javax.annotation.Nullable APIOperationMetadata operationMetadata) {
+  public void setOperationMetadata(APIOperationMetadata operationMetadata) {
     this.operationMetadata = operationMetadata;
   }
 
 
-  public APIApproveExecutionPlanResponse approval(@javax.annotation.Nullable APIPlanApprovalResponseApproval approval) {
+  public APIApproveExecutionPlanResponse approval(APIPlanApprovalResponseApproval approval) {
     this.approval = approval;
     return this;
   }
 
-  /**
+   /**
    * Get approval
    * @return approval
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_APPROVAL, required = false)
+  @JsonProperty(JSON_PROPERTY_APPROVAL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public APIPlanApprovalResponseApproval getApproval() {
     return approval;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_APPROVAL, required = false)
+  @JsonProperty(JSON_PROPERTY_APPROVAL)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApproval(@javax.annotation.Nullable APIPlanApprovalResponseApproval approval) {
+  public void setApproval(APIPlanApprovalResponseApproval approval) {
     this.approval = approval;
   }
 
@@ -237,12 +236,12 @@ public class APIApproveExecutionPlanResponse {
 
     // add `cid` to the URL query string
     if (getCid() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scid%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getCid()))));
+      joiner.add(String.format("%scid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCid()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `isCompleted` to the URL query string
     if (getIsCompleted() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sisCompleted%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getIsCompleted()))));
+      joiner.add(String.format("%sisCompleted%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getIsCompleted()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `operationMetadata` to the URL query string

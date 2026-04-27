@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,29 +25,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIFinP2PEVMOperatorDetails;
-import java.util.Arrays;
+import io.ownera.ledger.adapter.api.model.APIContractDetailsAdditionalContractDetails;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIContractDetails
  */
 @JsonPropertyOrder({
   APIContractDetails.JSON_PROPERTY_TYPE,
-  APIContractDetails.JSON_PROPERTY_NETWORK,
   APIContractDetails.JSON_PROPERTY_ADDRESS,
   APIContractDetails.JSON_PROPERTY_TOKEN_STANDARD,
   APIContractDetails.JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIContractDetails {
   /**
    * the type of the identifier
    */
   public enum TypeEnum {
-    CONTRACT_DETAILS(String.valueOf("contractDetails"));
+    CONTRACTDETAILS("contractDetails");
 
     private String value;
 
@@ -76,144 +74,116 @@ public class APIContractDetails {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
-  public static final String JSON_PROPERTY_NETWORK = "network";
-  @javax.annotation.Nonnull
-  private String network;
-
   public static final String JSON_PROPERTY_ADDRESS = "address";
-  @javax.annotation.Nonnull
   private String address;
 
   public static final String JSON_PROPERTY_TOKEN_STANDARD = "TokenStandard";
-  @javax.annotation.Nullable
   private String tokenStandard;
 
   public static final String JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS = "additionalContractDetails";
-  @javax.annotation.Nullable
-  private APIFinP2PEVMOperatorDetails additionalContractDetails;
+  private APIContractDetailsAdditionalContractDetails additionalContractDetails;
 
   public APIContractDetails() { 
   }
 
-  public APIContractDetails type(@javax.annotation.Nonnull TypeEnum type) {
+  public APIContractDetails type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * the type of the identifier
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APIContractDetails network(@javax.annotation.Nonnull String network) {
-    this.network = network;
-    return this;
-  }
-
-  /**
-   * the network
-   * @return network
-   */
-  @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NETWORK, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public String getNetwork() {
-    return network;
-  }
-
-
-  @JsonProperty(value = JSON_PROPERTY_NETWORK, required = true)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setNetwork(@javax.annotation.Nonnull String network) {
-    this.network = network;
-  }
-
-
-  public APIContractDetails address(@javax.annotation.Nonnull String address) {
+  public APIContractDetails address(String address) {
     this.address = address;
     return this;
   }
 
-  /**
+   /**
    * the address
    * @return address
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getAddress() {
     return address;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setAddress(@javax.annotation.Nonnull String address) {
+  public void setAddress(String address) {
     this.address = address;
   }
 
 
-  public APIContractDetails tokenStandard(@javax.annotation.Nullable String tokenStandard) {
+  public APIContractDetails tokenStandard(String tokenStandard) {
     this.tokenStandard = tokenStandard;
     return this;
   }
 
-  /**
+   /**
    * The standard of the token (e.g., ERC20, ERC721)
    * @return tokenStandard
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_STANDARD, required = false)
+  @JsonProperty(JSON_PROPERTY_TOKEN_STANDARD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
   public String getTokenStandard() {
     return tokenStandard;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TOKEN_STANDARD, required = false)
+  @JsonProperty(JSON_PROPERTY_TOKEN_STANDARD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTokenStandard(@javax.annotation.Nullable String tokenStandard) {
+  public void setTokenStandard(String tokenStandard) {
     this.tokenStandard = tokenStandard;
   }
 
 
-  public APIContractDetails additionalContractDetails(@javax.annotation.Nullable APIFinP2PEVMOperatorDetails additionalContractDetails) {
+  public APIContractDetails additionalContractDetails(APIContractDetailsAdditionalContractDetails additionalContractDetails) {
     this.additionalContractDetails = additionalContractDetails;
     return this;
   }
 
-  /**
+   /**
    * Get additionalContractDetails
    * @return additionalContractDetails
-   */
+  **/
   @javax.annotation.Nullable
-  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public APIFinP2PEVMOperatorDetails getAdditionalContractDetails() {
+
+  public APIContractDetailsAdditionalContractDetails getAdditionalContractDetails() {
     return additionalContractDetails;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS, required = false)
+  @JsonProperty(JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAdditionalContractDetails(@javax.annotation.Nullable APIFinP2PEVMOperatorDetails additionalContractDetails) {
+  public void setAdditionalContractDetails(APIContractDetailsAdditionalContractDetails additionalContractDetails) {
     this.additionalContractDetails = additionalContractDetails;
   }
 
@@ -231,7 +201,6 @@ public class APIContractDetails {
     }
     APIContractDetails contractDetails = (APIContractDetails) o;
     return Objects.equals(this.type, contractDetails.type) &&
-        Objects.equals(this.network, contractDetails.network) &&
         Objects.equals(this.address, contractDetails.address) &&
         Objects.equals(this.tokenStandard, contractDetails.tokenStandard) &&
         Objects.equals(this.additionalContractDetails, contractDetails.additionalContractDetails);
@@ -239,7 +208,7 @@ public class APIContractDetails {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, network, address, tokenStandard, additionalContractDetails);
+    return Objects.hash(type, address, tokenStandard, additionalContractDetails);
   }
 
   @Override
@@ -247,7 +216,6 @@ public class APIContractDetails {
     StringBuilder sb = new StringBuilder();
     sb.append("class APIContractDetails {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    network: ").append(toIndentedString(network)).append("\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("    tokenStandard: ").append(toIndentedString(tokenStandard)).append("\n");
     sb.append("    additionalContractDetails: ").append(toIndentedString(additionalContractDetails)).append("\n");
@@ -300,22 +268,17 @@ public class APIContractDetails {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
-    }
-
-    // add `network` to the URL query string
-    if (getNetwork() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `address` to the URL query string
     if (getAddress() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%saddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getAddress()))));
+      joiner.add(String.format("%saddress%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `TokenStandard` to the URL query string
     if (getTokenStandard() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%sTokenStandard%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getTokenStandard()))));
+      joiner.add(String.format("%sTokenStandard%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTokenStandard()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `additionalContractDetails` to the URL query string

@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APICryptoTransfer
  */
@@ -38,13 +37,13 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APICryptoTransfer.JSON_PROPERTY_CONTRACT_ADDRESS,
   APICryptoTransfer.JSON_PROPERTY_WALLET_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APICryptoTransfer {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    CRYPTO_TRANSFER(String.valueOf("cryptoTransfer"));
+    CRYPTOTRANSFER("cryptoTransfer");
 
     private String value;
 
@@ -74,116 +73,116 @@ public class APICryptoTransfer {
   }
 
   public static final String JSON_PROPERTY_TYPE = "type";
-  @javax.annotation.Nonnull
   private TypeEnum type;
 
   public static final String JSON_PROPERTY_NETWORK = "network";
-  @javax.annotation.Nonnull
   private String network;
 
   public static final String JSON_PROPERTY_CONTRACT_ADDRESS = "contractAddress";
-  @javax.annotation.Nonnull
   private String contractAddress;
 
   public static final String JSON_PROPERTY_WALLET_ADDRESS = "walletAddress";
-  @javax.annotation.Nonnull
   private String walletAddress;
 
   public APICryptoTransfer() { 
   }
 
-  public APICryptoTransfer type(@javax.annotation.Nonnull TypeEnum type) {
+  public APICryptoTransfer type(TypeEnum type) {
     this.type = type;
     return this;
   }
 
-  /**
+   /**
    * Get type
    * @return type
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public TypeEnum getType() {
     return type;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_TYPE, required = true)
+  @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(@javax.annotation.Nonnull TypeEnum type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 
 
-  public APICryptoTransfer network(@javax.annotation.Nonnull String network) {
+  public APICryptoTransfer network(String network) {
     this.network = network;
     return this;
   }
 
-  /**
+   /**
    * Get network
    * @return network
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_NETWORK, required = true)
+  @JsonProperty(JSON_PROPERTY_NETWORK)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getNetwork() {
     return network;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_NETWORK, required = true)
+  @JsonProperty(JSON_PROPERTY_NETWORK)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setNetwork(@javax.annotation.Nonnull String network) {
+  public void setNetwork(String network) {
     this.network = network;
   }
 
 
-  public APICryptoTransfer contractAddress(@javax.annotation.Nonnull String contractAddress) {
+  public APICryptoTransfer contractAddress(String contractAddress) {
     this.contractAddress = contractAddress;
     return this;
   }
 
-  /**
+   /**
    * Get contractAddress
    * @return contractAddress
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_CONTRACT_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_CONTRACT_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getContractAddress() {
     return contractAddress;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_CONTRACT_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_CONTRACT_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setContractAddress(@javax.annotation.Nonnull String contractAddress) {
+  public void setContractAddress(String contractAddress) {
     this.contractAddress = contractAddress;
   }
 
 
-  public APICryptoTransfer walletAddress(@javax.annotation.Nonnull String walletAddress) {
+  public APICryptoTransfer walletAddress(String walletAddress) {
     this.walletAddress = walletAddress;
     return this;
   }
 
-  /**
+   /**
    * Get walletAddress
    * @return walletAddress
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_WALLET_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getWalletAddress() {
     return walletAddress;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_WALLET_ADDRESS, required = true)
+  @JsonProperty(JSON_PROPERTY_WALLET_ADDRESS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setWalletAddress(@javax.annotation.Nonnull String walletAddress) {
+  public void setWalletAddress(String walletAddress) {
     this.walletAddress = walletAddress;
   }
 
@@ -268,22 +267,22 @@ public class APICryptoTransfer {
 
     // add `type` to the URL query string
     if (getType() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%stype%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getType()))));
+      joiner.add(String.format("%stype%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getType()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `network` to the URL query string
     if (getNetwork() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%snetwork%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getNetwork()))));
+      joiner.add(String.format("%snetwork%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getNetwork()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `contractAddress` to the URL query string
     if (getContractAddress() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%scontractAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getContractAddress()))));
+      joiner.add(String.format("%scontractAddress%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getContractAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `walletAddress` to the URL query string
     if (getWalletAddress() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%swalletAddress%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getWalletAddress()))));
+      joiner.add(String.format("%swalletAddress%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getWalletAddress()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

@@ -2,16 +2,15 @@ package io.ownera.ledger.adapter.service.plan;
 
 import io.ownera.finp2p.OperationalSDK;
 import io.ownera.finp2p.opapi.ApiException;
-import io.ownera.finp2p.opapi.model.AccountInformation;
-import io.ownera.finp2p.opapi.model.CryptocurrencyAsset;
 import io.ownera.finp2p.opapi.model.Execution;
 import io.ownera.finp2p.opapi.model.ExecutionInstruction;
 import io.ownera.finp2p.opapi.model.ExecutionPlan;
 import io.ownera.finp2p.opapi.model.ExecutionPlanOperation;
-import io.ownera.finp2p.opapi.model.FiatAsset;
 import io.ownera.finp2p.opapi.model.Finp2pAsset;
+import io.ownera.finp2p.opapi.model.Finp2pAssetAccount;
 import io.ownera.finp2p.opapi.model.HoldInstruction;
 import io.ownera.finp2p.opapi.model.IssueInstruction;
+import io.ownera.finp2p.opapi.model.LedgerAccountAsset;
 import io.ownera.finp2p.opapi.model.RedemptionInstruction;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
@@ -118,15 +117,17 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
 
                 if (actual instanceof TransferInstruction) {
                     TransferInstruction transfer = (TransferInstruction) actual;
-                    String destFinId = transfer.getDestination() != null ? transfer.getDestination().getFinId() : null;
-                    String srcFinId = transfer.getSource() != null ? transfer.getSource().getFinId() : null;
-                    io.ownera.finp2p.opapi.model.Asset a = transfer.getAsset();
+                    String destFinId = finIdOf(transfer.getDestination());
+                    String srcFinId = finIdOf(transfer.getSource());
+                    Asset asset = toInternalAsset(transfer.getDestination() != null
+                            ? transfer.getDestination()
+                            : transfer.getSource());
 
                     try {
                         inboundTransferHook.onInboundTransfer(idempotencyKey,
                                 new InboundTransferHook.InboundTransferContext(
                                         planId, srcFinId,
-                                        toInternalAsset(a),
+                                        asset,
                                         destFinId, transfer.getAmount(),
                                         instructionSequence, null));
                     } catch (Exception e) {
@@ -141,8 +142,8 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     }
 
     @Override
-    public void proposalStatus(String planId, String status, String requestType) {
-        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, requestType);
+    public void proposalStatus(String planId, PlanProposal proposal, ProposalStatus status) {
+        logger.info("Proposal status: plan={}, status={}, type={}", planId, status, proposal.getClass().getSimpleName());
     }
 
     private PlanApprovalStatus validatePlan(String idempotencyKey, String planId, Execution execution) {
@@ -179,14 +180,14 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             IssueInstruction issue = (IssueInstruction) instruction;
             return validateIssuance(idempotencyKey, organizations,
                     toFinIdAccount(issue.getDestination()),
-                    toInternalAsset(issue.getAsset()),
+                    toInternalAsset(issue.getDestination()),
                     issue.getAmount());
 
         } else if (instruction instanceof TransferInstruction) {
             TransferInstruction transfer = (TransferInstruction) instruction;
             FinIdAccount source = toFinIdAccount(transfer.getSource());
             DestinationAccount dest = toDestinationAccount(transfer.getDestination());
-            Asset asset = toInternalAsset(transfer.getAsset());
+            Asset asset = toInternalAsset(transfer.getSource() != null ? transfer.getSource() : transfer.getDestination());
 
             // Notify inbound transfer hook if destination is our org
             if (inboundTransferHook != null && transfer.getDestination() != null) {
@@ -196,7 +197,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                                     planId,
                                     source.finId,
                                     asset,
-                                    transfer.getDestination().getFinId(),
+                                    finIdOf(transfer.getDestination()),
                                     transfer.getAmount()));
                 } catch (Exception e) {
                     logger.warn("Planned inbound transfer hook failed: {}", e.getMessage());
@@ -210,7 +211,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             return validateTransfer(idempotencyKey, organizations,
                     toFinIdAccount(hold.getSource()),
                     toDestinationAccount(hold.getDestination()),
-                    toInternalAsset(hold.getAsset()),
+                    toInternalAsset(hold.getSource() != null ? hold.getSource() : hold.getDestination()),
                     hold.getAmount());
 
         } else if (instruction instanceof RedemptionInstruction) {
@@ -218,7 +219,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             return validateRedemption(idempotencyKey, organizations,
                     toFinIdAccount(redeem.getSource()),
                     toDestinationAccount(redeem.getDestination()),
-                    toInternalAsset(redeem.getAsset()),
+                    toInternalAsset(redeem.getSource() != null ? redeem.getSource() : redeem.getDestination()),
                     redeem.getAmount());
         }
 
@@ -266,26 +267,37 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     }
 
     // --- Helpers to convert SDK types to internal model ---
+    // 0.28: instructions carry LedgerAccountAsset (asset embedded in account).
 
-    private static FinIdAccount toFinIdAccount(@Nullable AccountInformation account) {
+    private static FinIdAccount toFinIdAccount(@Nullable LedgerAccountAsset account) {
         if (account == null) return new FinIdAccount("");
-        return new FinIdAccount(account.getFinId() != null ? account.getFinId() : "");
+        Finp2pAssetAccount finp2p = account.getFinp2pAccount();
+        if (finp2p != null && finp2p.getAccount() != null) {
+            String finId = finp2p.getAccount().getFinId();
+            return new FinIdAccount(finId != null ? finId : "");
+        }
+        return new FinIdAccount("");
     }
 
-    private static DestinationAccount toDestinationAccount(@Nullable AccountInformation account) {
+    private static String finIdOf(@Nullable LedgerAccountAsset account) {
+        if (account == null) return null;
+        Finp2pAssetAccount finp2p = account.getFinp2pAccount();
+        if (finp2p != null && finp2p.getAccount() != null) {
+            return finp2p.getAccount().getFinId();
+        }
+        return null;
+    }
+
+    private static DestinationAccount toDestinationAccount(@Nullable LedgerAccountAsset account) {
         return toFinIdAccount(account);
     }
 
-    private static Asset toInternalAsset(@Nullable io.ownera.finp2p.opapi.model.Asset sdkAsset) {
-        if (sdkAsset == null) return new Asset("", AssetType.FINP2P);
-        Object actual = sdkAsset.getActualInstance();
-        if (actual instanceof Finp2pAsset) {
-            Finp2pAsset fa = (Finp2pAsset) actual;
-            return new Asset(fa.getResourceId() != null ? fa.getResourceId() : "", AssetType.FINP2P);
-        } else if (actual instanceof FiatAsset) {
-            return new Asset("", AssetType.FIAT);
-        } else if (actual instanceof CryptocurrencyAsset) {
-            return new Asset("", AssetType.CRYPTOCURRENCY);
+    private static Asset toInternalAsset(@Nullable LedgerAccountAsset account) {
+        if (account == null) return new Asset("", AssetType.FINP2P);
+        Finp2pAssetAccount finp2p = account.getFinp2pAccount();
+        if (finp2p != null && finp2p.getAsset() != null) {
+            Finp2pAsset asset = finp2p.getAsset();
+            return new Asset(asset.getId() != null ? asset.getId() : "", AssetType.FINP2P);
         }
         return new Asset("", AssetType.FINP2P);
     }

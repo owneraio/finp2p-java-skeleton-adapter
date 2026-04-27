@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,12 +27,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-import io.ownera.ledger.adapter.api.ApiClient;
 /**
  * APIHashGroup
  */
@@ -39,71 +38,68 @@ import io.ownera.ledger.adapter.api.ApiClient;
   APIHashGroup.JSON_PROPERTY_HASH,
   APIHashGroup.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-02-26T13:41:33.467077277+02:00[Asia/Jerusalem]", comments = "Generator version: 7.20.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
 public class APIHashGroup {
   public static final String JSON_PROPERTY_HASH = "hash";
-  @javax.annotation.Nonnull
   private String hash;
 
   public static final String JSON_PROPERTY_FIELDS = "fields";
-  @javax.annotation.Nonnull
   private List<APIField> fields = new ArrayList<>();
 
   public APIHashGroup() { 
   }
 
-  public APIHashGroup hash(@javax.annotation.Nonnull String hash) {
+  public APIHashGroup hash(String hash) {
     this.hash = hash;
     return this;
   }
 
-  /**
+   /**
    * hex representation of the hash group hash value
    * @return hash
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public String getHash() {
     return hash;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_HASH, required = true)
+  @JsonProperty(JSON_PROPERTY_HASH)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setHash(@javax.annotation.Nonnull String hash) {
+  public void setHash(String hash) {
     this.hash = hash;
   }
 
 
-  public APIHashGroup fields(@javax.annotation.Nonnull List<APIField> fields) {
+  public APIHashGroup fields(List<APIField> fields) {
     this.fields = fields;
     return this;
   }
 
   public APIHashGroup addFieldsItem(APIField fieldsItem) {
-    if (this.fields == null) {
-      this.fields = new ArrayList<>();
-    }
     this.fields.add(fieldsItem);
     return this;
   }
 
-  /**
+   /**
    * list of fields by order they appear in the hash group
    * @return fields
-   */
+  **/
   @javax.annotation.Nonnull
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
+  @JsonProperty(JSON_PROPERTY_FIELDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
   public List<APIField> getFields() {
     return fields;
   }
 
 
-  @JsonProperty(value = JSON_PROPERTY_FIELDS, required = true)
+  @JsonProperty(JSON_PROPERTY_FIELDS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setFields(@javax.annotation.Nonnull List<APIField> fields) {
+  public void setFields(List<APIField> fields) {
     this.fields = fields;
   }
 
@@ -184,15 +180,15 @@ public class APIHashGroup {
 
     // add `hash` to the URL query string
     if (getHash() != null) {
-      joiner.add(String.format(java.util.Locale.ROOT, "%shash%s=%s", prefix, suffix, ApiClient.urlEncode(ApiClient.valueToString(getHash()))));
+      joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `fields` to the URL query string
     if (getFields() != null) {
       for (int i = 0; i < getFields().size(); i++) {
         if (getFields().get(i) != null) {
-          joiner.add(getFields().get(i).toUrlQueryString(String.format(java.util.Locale.ROOT, "%sfields%s%s", prefix, suffix,
-          "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix))));
+          joiner.add(getFields().get(i).toUrlQueryString(String.format("%sfields%s%s", prefix, suffix,
+          "".equals(suffix) ? "" : String.format("%s%d%s", containerPrefix, i, containerSuffix))));
         }
       }
     }
