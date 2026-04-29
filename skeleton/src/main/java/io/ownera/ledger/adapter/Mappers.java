@@ -288,14 +288,25 @@ public class Mappers {
             operation.cid("");
             operation.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerIdentifier(new APILedgerAssetIdentifier(
-                                    new APILedgerAssetIdentifierTypeCAIP19()
-                                            .tokenId(success.result.tokenId)
-                            ))
+                            .ledgerIdentifier(toAPILedgerIdentifier(success.result))
                     ));
 
         }
         return operation;
+    }
+
+    /**
+     * Builds an APILedgerAssetIdentifier with the CAIP-19 discriminator and all
+     * required fields populated. The {@code assetIdentifierType} discriminator must
+     * be set to "CAIP-19" or downstream nodes reject the response.
+     */
+    private static APILedgerAssetIdentifier toAPILedgerIdentifier(AssetCreationResult result) {
+        APILedgerAssetIdentifierTypeCAIP19 caip19 = new APILedgerAssetIdentifierTypeCAIP19()
+                .assetIdentifierType(APILedgerAssetIdentifierTypeCAIP19.AssetIdentifierTypeEnum.CAIP_19)
+                .tokenId(result.tokenId)
+                .network(result.reference != null && result.reference.network != null ? result.reference.network : "")
+                .standard(result.reference != null && result.reference.tokenStandard != null ? result.reference.tokenStandard : "");
+        return new APILedgerAssetIdentifier(caip19);
     }
 
     public static APICreateAssetResponse toAPIResponse(AssetCreationStatus status) {
@@ -320,10 +331,7 @@ public class Mappers {
             response.setCid("");
             response.response(new APIAssetCreateResponse()
                     .ledgerAssetInfo(new APILedgerAssetInfo()
-                            .ledgerIdentifier(new APILedgerAssetIdentifier(
-                                    new APILedgerAssetIdentifierTypeCAIP19()
-                                            .tokenId(success.result.tokenId)
-                            ))
+                            .ledgerIdentifier(toAPILedgerIdentifier(success.result))
                     ));
 
         }
