@@ -25,7 +25,18 @@ public abstract class AbstractTokenLifecycleTest {
         String buyer = randomFinId();
         APIAsset asset = finp2pAsset();
 
-        api.createAsset(createAssetRequest(asset));
+        APICreateAssetResponse createResp = api.createAsset(createAssetRequest(asset));
+        // Lock in CAIP-19 discriminator on the response: FinP2P node rejects identifiers
+        // missing assetIdentifierType ("unknown discriminator value").
+        APILedgerAssetIdentifierTypeCAIP19 caip19 =
+                (APILedgerAssetIdentifierTypeCAIP19) createResp.getResponse().getLedgerAssetInfo()
+                        .getLedgerIdentifier().getActualInstance();
+        assert caip19.getAssetIdentifierType() == APILedgerAssetIdentifierTypeCAIP19.AssetIdentifierTypeEnum.CAIP_19
+                : "ledgerIdentifier missing CAIP-19 discriminator";
+        assert caip19.getTokenId() != null && !caip19.getTokenId().isEmpty()
+                : "ledgerIdentifier.tokenId is required";
+        assert caip19.getNetwork() != null : "ledgerIdentifier.network must be non-null";
+        assert caip19.getStandard() != null : "ledgerIdentifier.standard must be non-null";
 
         APIReceiptOperation issueOp = api.issue(issueRequest(asset, issuer, "1000"));
         APIReceipt issueReceipt = receipt(issueOp);
