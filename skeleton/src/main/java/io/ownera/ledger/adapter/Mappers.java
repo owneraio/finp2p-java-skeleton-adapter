@@ -890,4 +890,57 @@ public class Mappers {
         }
         return new APIOperationMetadata().operationResponseStrategy(strategy);
     }
+
+    // --- Operational callback (SDK opapi.model) ---
+    // CallbackClient implementations call OperationalSDK.sendCallbackResponse(cid, opapi.model.OperationStatus).
+    // The SDK type is distinct from the skeleton's APIOperationStatus, so we provide a separate mapper here
+    // so adapters don't have to roll their own (and forget the CAIP-19 discriminator — see PR #39).
+
+    public static io.ownera.finp2p.opapi.model.OperationStatus toSdkOperationStatus(OperationStatus opStatus) {
+        if (opStatus instanceof AssetCreationStatus) {
+            return new io.ownera.finp2p.opapi.model.OperationStatus(toSdkCreateAssetOpWrap((AssetCreationStatus) opStatus));
+        }
+        throw new MappingException("toSdkOperationStatus: unsupported operation status type: " + opStatus.getClass().getName()
+                + " (currently only AssetCreationStatus is supported for callbacks; extend Mappers if other types are needed)");
+    }
+
+    private static io.ownera.finp2p.opapi.model.OperationStatusCreateAsset toSdkCreateAssetOpWrap(AssetCreationStatus status) {
+        return new io.ownera.finp2p.opapi.model.OperationStatusCreateAsset()
+                .type(io.ownera.finp2p.opapi.model.OperationStatusCreateAsset.TypeEnum.CREATE_ASSET)
+                .operation(toSdkCreateAssetOperation(status));
+    }
+
+    private static io.ownera.finp2p.opapi.model.CreateAssetOperation toSdkCreateAssetOperation(AssetCreationStatus status) {
+        io.ownera.finp2p.opapi.model.CreateAssetOperation op = new io.ownera.finp2p.opapi.model.CreateAssetOperation();
+        if (status instanceof PendingAssetCreation) {
+            PendingAssetCreation pending = (PendingAssetCreation) status;
+            op.isCompleted(false).cid(pending.correlationId);
+        } else if (status instanceof FailedAssetCreation) {
+            FailedAssetCreation failed = (FailedAssetCreation) status;
+            op.isCompleted(true).cid("")
+                    .error(new io.ownera.finp2p.opapi.model.CreateAssetOperationErrorInformation()
+                            .code(failed.details.code)
+                            .message(failed.details.message));
+        } else if (status instanceof SuccessfulAssetCreation) {
+            SuccessfulAssetCreation success = (SuccessfulAssetCreation) status;
+            op.isCompleted(true).cid("")
+                    .response(new io.ownera.finp2p.opapi.model.AssetCreateResponse()
+                            .ledgerAssetInfo(new io.ownera.finp2p.opapi.model.LedgerAssetInfo()
+                                    .ledgerIdentifier(toSdkLedgerIdentifier(success.result))));
+        }
+        return op;
+    }
+
+    /**
+     * Build the SDK's {@link io.ownera.finp2p.opapi.model.LedgerAssetIdentifierTypeCAIP19} with the
+     * {@code assetIdentifierType} discriminator set to CAIP-19 plus all fields populated.
+     * The downstream router rejects responses missing the discriminator (see PR #39).
+     */
+    private static io.ownera.finp2p.opapi.model.LedgerAssetIdentifierTypeCAIP19 toSdkLedgerIdentifier(AssetCreationResult result) {
+        return new io.ownera.finp2p.opapi.model.LedgerAssetIdentifierTypeCAIP19()
+                .assetIdentifierType(io.ownera.finp2p.opapi.model.LedgerAssetIdentifierTypeCAIP19.AssetIdentifierTypeEnum.CAIP_19)
+                .tokenId(result.tokenId)
+                .network(result.reference != null && result.reference.network != null ? result.reference.network : "")
+                .standard(result.reference != null && result.reference.tokenStandard != null ? result.reference.tokenStandard : "");
+    }
 }
