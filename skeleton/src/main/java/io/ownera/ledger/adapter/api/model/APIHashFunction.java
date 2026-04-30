@@ -61,6 +61,11 @@ public enum APIHashFunction {
 
   @JsonCreator
   public static APIHashFunction fromValue(String value) {
+    // Router historically sends "" or null to mean "unspecified". Default to UNSPECIFIED
+    // instead of throwing — see 0.27.9 fix; lost during the 0.28 OpenAPI regen.
+    if (value == null || value.isEmpty()) {
+      return UNSPECIFIED;
+    }
     for (APIHashFunction b : APIHashFunction.values()) {
       if (b.value.equals(value)) {
         return b;
