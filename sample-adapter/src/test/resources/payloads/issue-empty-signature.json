@@ -1,0 +1,80 @@
+{
+  "destination": {
+    "asset": {
+      "ledgerIdentifier": {
+        "assetIdentifierType": "CAIP-19",
+        "network": "hedera:testnet",
+        "standard": "HTS",
+        "tokenId": "0.0.8823890"
+      },
+      "resourceId": "org-a:102:a6aef480-c440-40bd-af22-88a76e0516b9"
+    },
+    "finId": "03d337542bc2d9921d3cc6eef2aa41d3017ad39b37a5f9f1910d669d7bc22d3442"
+  },
+  "executionContext": {
+    "executionPlanId": "org-a:106:2426cd2b-b55f-4992-ad8d-e9e14b49f7ea",
+    "instructionSequenceNumber": 2
+  },
+  "nonce": "e95c786b43bb020b37f2d6379185fa32",
+  "quantity": "30",
+  "settlementRef": "",
+  "signature": {
+    "hashFunc": "",
+    "signature": "",
+    "template": {
+      "type": "EIP712",
+      "primaryType": "PrimarySale",
+      "domain": {
+        "chainId": 1,
+        "name": "FinP2P",
+        "verifyingContract": "0x0000000000000000000000000000000000000000",
+        "version": "1"
+      },
+      "hash": "106042132ba1feb263056348760d0fc5e574d2ebc20410d707a968d0c3d69633",
+      "message": {
+        "asset": {
+          "amount": "30",
+          "assetId": "org-a:102:a6aef480-c440-40bd-af22-88a76e0516b9",
+          "assetType": "finp2p"
+        },
+        "buyer": {
+          "idkey": "02772ee0af54b3e9f7c7f4d7b6c5d4c3b2a1908f7e6d5c4b3a2918f7e6d5c4b3a2"
+        },
+        "issuer": {
+          "idkey": "03d337542bc2d9921d3cc6eef2aa41d3017ad39b37a5f9f1910d669d7bc22d3442"
+        },
+        "nonce": "e95c786b43bb020b37f2d6379185fa32",
+        "settlement": {
+          "amount": "300",
+          "assetId": "org-c:102:404bb9f8-1234-5678-90ab-cdef12345678",
+          "assetType": "finp2p"
+        }
+      },
+      "types": {
+        "definitions": [
+          { "name": "EIP712Domain", "fields": [
+            { "name": "name", "type": "string" },
+            { "name": "version", "type": "string" },
+            { "name": "chainId", "type": "uint256" },
+            { "name": "verifyingContract", "type": "address" }
+          ]},
+          { "name": "FinId", "fields": [
+            { "name": "idkey", "type": "string" }
+          ]},
+          { "name": "Term", "fields": [
+            { "name": "assetId", "type": "string" },
+            { "name": "assetType", "type": "string" },
+            { "name": "amount", "type": "string" }
+          ]},
+          { "name": "PrimarySale", "fields": [
+            { "name": "nonce", "type": "string" },
+            { "name": "buyer", "type": "FinId" },
+            { "name": "issuer", "type": "FinId" },
+            { "name": "asset", "type": "Term" },
+            { "name": "settlement", "type": "Term" }
+          ]}
+        ]
+      }
+    }
+  }
+}
