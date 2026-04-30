@@ -105,6 +105,13 @@ public class TestHelpers {
         return resp.getBody();
     }
 
+    public APIOperationStatus getOperationStatus(String cid) {
+        ResponseEntity<APIOperationStatus> resp =
+                rest.getForEntity("/api/operations/status/" + cid, APIOperationStatus.class);
+        assertEquals(200, resp.getStatusCodeValue());
+        return resp.getBody();
+    }
+
     // --- Assertion helpers ---
 
     public void assertBalance(String finId, APIAsset asset, String expectedBalance) {
