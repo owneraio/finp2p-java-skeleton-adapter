@@ -42,6 +42,13 @@ public abstract class AbstractTokenLifecycleTest {
         APIReceipt issueReceipt = receipt(issueOp);
         assert issueReceipt.getQuantity().equals("1000");
         assert issueReceipt.getOperationType() == APIOperationType.ISSUE;
+        // Receipt's destination.asset.ledgerIdentifier must carry the CAIP-19 discriminator —
+        // FinP2P node rejects null with code 999 "unknown discriminator value".
+        APILedgerAssetIdentifierTypeCAIP19 issueRcptCaip19 =
+                (APILedgerAssetIdentifierTypeCAIP19) issueReceipt.getDestination().getAsset()
+                        .getLedgerIdentifier().getActualInstance();
+        assert issueRcptCaip19.getAssetIdentifierType() == APILedgerAssetIdentifierTypeCAIP19.AssetIdentifierTypeEnum.CAIP_19
+                : "issue receipt destination.asset.ledgerIdentifier must have CAIP-19 discriminator";
 
         api.assertBalance(issuer, asset, "1000");
 

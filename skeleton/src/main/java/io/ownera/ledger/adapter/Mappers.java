@@ -624,8 +624,22 @@ public class Mappers {
     }
 
     private static APIAsset toAPIAsset(Asset asset) {
-        return new APIAsset()
-                .resourceId(asset.assetId);
+        APIAsset apiAsset = new APIAsset().resourceId(asset.assetId);
+        // ledgerIdentifier is a polymorphic union; the FinP2P node decoder treats null as
+        // "unknown discriminator value" and rejects the response with code 999. Always emit
+        // a CAIP-19 wrapper. Source the fields from the internal LedgerAssetIdentifier when
+        // present (carried in by the request), or fall back to empty strings.
+        apiAsset.ledgerIdentifier(toAPILedgerIdentifier(asset.ledgerIdentifier));
+        return apiAsset;
+    }
+
+    private static APILedgerAssetIdentifier toAPILedgerIdentifier(@Nullable LedgerAssetIdentifier id) {
+        APILedgerAssetIdentifierTypeCAIP19 caip19 = new APILedgerAssetIdentifierTypeCAIP19()
+                .assetIdentifierType(APILedgerAssetIdentifierTypeCAIP19.AssetIdentifierTypeEnum.CAIP_19)
+                .network(id != null && id.network != null ? id.network : "")
+                .tokenId(id != null && id.tokenId != null ? id.tokenId : "")
+                .standard(id != null && id.standard != null ? id.standard : "");
+        return new APILedgerAssetIdentifier(caip19);
     }
 
     private static APITransactionDetails toAPI(@Nullable TransactionDetails details) {
