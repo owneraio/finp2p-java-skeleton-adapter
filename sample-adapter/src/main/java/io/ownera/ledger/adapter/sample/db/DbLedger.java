@@ -3,6 +3,7 @@ package io.ownera.ledger.adapter.sample.db;
 import io.ownera.ledger.adapter.sample.HoldOperation;
 import io.ownera.ledger.adapter.sample.Transaction;
 import io.ownera.ledger.adapter.service.*;
+import io.ownera.ledger.adapter.service.asset.AssetStore;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.proof.ProofProvider;
 import org.jooq.DSLContext;
@@ -23,8 +24,14 @@ public class DbLedger implements TokenService, EscrowService, CommonService {
     private final @Nullable ProofProvider proofProvider;
 
     public DbLedger(DSLContext dsl, @Nullable ProofProvider proofProvider) {
+        this(dsl, "ledger_adapter", null, proofProvider);
+    }
+
+    public DbLedger(DSLContext dsl, String schemaName, @Nullable AssetStore assetStore, @Nullable ProofProvider proofProvider) {
         this.dsl = dsl;
-        this.storage = new DbStorage(dsl);
+        this.storage = assetStore != null
+                ? new DbStorage(dsl, assetStore)
+                : new DbStorage(dsl, schemaName);
         this.proofProvider = proofProvider;
     }
 
