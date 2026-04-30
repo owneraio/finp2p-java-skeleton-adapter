@@ -2,47 +2,40 @@ package io.ownera.ledger.adapter.sample.db;
 
 import io.ownera.ledger.adapter.sample.HoldOperation;
 import io.ownera.ledger.adapter.service.TokenServiceException;
+import io.ownera.ledger.adapter.service.asset.AssetStore;
+import io.ownera.ledger.adapter.service.asset.DbAssetStore;
 import io.ownera.ledger.adapter.service.model.Asset;
 import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Table;
-import org.jooq.impl.DSL;
 
 import static io.ownera.ledger.adapter.db.generated.Tables.*;
 
 public class DbStorage {
 
-    // Skeleton-owned table — uses plain DSL since schema name is configurable
-    private static final Field<String> ASSET_TYPE = DSL.field(DSL.name("type"), String.class);
-    private static final Field<String> ASSET_ID = DSL.field(DSL.name("id"), String.class);
-    private static final Field<String> TOKEN_STANDARD = DSL.field(DSL.name("token_standard"), String.class);
-    private static final Field<Integer> DECIMALS = DSL.field(DSL.name("decimals"), Integer.class);
-
     private final DSLContext dsl;
-    private final Table<?> assetsTable;
+    private final AssetStore assetStore;
 
     public DbStorage(DSLContext dsl) {
         this(dsl, "ledger_adapter");
     }
 
     public DbStorage(DSLContext dsl, String schemaName) {
+        this(dsl, new DbAssetStore(dsl, schemaName));
+    }
+
+    public DbStorage(DSLContext dsl, AssetStore assetStore) {
         this.dsl = dsl;
-        this.assetsTable = DSL.table(DSL.name(schemaName, "assets"));
+        this.assetStore = assetStore;
     }
 
     public void createAsset(String assetId, Asset asset) {
-        dsl.insertInto(assetsTable)
-                .set(ASSET_TYPE, asset.assetType.name())
-                .set(ASSET_ID, assetId)
-                .set(TOKEN_STANDARD, "ERC20")
-                .set(DECIMALS, 0)
-                .onConflictDoNothing()
-                .execute();
+        // Persist via skeleton-owned AssetStore so all adapters share the same contract;
+        // assetId always wins (the wrapping Asset.assetId may differ for legacy callers).
+        Asset toSave = new Asset(assetId, asset.assetType, asset.ledgerIdentifier);
+        assetStore.save(toSave);
     }
 
     public void checkAssetExists(Asset asset) {
-        int count = dsl.fetchCount(assetsTable, ASSET_TYPE.eq(asset.assetType.name()).and(ASSET_ID.eq(asset.assetId)));
-        if (count == 0) {
+        if (!assetStore.exists(asset.assetId)) {
             throw new TokenServiceException("Asset " + asset.assetId + " not found");
         }
     }
