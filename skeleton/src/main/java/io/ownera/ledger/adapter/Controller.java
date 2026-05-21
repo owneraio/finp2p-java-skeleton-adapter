@@ -1,10 +1,12 @@
 package io.ownera.ledger.adapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.workflow.CorrelationIdGenerator;
 import io.ownera.ledger.adapter.service.workflow.OperationExecutor;
+import io.ownera.ledger.adapter.service.workflow.OperationStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,11 +31,14 @@ public class Controller {
     private final SignatureVerifier signatureVerifier;
     private final OperationExecutor operationExecutor;
     private final Optional<TransactionHook> transactionHook;
+    private final OperationStore operationStore;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
                       PlanApprovalService planApprovalService, CommonService commonService,
                       HealthService healthService, SignatureVerifier signatureVerifier,
-                      OperationExecutor operationExecutor, Optional<TransactionHook> transactionHook) {
+                      OperationExecutor operationExecutor, Optional<TransactionHook> transactionHook,
+                      OperationStore operationStore) {
         this.escrowService = escrowService;
         this.tokenService = tokenService;
         this.paymentService = paymentService;
@@ -43,6 +48,7 @@ public class Controller {
         this.signatureVerifier = signatureVerifier;
         this.operationExecutor = operationExecutor;
         this.transactionHook = transactionHook;
+        this.operationStore = operationStore;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Controller.class);
@@ -309,8 +315,22 @@ public class Controller {
 
     @GetMapping(value = "/api/operations/status/{id}")
     public final ResponseEntity<APIOperationStatus> getOperationStatus(@PathVariable("id") String correlationId) {
-        OperationStatus status = commonService.operationStatus(correlationId);
-        return ResponseEntity.status(HttpStatus.OK).body(toAPI(status));
+        // Operations table is the source of truth for cid lookups (matches the Node
+        // workflow proxy in skeleton/src/workflows/service.ts: createServiceProxy
+        // returns operation.outputs directly). Reading outputs verbatim is the only
+        // correct path — CommonService.operationStatus on the underlying adapter
+        // looks up by transaction id, not by cid, so it is never appropriate here.
+        String stored = operationStore.findOutputsByCid(correlationId);
+        if (stored == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        try {
+            APIOperationStatus api = objectMapper.readValue(stored, APIOperationStatus.class);
+            return ResponseEntity.status(HttpStatus.OK).body(api);
+        } catch (Exception e) {
+            logger.error("Failed to parse persisted outputs for cid={}: {}", correlationId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // --- Escrow endpoints ---

@@ -957,4 +957,167 @@ public class Mappers {
                 .network(result.reference != null && result.reference.network != null ? result.reference.network : "")
                 .standard(result.reference != null && result.reference.tokenStandard != null ? result.reference.tokenStandard : "");
     }
+
+    // --- Inverse mappers (APIOperationStatus → internal OperationStatus) ---
+    // Used by DbOperationStore.toRecord to populate the in-memory record's `result` field
+    // from the persisted outputs JSONB, so OperationExecutor's idempotent-replay cache-hit
+    // path returns the original completed payload (not a stale Pending).
+    //
+    // Internal reconstructions are intentionally minimal: they preserve only the fields
+    // that toAPI(...) reads, so toAPI(fromAPI(x)) is a faithful round-trip for the
+    // controller response path. Fields like ReceiptOperation's proof, deposit details, or
+    // OperationMetadata that don't round-trip cleanly are dropped.
+
+    public static OperationStatus fromAPI(APIOperationStatus status) {
+        Object actual = status.getActualInstance();
+        if (actual instanceof APIOperationStatusCreateAsset) {
+            return fromAPI(((APIOperationStatusCreateAsset) actual).getOperation());
+        }
+        if (actual instanceof APIOperationStatusReceipt) {
+            return fromAPI(((APIOperationStatusReceipt) actual).getOperation());
+        }
+        if (actual instanceof APIOperationStatusDeposit) {
+            return fromAPI(((APIOperationStatusDeposit) actual).getOperation());
+        }
+        if (actual instanceof APIOperationStatusApproval) {
+            return fromAPI(((APIOperationStatusApproval) actual).getOperation());
+        }
+        throw new MappingException("Unsupported operation status variant: " + actual.getClass().getName());
+    }
+
+    public static AssetCreationStatus fromAPI(APICreateAssetOperation op) {
+        if (!Boolean.TRUE.equals(op.getIsCompleted())) {
+            return new PendingAssetCreation(op.getCid() != null ? op.getCid() : "", null);
+        }
+        if (op.getError() != null) {
+            return new FailedAssetCreation(toErrorDetails(op.getError().getCode(), op.getError().getMessage()));
+        }
+        APIAssetCreateResponse resp = op.getResponse();
+        if (resp == null) {
+            throw new MappingException("APICreateAssetOperation is completed but has no error and no response");
+        }
+        String tokenId = "";
+        if (resp.getLedgerAssetInfo() != null && resp.getLedgerAssetInfo().getLedgerIdentifier() != null) {
+            Object id = resp.getLedgerAssetInfo().getLedgerIdentifier().getActualInstance();
+            if (id instanceof APILedgerAssetIdentifierTypeCAIP19) {
+                APILedgerAssetIdentifierTypeCAIP19 caip = (APILedgerAssetIdentifierTypeCAIP19) id;
+                tokenId = caip.getTokenId() != null ? caip.getTokenId() : "";
+            }
+        }
+        return new SuccessfulAssetCreation(new AssetCreationResult(tokenId, null));
+    }
+
+    public static PlanApprovalStatus fromAPI(APIExecutionPlanApprovalOperation op) {
+        if (!Boolean.TRUE.equals(op.getIsCompleted())) {
+            return new PendingPlan(op.getCid() != null ? op.getCid() : "", null);
+        }
+        APIPlanApprovalResponseApproval approval = op.getApproval();
+        if (approval != null) {
+            Object actual = approval.getActualInstance();
+            if (actual instanceof APIPlanRejected) {
+                APIPlanRejected rejected = (APIPlanRejected) actual;
+                if (rejected.getFailure() != null) {
+                    Object failureActual = rejected.getFailure().getActualInstance();
+                    if (failureActual instanceof APIValidationFailure) {
+                        APIValidationFailure vf = (APIValidationFailure) failureActual;
+                        return new RejectedPlan(toErrorDetails(vf.getCode(), vf.getMessage()));
+                    }
+                }
+                return new RejectedPlan(new ErrorDetails(0, "rejected"));
+            }
+            if (actual instanceof APIPlanApproved) {
+                return new ApprovedPlan();
+            }
+        }
+        return new ApprovedPlan();
+    }
+
+    public static DepositOperation fromAPI(APIDepositOperation op) {
+        if (!Boolean.TRUE.equals(op.getIsCompleted())) {
+            return new PendingDepositOperation(op.getCid() != null ? op.getCid() : "", null);
+        }
+        if (op.getError() != null) {
+            // APIDepositOperation.error is typed as Object in the generated model; after
+            // Jackson roundtrip it's a Map<String, Object> with code/message keys.
+            return new FailedDepositOperation(toErrorDetailsFromObject(op.getError()));
+        }
+        APIDepositInstruction resp = op.getResponse();
+        if (resp == null) {
+            throw new MappingException("APIDepositOperation is completed but has no error and no response");
+        }
+        DepositInstruction instr = new DepositInstruction(
+                null, // destination not roundtripped; toAPI doesn't read it back
+                resp.getDescription(),
+                java.util.Collections.emptyList(), // paymentOptions reconstruction not needed for round-trip
+                resp.getOperationId(),
+                resp.getDetails());
+        return new SuccessfulDepositOperation(instr);
+    }
+
+    public static ReceiptOperation fromAPI(APIReceiptOperation op) {
+        if (!Boolean.TRUE.equals(op.getIsCompleted())) {
+            return new PendingReceiptStatus(op.getCid() != null ? op.getCid() : "", null);
+        }
+        if (op.getError() != null) {
+            return new FailedReceiptStatus(toErrorDetails(op.getError().getCode(), op.getError().getMessage()));
+        }
+        APIReceipt apiReceipt = op.getResponse();
+        if (apiReceipt == null) {
+            throw new MappingException("APIReceiptOperation is completed but has no error and no response");
+        }
+        Source source = apiReceipt.getSource() != null ? sourceFromAPI(apiReceipt.getSource()) : null;
+        Destination destination = apiReceipt.getDestination() != null ? destinationFromAPI(apiReceipt.getDestination()) : null;
+        // Asset is embedded in source/destination (APIAccount-shaped); both carry the same one.
+        Asset asset = null;
+        if (apiReceipt.getDestination() != null && apiReceipt.getDestination().getAsset() != null) {
+            asset = fromAPI(apiReceipt.getDestination().getAsset());
+        } else if (apiReceipt.getSource() != null && apiReceipt.getSource().getAsset() != null) {
+            asset = fromAPI(apiReceipt.getSource().getAsset());
+        }
+        OperationType opType = apiReceipt.getOperationType() != null
+                ? toInternalOperationType(apiReceipt.getOperationType()) : OperationType.TRANSFER;
+        TransactionDetails txDetails = apiReceipt.getTransactionDetails() != null
+                ? new TransactionDetails(
+                        apiReceipt.getTransactionDetails().getTransactionId(),
+                        apiReceipt.getTransactionDetails().getOperationId())
+                : null;
+        TradeDetails tradeDetails = null;
+        if (apiReceipt.getTradeDetails() != null && apiReceipt.getTradeDetails().getExecutionContext() != null) {
+            APIReceiptExecutionContext exCtx = apiReceipt.getTradeDetails().getExecutionContext();
+            tradeDetails = new TradeDetails(new ExecutionContext(exCtx.getExecutionPlanId(), 0));
+        }
+        long timestamp = apiReceipt.getTimestamp() != null ? apiReceipt.getTimestamp() : 0L;
+        Receipt receipt = new Receipt(
+                apiReceipt.getId(), opType, asset, source, destination,
+                apiReceipt.getQuantity(), txDetails, tradeDetails, null, timestamp);
+        return new SuccessReceiptStatus(receipt);
+    }
+
+    private static ErrorDetails toErrorDetails(@Nullable Integer code, @Nullable String message) {
+        return new ErrorDetails(code != null ? code : 0, message != null ? message : "");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static ErrorDetails toErrorDetailsFromObject(Object error) {
+        if (error instanceof Map) {
+            Map<String, Object> map = (Map<String, Object>) error;
+            Object code = map.get("code");
+            Object message = map.get("message");
+            int codeInt = code instanceof Number ? ((Number) code).intValue() : 0;
+            return new ErrorDetails(codeInt, message != null ? message.toString() : "");
+        }
+        return new ErrorDetails(0, error != null ? error.toString() : "");
+    }
+
+    private static OperationType toInternalOperationType(APIOperationType apiType) {
+        switch (apiType) {
+            case ISSUE:    return OperationType.ISSUE;
+            case TRANSFER: return OperationType.TRANSFER;
+            case REDEEM:   return OperationType.REDEEM;
+            case HOLD:     return OperationType.HOLD;
+            case RELEASE:  return OperationType.RELEASE;
+            default:
+                throw new MappingException("Unsupported APIOperationType: " + apiType);
+        }
+    }
 }

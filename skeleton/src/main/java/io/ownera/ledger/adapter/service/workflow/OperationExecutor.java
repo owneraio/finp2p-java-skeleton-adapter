@@ -20,14 +20,23 @@ public class OperationExecutor {
     private final @Nullable CallbackClient callbackClient;
     private final boolean async;
     private final @Nullable ExecutorService executorPool;
+    private final OperationOutputSerializer outputSerializer;
 
     public OperationExecutor(OperationStore store,
                              @Nullable CallbackClient callbackClient,
                              boolean async) {
+        this(store, callbackClient, async, OperationOutputSerializer.defaultSerializer());
+    }
+
+    public OperationExecutor(OperationStore store,
+                             @Nullable CallbackClient callbackClient,
+                             boolean async,
+                             OperationOutputSerializer outputSerializer) {
         this.store = store;
         this.callbackClient = callbackClient;
         this.async = async;
         this.executorPool = async ? Executors.newCachedThreadPool() : null;
+        this.outputSerializer = outputSerializer;
     }
 
     /**
@@ -72,18 +81,24 @@ public class OperationExecutor {
                 logger.debug("Returning cached result for method={}, cid={}", method, existing.cid);
                 return (T) existing.result;
             }
-            logger.debug("Operation in progress for method={}, cid={}", method, existing.cid);
+            logger.debug("Operation in progress or completed (cached outputs only durable via polling) "
+                    + "for method={}, cid={}", method, existing.cid);
             return pendingFactory.createPending(existing.cid);
         }
 
         String cid = CorrelationIdGenerator.generate();
         OperationRecord record = new OperationRecord(
                 cid, method, OperationRecord.Status.IN_PROGRESS, inputsHash, null);
-        store.save(record);
+        // Persist a pending payload on insertion so polling returns an in-progress response
+        // for the cid instead of 404 — matches Node's createServiceProxy contract where every
+        // known cid is pollable (skeleton/src/workflows/service.ts).
+        T pending = pendingFactory.createPending(cid);
+        String pendingJson = trySerialize(cid, method, pending);
+        store.save(record, pendingJson);
 
         if (async) {
             executorPool.submit(() -> executeOperation(cid, method, operation));
-            return pendingFactory.createPending(cid);
+            return pending;
         }
 
         return executeOperation(cid, method, operation);
@@ -92,7 +107,8 @@ public class OperationExecutor {
     private <T extends OperationStatus> T executeOperation(String cid, String method, Supplier<T> operation) {
         try {
             T result = operation.get();
-            store.updateStatus(cid, OperationRecord.Status.COMPLETED, result);
+            String outputsJson = trySerialize(cid, method, result);
+            store.updateStatus(cid, OperationRecord.Status.COMPLETED, outputsJson);
 
             if (callbackClient != null) {
                 try {
@@ -105,8 +121,33 @@ public class OperationExecutor {
             return result;
         } catch (Exception e) {
             logger.error("Operation failed: method={}, cid={}, error={}", method, cid, e.getMessage());
-            store.updateStatus(cid, OperationRecord.Status.FAILED, null);
+            // Persist a failure payload so polling returns a proper failed-operation response
+            // (matches Node's wrappedResponse error branch in service.ts). Polling reserves 404
+            // for truly unknown cids.
+            String failureJson = tryBuildFailure(cid, method, e);
+            store.updateStatus(cid, OperationRecord.Status.FAILED, failureJson);
             if (!async) throw e;
+            return null;
+        }
+    }
+
+    private String tryBuildFailure(String cid, String method, Exception cause) {
+        try {
+            OperationStatus failure = WorkflowOutcomes.failureFor(method, 1, String.valueOf(cause.getMessage()));
+            return outputSerializer.serialize(failure);
+        } catch (Exception e) {
+            logger.warn("Failed to build/serialize failure payload for method={}, cid={}: {}", method, cid, e.getMessage());
+            return null;
+        }
+    }
+
+    private String trySerialize(String cid, String method, OperationStatus result) {
+        try {
+            return outputSerializer.serialize(result);
+        } catch (Exception e) {
+            // Outputs are an optimization for polling/replay — never block the operation's
+            // completion on a serialization failure. Log and persist with null outputs.
+            logger.warn("Failed to serialize outputs for method={}, cid={}: {}", method, cid, e.getMessage());
             return null;
         }
     }
