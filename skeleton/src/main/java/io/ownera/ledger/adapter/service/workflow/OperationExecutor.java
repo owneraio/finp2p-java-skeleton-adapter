@@ -89,11 +89,16 @@ public class OperationExecutor {
         String cid = CorrelationIdGenerator.generate();
         OperationRecord record = new OperationRecord(
                 cid, method, OperationRecord.Status.IN_PROGRESS, inputsHash, null);
-        store.save(record);
+        // Persist a pending payload on insertion so polling returns an in-progress response
+        // for the cid instead of 404 — matches Node's createServiceProxy contract where every
+        // known cid is pollable (skeleton/src/workflows/service.ts).
+        T pending = pendingFactory.createPending(cid);
+        String pendingJson = trySerialize(cid, method, pending);
+        store.save(record, pendingJson);
 
         if (async) {
             executorPool.submit(() -> executeOperation(cid, method, operation));
-            return pendingFactory.createPending(cid);
+            return pending;
         }
 
         return executeOperation(cid, method, operation);
@@ -116,8 +121,22 @@ public class OperationExecutor {
             return result;
         } catch (Exception e) {
             logger.error("Operation failed: method={}, cid={}, error={}", method, cid, e.getMessage());
-            store.updateStatus(cid, OperationRecord.Status.FAILED, (String) null);
+            // Persist a failure payload so polling returns a proper failed-operation response
+            // (matches Node's wrappedResponse error branch in service.ts). Polling reserves 404
+            // for truly unknown cids.
+            String failureJson = tryBuildFailure(cid, method, e);
+            store.updateStatus(cid, OperationRecord.Status.FAILED, failureJson);
             if (!async) throw e;
+            return null;
+        }
+    }
+
+    private String tryBuildFailure(String cid, String method, Exception cause) {
+        try {
+            OperationStatus failure = WorkflowOutcomes.failureFor(method, 1, String.valueOf(cause.getMessage()));
+            return outputSerializer.serialize(failure);
+        } catch (Exception e) {
+            logger.warn("Failed to build/serialize failure payload for method={}, cid={}: {}", method, cid, e.getMessage());
             return null;
         }
     }

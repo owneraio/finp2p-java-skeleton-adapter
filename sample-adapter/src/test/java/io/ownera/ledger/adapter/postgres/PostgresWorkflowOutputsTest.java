@@ -5,7 +5,12 @@ import io.ownera.ledger.adapter.PostgresContainerHolder;
 import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifierTypeCAIP19;
 import io.ownera.ledger.adapter.api.model.APIOperationStatus;
 import io.ownera.ledger.adapter.api.model.APIOperationStatusCreateAsset;
+import io.ownera.ledger.adapter.service.model.AssetCreationStatus;
+import io.ownera.ledger.adapter.service.model.OperationMetadata;
+import io.ownera.ledger.adapter.service.model.PendingAssetCreation;
+import io.ownera.ledger.adapter.service.model.PollingResponseStrategy;
 import io.ownera.ledger.adapter.service.workflow.DbOperationStore;
+import io.ownera.ledger.adapter.service.workflow.OperationExecutor;
 import io.ownera.ledger.adapter.service.workflow.OperationRecord;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
 import org.jooq.DSLContext;
@@ -135,6 +140,77 @@ public class PostgresWorkflowOutputsTest {
                 "/api/operations/status/does-not-exist-" + System.nanoTime(),
                 String.class);
         assertEquals(404, resp.getStatusCodeValue());
+    }
+
+    @Test
+    void pollingEndpointReturnsPersistedPendingPayloadForInProgressOperation() {
+        // Async workflow contract: every known cid must be pollable. The executor persists a
+        // pending payload on insertion so the polling endpoint returns 200 with isCompleted=false,
+        // not 404. Drive execute() with an async executor so it returns immediately after save.
+        OperationExecutor executor = new OperationExecutor(store, null, true);
+        // Block the work supplier until we have polled the endpoint, so the row stays IN_PROGRESS.
+        java.util.concurrent.CountDownLatch hold = new java.util.concurrent.CountDownLatch(1);
+        String inputsHash = "hash-pending-" + System.nanoTime();
+        AssetCreationStatus pending = executor.execute(
+                "createAsset", inputsHash,
+                () -> {
+                    try { hold.await(); } catch (InterruptedException ignored) {}
+                    throw new RuntimeException("must not finalize before polling");
+                },
+                cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
+        );
+        try {
+            assertTrue(pending instanceof PendingAssetCreation, "execute() must return pending in async mode");
+            String cid = ((PendingAssetCreation) pending).correlationId;
+
+            ResponseEntity<APIOperationStatus> resp = restTemplate.getForEntity(
+                    "/api/operations/status/" + cid, APIOperationStatus.class);
+            assertEquals(200, resp.getStatusCodeValue(),
+                    "in-progress cid must be pollable, not 404 — see Node createServiceProxy");
+            APIOperationStatus body = resp.getBody();
+            assertNotNull(body);
+            APIOperationStatusCreateAsset wrap = (APIOperationStatusCreateAsset) body.getActualInstance();
+            assertEquals(APIOperationStatusCreateAsset.TypeEnum.CREATEASSET, wrap.getType());
+            assertFalse(wrap.getOperation().getIsCompleted(),
+                    "pending payload must report isCompleted=false");
+        } finally {
+            hold.countDown();
+        }
+    }
+
+    @Test
+    void pollingEndpointReturnsPersistedFailurePayloadForFailedOperation() {
+        // Failure branch of the same contract: the executor must persist a failure payload so
+        // failed operations are pollable as completed-with-error, not indistinguishable from
+        // unknown cids (which 404).
+        OperationExecutor executor = new OperationExecutor(store, null, false);
+        String inputsHash = "hash-failure-" + System.nanoTime();
+        RuntimeException boom = new RuntimeException("simulated workflow failure");
+        try {
+            executor.execute(
+                    "createAsset", inputsHash,
+                    () -> { throw boom; },
+                    cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
+            );
+            fail("execute() must rethrow in sync mode");
+        } catch (RuntimeException e) {
+            assertSame(boom, e);
+        }
+
+        OperationRecord rec = store.findByInputsHash(inputsHash);
+        assertNotNull(rec);
+        assertEquals(OperationRecord.Status.FAILED, rec.status);
+
+        ResponseEntity<APIOperationStatus> resp = restTemplate.getForEntity(
+                "/api/operations/status/" + rec.cid, APIOperationStatus.class);
+        assertEquals(200, resp.getStatusCodeValue(),
+                "failed cid must be pollable as completed-with-error, not 404");
+        APIOperationStatus body = resp.getBody();
+        assertNotNull(body);
+        APIOperationStatusCreateAsset wrap = (APIOperationStatusCreateAsset) body.getActualInstance();
+        assertTrue(wrap.getOperation().getIsCompleted(),
+                "failure payload must report isCompleted=true");
+        assertNotNull(wrap.getOperation().getError(), "failure payload must carry error details");
     }
 
     @Test

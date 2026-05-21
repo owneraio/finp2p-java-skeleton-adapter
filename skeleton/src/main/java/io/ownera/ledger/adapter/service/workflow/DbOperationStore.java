@@ -55,13 +55,16 @@ public class DbOperationStore implements OperationStore {
     }
 
     @Override
-    public void save(OperationRecord record) {
-        dsl.insertInto(table)
+    public void save(OperationRecord record, @Nullable String pendingOutputsJson) {
+        var insert = dsl.insertInto(table)
                 .set(CID, record.cid)
                 .set(METHOD, record.method)
                 .set(STATUS, record.status.name())
-                .set(INPUTS_HASH, record.inputsHash)
-                .execute();
+                .set(INPUTS_HASH, record.inputsHash);
+        if (pendingOutputsJson != null) {
+            insert = insert.set(OUTPUTS, JSONB.valueOf(pendingOutputsJson));
+        }
+        insert.execute();
     }
 
     @Override

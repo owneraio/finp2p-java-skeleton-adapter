@@ -8,7 +8,24 @@ public interface OperationStore {
     @Nullable
     OperationRecord findByInputsHash(String inputsHash);
 
-    void save(OperationRecord record);
+    /**
+     * Persist a new operation row with optional pending-payload JSON.
+     *
+     * <p>Mirrors the Node skeleton's {@code createServiceProxy} contract: every known CID has a
+     * pollable payload from the moment it is created — pending while the operation is in flight,
+     * then success/failure once it finalizes. Passing {@code null} leaves the {@code outputs}
+     * column unset (useful for callers that have no payload to persist yet).
+     */
+    void save(OperationRecord record, @Nullable String pendingOutputsJson);
+
+    /**
+     * Backward-compatible overload that persists no pending payload. New callers should pass
+     * a serialized pending {@link io.ownera.ledger.adapter.api.model.APIOperationStatus} so the
+     * polling endpoint can return an in-progress payload for the cid.
+     */
+    default void save(OperationRecord record) {
+        save(record, null);
+    }
 
     /**
      * Persist a status transition with serialized outputs.
