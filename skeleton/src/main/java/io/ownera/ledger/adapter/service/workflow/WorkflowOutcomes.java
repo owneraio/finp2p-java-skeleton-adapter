@@ -41,7 +41,8 @@ public final class WorkflowOutcomes {
             case "proposeResetPlan":
             case "proposeInstructionApproval":
                 return new PendingPlan(cid, metadata);
-            case "depositInstruction":
+            case "depositInstruction":      // legacy method-name string (sync OperationExecutor)
+            case "getDepositInstruction":   // interface method name used by the workflow proxy
                 return new PendingDepositOperation(cid, metadata);
             default:
                 throw new IllegalArgumentException(
@@ -68,6 +69,7 @@ public final class WorkflowOutcomes {
             case "proposeInstructionApproval":
                 return new RejectedPlan(details);
             case "depositInstruction":
+            case "getDepositInstruction":
                 return new FailedDepositOperation(details);
             default:
                 throw new IllegalArgumentException(

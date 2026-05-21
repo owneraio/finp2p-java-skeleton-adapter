@@ -37,7 +37,7 @@ public class TestHelpers {
         ResponseEntity<APICreateAssetResponse> resp =
                 rest.postForEntity("/api/assets/create", entity, APICreateAssetResponse.class);
         assertEquals(200, resp.getStatusCodeValue(), "createAsset failed: " + resp.getBody());
-        return resp.getBody();
+        return awaitCreateAssetCompletion(resp.getBody());
     }
 
     public APIReceiptOperation issue(APIIssueAssetsRequest request) {
@@ -45,7 +45,7 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/issue", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "issue failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
     }
 
     public APIReceiptOperation transfer(APITransferAssetRequest request) {
@@ -53,7 +53,7 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/transfer", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "transfer failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
     }
 
     public APIReceiptOperation redeem(APIRedeemAssetsRequest request) {
@@ -61,7 +61,7 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/redeem", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "redeem failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
     }
 
     public APIReceiptOperation hold(APIHoldOperationRequest request) {
@@ -69,7 +69,7 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/hold", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "hold failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
     }
 
     public APIReceiptOperation release(APIReleaseOperationRequest request) {
@@ -77,7 +77,7 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/release", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "release failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
     }
 
     public APIReceiptOperation rollback(APIRollbackOperationRequest request) {
@@ -85,7 +85,64 @@ public class TestHelpers {
         ResponseEntity<APIReceiptOperation> resp =
                 rest.postForEntity("/api/assets/rollback", entity, APIReceiptOperation.class);
         assertEquals(200, resp.getStatusCodeValue(), "rollback failed");
-        return resp.getBody();
+        return awaitReceiptCompletion(resp.getBody());
+    }
+
+    // --- Pending-to-completed polling ---
+    //
+    // The sample-adapter now routes proxied service methods through WorkflowServiceProxy, which
+    // returns a Pending payload immediately and finalizes in the background. To preserve the
+    // sync-style assertions in the test suite (assertSuccessReceipt etc.), each helper waits for
+    // the operation's cid to reach a completed state via the polling endpoint, then returns the
+    // finalized payload mapped back to the endpoint's response shape.
+
+    private static final int POLL_MAX_ATTEMPTS = 100;
+    private static final long POLL_INTERVAL_MS = 50L;
+
+    private APIReceiptOperation awaitReceiptCompletion(APIReceiptOperation pending) {
+        if (pending == null || Boolean.TRUE.equals(pending.getIsCompleted())) return pending;
+        APIOperationStatusReceipt wrapped = pollFor(pending.getCid(), APIOperationStatusReceipt.class);
+        return wrapped != null ? wrapped.getOperation() : pending;
+    }
+
+    private APICreateAssetResponse awaitCreateAssetCompletion(APICreateAssetResponse pending) {
+        if (pending == null || Boolean.TRUE.equals(pending.getIsCompleted())) return pending;
+        APIOperationStatusCreateAsset wrapped = pollFor(pending.getCid(), APIOperationStatusCreateAsset.class);
+        if (wrapped == null) return pending;
+        APICreateAssetOperation op = wrapped.getOperation();
+        return new APICreateAssetResponse()
+                .cid(op.getCid())
+                .isCompleted(op.getIsCompleted())
+                .operationMetadata(op.getOperationMetadata())
+                .error(op.getError())
+                .response(op.getResponse());
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T pollFor(String cid, Class<T> wrappedType) {
+        if (cid == null || cid.isEmpty()) return null;
+        for (int i = 0; i < POLL_MAX_ATTEMPTS; i++) {
+            ResponseEntity<APIOperationStatus> resp = rest.getForEntity(
+                    "/api/operations/status/" + cid, APIOperationStatus.class);
+            if (resp.getStatusCodeValue() == 200 && resp.getBody() != null) {
+                Object actual = resp.getBody().getActualInstance();
+                if (wrappedType.isInstance(actual)) {
+                    Boolean done = isCompleted(actual);
+                    if (Boolean.TRUE.equals(done)) return (T) actual;
+                }
+            }
+            try { Thread.sleep(POLL_INTERVAL_MS); } catch (InterruptedException ignored) { return null; }
+        }
+        throw new AssertionError("Operation cid=" + cid + " did not complete within "
+                + (POLL_MAX_ATTEMPTS * POLL_INTERVAL_MS) + " ms");
+    }
+
+    private Boolean isCompleted(Object wrapped) {
+        if (wrapped instanceof APIOperationStatusReceipt) return ((APIOperationStatusReceipt) wrapped).getOperation().getIsCompleted();
+        if (wrapped instanceof APIOperationStatusCreateAsset) return ((APIOperationStatusCreateAsset) wrapped).getOperation().getIsCompleted();
+        if (wrapped instanceof APIOperationStatusDeposit) return ((APIOperationStatusDeposit) wrapped).getOperation().getIsCompleted();
+        if (wrapped instanceof APIOperationStatusApproval) return ((APIOperationStatusApproval) wrapped).getOperation().getIsCompleted();
+        return Boolean.FALSE;
     }
 
     public APIGetAssetBalanceResponse getBalance(APIAsset asset, String finId) {

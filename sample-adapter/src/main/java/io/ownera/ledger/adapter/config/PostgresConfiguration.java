@@ -1,8 +1,8 @@
 package io.ownera.ledger.adapter.config;
 
 import io.ownera.ledger.adapter.sample.db.DbLedger;
+import io.ownera.ledger.adapter.service.CommonService;
 import io.ownera.ledger.adapter.service.workflow.DbOperationStore;
-import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.asset.AssetStore;
 import io.ownera.ledger.adapter.service.asset.DbAssetStore;
 import io.ownera.ledger.adapter.service.mapping.DbAccountMappingStore;
@@ -46,15 +46,9 @@ public class PostgresConfiguration {
         return new DbLedger(dslContext, ledgerSchema, assetStore, proofProvider.orElse(null));
     }
 
-    @Bean
-    public TokenService tokenService(DbLedger ledger) {
-        return ledger;
-    }
-
-    @Bean
-    public EscrowService escrowService(DbLedger ledger) {
-        return ledger;
-    }
+    // TokenService and EscrowService beans live in WorkflowProxyConfig — they are exposed as
+    // WorkflowServiceProxy-wrapped versions of DbLedger so all token/escrow operations flow
+    // through the durable async workflow path.
 
     @Bean
     public CommonService commonService(DbLedger ledger, OperationStore operationStore) {
