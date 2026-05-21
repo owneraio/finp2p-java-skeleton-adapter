@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter.service.workflow;
 
 import io.ownera.ledger.adapter.service.model.OperationStatus;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public interface OperationStore {
 
@@ -9,14 +10,24 @@ public interface OperationStore {
     OperationRecord findByInputsHash(String inputsHash);
 
     /**
-     * Persist a new operation row with optional pending-payload JSON.
+     * Persist a new operation row with optional inputs and pending-payload JSON.
      *
-     * <p>Mirrors the Node skeleton's {@code createServiceProxy} contract: every known CID has a
-     * pollable payload from the moment it is created — pending while the operation is in flight,
-     * then success/failure once it finalizes. Passing {@code null} leaves the {@code outputs}
-     * column unset (useful for callers that have no payload to persist yet).
+     * <p>{@code inputsJson} is the serialized method-argument tuple used by the workflow proxy
+     * for crash recovery (replay of {@code IN_PROGRESS} operations after restart). Pass
+     * {@code null} when the caller does not own a re-invokable representation of its args.
+     *
+     * <p>{@code pendingOutputsJson} mirrors the Node skeleton's {@code createServiceProxy}
+     * contract: every known CID has a pollable payload from the moment it is created — pending
+     * while the operation is in flight, then success/failure once it finalizes.
      */
-    void save(OperationRecord record, @Nullable String pendingOutputsJson);
+    void save(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson);
+
+    /**
+     * Backward-compatible overload: no inputs to persist.
+     */
+    default void save(OperationRecord record, @Nullable String pendingOutputsJson) {
+        save(record, null, pendingOutputsJson);
+    }
 
     /**
      * Backward-compatible overload that persists no pending payload. New callers should pass
@@ -24,7 +35,7 @@ public interface OperationStore {
      * polling endpoint can return an in-progress payload for the cid.
      */
     default void save(OperationRecord record) {
-        save(record, null);
+        save(record, null, null);
     }
 
     /**
@@ -58,4 +69,29 @@ public interface OperationStore {
      */
     @Nullable
     String findOutputsByCid(String cid);
+
+    /**
+     * Fetch all {@code IN_PROGRESS} operations for a method, with their persisted input JSON.
+     *
+     * <p>Used by {@link WorkflowRecovery} at startup to replay operations that were left
+     * in-flight when the process crashed. Mirrors Node's
+     * {@code storage.getPendingOperations(method)} in {@code skeleton/src/workflows/storage.ts}.
+     */
+    List<PendingOperation> findPending(String method);
+
+    /**
+     * Row shape returned by {@link #findPending(String)}: the cid + persisted input args JSON
+     * needed to re-invoke the original service method.
+     */
+    final class PendingOperation {
+        public final String cid;
+        public final String method;
+        public final @Nullable String inputsJson;
+
+        public PendingOperation(String cid, String method, @Nullable String inputsJson) {
+            this.cid = cid;
+            this.method = method;
+            this.inputsJson = inputsJson;
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package io.ownera.ledger.adapter.service.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import javax.annotation.Nullable;
 
 public class FinIdAccount implements SourceAccount, DestinationAccount {
@@ -22,6 +23,7 @@ public class FinIdAccount implements SourceAccount, DestinationAccount {
         this(finId, null, null);
     }
 
+    @JsonCreator
     public FinIdAccount(String finId, @Nullable String orgId, @Nullable String custodianOrgId) {
         this.finId = finId;
         this.orgId = orgId;

@@ -1,0 +1,285 @@
+package io.ownera.ledger.adapter.postgres;
+
+import io.ownera.ledger.adapter.PostgresContainerHolder;
+import io.ownera.ledger.adapter.service.TokenService;
+import io.ownera.ledger.adapter.service.TokenServiceException;
+import io.ownera.ledger.adapter.service.model.Asset;
+import io.ownera.ledger.adapter.service.model.AssetBind;
+import io.ownera.ledger.adapter.service.model.AssetCreationResult;
+import io.ownera.ledger.adapter.service.model.AssetCreationStatus;
+import io.ownera.ledger.adapter.service.model.AssetDenomination;
+import io.ownera.ledger.adapter.service.model.AssetType;
+import io.ownera.ledger.adapter.service.model.Balance;
+import io.ownera.ledger.adapter.service.model.ExecutionContext;
+import io.ownera.ledger.adapter.service.model.FinIdAccount;
+import io.ownera.ledger.adapter.service.model.LedgerReference;
+import io.ownera.ledger.adapter.service.model.OperationStatus;
+import io.ownera.ledger.adapter.service.model.PendingAssetCreation;
+import io.ownera.ledger.adapter.service.model.ReceiptOperation;
+import io.ownera.ledger.adapter.service.model.Signature;
+import io.ownera.ledger.adapter.service.model.Source;
+import io.ownera.ledger.adapter.service.model.Destination;
+import io.ownera.ledger.adapter.service.model.SuccessfulAssetCreation;
+import io.ownera.ledger.adapter.service.workflow.CallbackClient;
+import io.ownera.ledger.adapter.service.workflow.DbOperationStore;
+import io.ownera.ledger.adapter.service.workflow.OperationOutputSerializer;
+import io.ownera.ledger.adapter.service.workflow.OperationRecord;
+import io.ownera.ledger.adapter.service.workflow.OperationStore;
+import io.ownera.ledger.adapter.service.workflow.WorkflowArgsCodec;
+import io.ownera.ledger.adapter.service.workflow.WorkflowRecovery;
+import io.ownera.ledger.adapter.service.workflow.WorkflowServiceProxy;
+import org.jooq.DSLContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the PR 1 durable-workflow path: {@link WorkflowServiceProxy} captures method args,
+ * persists pending + inputs, runs the real method in the background, finalizes (persists outputs
+ * + sends callback), and {@link WorkflowRecovery} replays IN_PROGRESS rows on startup.
+ */
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+public class WorkflowServiceProxyTest {
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("DB_CONNECTION_STRING", PostgresContainerHolder.POSTGRES::getJdbcUrl);
+        registry.add("DB_USERNAME", PostgresContainerHolder.POSTGRES::getUsername);
+        registry.add("DB_PASSWORD", PostgresContainerHolder.POSTGRES::getPassword);
+    }
+
+    @Autowired
+    private DSLContext dsl;
+
+    private OperationStore store;
+    private WorkflowArgsCodec argsCodec;
+
+    @BeforeEach
+    void setup() {
+        store = new DbOperationStore(dsl, "sample_adapter");
+        argsCodec = new WorkflowArgsCodec();
+    }
+
+    /**
+     * Minimal in-memory {@link TokenService} stub. Only {@code createAsset} is exercised here;
+     * the other methods throw to fail-fast if called unexpectedly.
+     */
+    static class StubTokenService implements TokenService {
+        final CountDownLatch released = new CountDownLatch(1);
+        volatile boolean hold = false;
+        volatile @Nullable RuntimeException failWith = null;
+        volatile int createCalls = 0;
+
+        @Override
+        public AssetCreationStatus createAsset(String idempotencyKey, Asset asset,
+                                               @Nullable AssetBind assetBind, @Nullable Object assetMetadata,
+                                               @Nullable String assetName, @Nullable String issuerId,
+                                               @Nullable AssetDenomination assetDenomination) {
+            createCalls++;
+            if (hold) {
+                try { released.await(); } catch (InterruptedException ignored) {}
+            }
+            if (failWith != null) throw failWith;
+            return new SuccessfulAssetCreation(new AssetCreationResult(
+                    "tok-" + asset.assetId,
+                    new LedgerReference("hedera:testnet", "0x0", "HTS", null)));
+        }
+
+        @Override
+        public ReceiptOperation issue(String idempotencyKey, Asset asset, FinIdAccount to, String amount,
+                                      @Nullable ExecutionContext exCtx) { throw new UnsupportedOperationException(); }
+        @Override
+        public ReceiptOperation transfer(String idempotencyKey, String nonce, Source source, Destination destination,
+                                         Asset asset, String quantity, Signature signature,
+                                         @Nullable ExecutionContext exCtx) { throw new UnsupportedOperationException(); }
+        @Override
+        public ReceiptOperation redeem(String idempotencyKey, String nonce, FinIdAccount source, Asset asset,
+                                       String quantity, @Nullable String operationId, Signature signature,
+                                       @Nullable ExecutionContext exCtx) { throw new UnsupportedOperationException(); }
+        @Override public String getBalance(Asset asset, String finId) { return "0"; }
+        @Override public Balance balance(Asset asset, String finId) { throw new UnsupportedOperationException(); }
+    }
+
+    static class RecordingCallback implements CallbackClient {
+        volatile @Nullable String lastCid;
+        volatile @Nullable OperationStatus lastResult;
+        final CountDownLatch fired = new CountDownLatch(1);
+
+        @Override
+        public void sendCallback(String cid, OperationStatus result) {
+            lastCid = cid;
+            lastResult = result;
+            fired.countDown();
+        }
+    }
+
+    private TokenService wrap(StubTokenService target, @Nullable CallbackClient callback) {
+        return WorkflowServiceProxy.wrap(TokenService.class, target, store, callback,
+                Executors.newCachedThreadPool(), argsCodec,
+                OperationOutputSerializer.defaultSerializer(),
+                Set.of("createAsset", "issue", "transfer", "redeem"));
+    }
+
+    private Asset asset(String id) {
+        return new Asset(id, AssetType.FINP2P);
+    }
+
+    @Test
+    void proxyReturnsPendingImmediatelyAndPersistsRow() throws Exception {
+        StubTokenService stub = new StubTokenService();
+        stub.hold = true; // keep work in-flight while we inspect storage
+        TokenService proxied = wrap(stub, null);
+        try {
+            String ik = "ik-pending-" + System.nanoTime();
+            AssetCreationStatus result = proxied.createAsset(ik, asset("ast-1"), null, null, null, null, null);
+
+            assertTrue(result instanceof PendingAssetCreation,
+                    "proxy must return Pending immediately, got " + result.getClass());
+            String cid = ((PendingAssetCreation) result).correlationId;
+            assertNotNull(cid);
+
+            String stored = store.findOutputsByCid(cid);
+            assertNotNull(stored, "pending payload must be persisted at save time");
+            // Postgres JSONB normalizes whitespace; parse before comparing.
+            com.fasterxml.jackson.databind.JsonNode parsed = new com.fasterxml.jackson.databind.ObjectMapper().readTree(stored);
+            assertEquals(false, parsed.at("/operation/isCompleted").asBoolean(true), stored);
+        } finally {
+            stub.released.countDown();
+        }
+    }
+
+    @Test
+    void proxyFinalizesSuccessAndCallsCallback() throws Exception {
+        StubTokenService stub = new StubTokenService();
+        RecordingCallback cb = new RecordingCallback();
+        TokenService proxied = wrap(stub, cb);
+
+        String ik = "ik-success-" + System.nanoTime();
+        AssetCreationStatus result = proxied.createAsset(ik, asset("ast-S"), null, null, null, null, null);
+        String cid = ((PendingAssetCreation) result).correlationId;
+
+        assertTrue(cb.fired.await(5, TimeUnit.SECONDS), "callback must fire after persistence");
+        assertEquals(cid, cb.lastCid);
+        assertTrue(cb.lastResult instanceof SuccessfulAssetCreation, "callback must carry the success payload");
+
+        OperationRecord rec = store.findByCid(cid);
+        assertNotNull(rec);
+        assertEquals(OperationRecord.Status.COMPLETED, rec.status);
+        assertTrue(rec.result instanceof SuccessfulAssetCreation,
+                "result must be reconstructable from persisted outputs");
+    }
+
+    @Test
+    void proxyFinalizesFailureAndCallsCallback() throws Exception {
+        StubTokenService stub = new StubTokenService();
+        stub.failWith = new RuntimeException("simulated failure");
+        RecordingCallback cb = new RecordingCallback();
+        TokenService proxied = wrap(stub, cb);
+
+        String ik = "ik-failure-" + System.nanoTime();
+        AssetCreationStatus result = proxied.createAsset(ik, asset("ast-F"), null, null, null, null, null);
+        String cid = ((PendingAssetCreation) result).correlationId;
+
+        assertTrue(cb.fired.await(5, TimeUnit.SECONDS), "callback must also fire on failure");
+        assertEquals(cid, cb.lastCid);
+        assertNotNull(cb.lastResult, "callback must carry the failure payload");
+
+        OperationRecord rec = store.findByCid(cid);
+        assertNotNull(rec);
+        assertEquals(OperationRecord.Status.FAILED, rec.status);
+    }
+
+    @Test
+    void duplicateCallShortCircuitsToExistingOutputs() throws Exception {
+        StubTokenService stub = new StubTokenService();
+        TokenService proxied = wrap(stub, null);
+
+        String ik = "ik-dedup-" + System.nanoTime();
+        Asset a = asset("ast-DUP");
+
+        AssetCreationStatus first = proxied.createAsset(ik, a, null, null, null, null, null);
+        String cid = ((PendingAssetCreation) first).correlationId;
+
+        // Wait for the first call to finalize.
+        for (int i = 0; i < 50; i++) {
+            OperationRecord r = store.findByCid(cid);
+            if (r != null && r.status == OperationRecord.Status.COMPLETED) break;
+            Thread.sleep(50);
+        }
+
+        AssetCreationStatus second = proxied.createAsset(ik, a, null, null, null, null, null);
+        assertTrue(second instanceof SuccessfulAssetCreation,
+                "second identical call must return the cached success payload, got " + second.getClass());
+        assertEquals(1, stub.createCalls, "underlying service must run once across duplicate requests");
+    }
+
+    @Test
+    void nonProxiedMethodPassesThrough() {
+        StubTokenService stub = new StubTokenService();
+        TokenService proxied = wrap(stub, null);
+        // getBalance is not in the proxied set — should call the target directly without
+        // persisting a row.
+        String balance = proxied.getBalance(asset("ast-B"), "fin-1");
+        assertEquals("0", balance);
+    }
+
+    @Test
+    void recoveryReplaysPendingRowsAfterRestart() throws Exception {
+        // Simulate a crash: build a proxy whose underlying service blocks forever, kick off a
+        // call (row is now IN_PROGRESS with persisted inputs), then build a fresh proxy whose
+        // service finalizes immediately, and run recovery — the original cid should now reach
+        // COMPLETED via the new proxy.
+        StubTokenService crashed = new StubTokenService();
+        crashed.hold = true;
+        TokenService crashedProxy = wrap(crashed, null);
+
+        String ik = "ik-recovery-" + System.nanoTime();
+        AssetCreationStatus pending = crashedProxy.createAsset(ik, asset("ast-R"), null, null, null, null, null);
+        String cid = ((PendingAssetCreation) pending).correlationId;
+
+        // Sanity: row is IN_PROGRESS.
+        OperationRecord midflight = store.findByCid(cid);
+        assertNotNull(midflight);
+        assertEquals(OperationRecord.Status.IN_PROGRESS, midflight.status);
+
+        // Restart: build a new service + new proxy handler as if after a JVM boot.
+        StubTokenService restarted = new StubTokenService(); // finalizes immediately
+        WorkflowServiceProxy handler = new WorkflowServiceProxy(
+                restarted, store, null, Executors.newCachedThreadPool(),
+                argsCodec, OperationOutputSerializer.defaultSerializer(),
+                Set.of("createAsset", "issue", "transfer", "redeem"));
+        WorkflowRecovery recovery = new WorkflowRecovery(store, handler,
+                List.of("createAsset", "issue", "transfer", "redeem"), argsCodec);
+        recovery.replayAll();
+
+        // Wait for the replayed operation to finalize.
+        OperationRecord finalRec = null;
+        for (int i = 0; i < 100; i++) {
+            finalRec = store.findByCid(cid);
+            if (finalRec != null && finalRec.status == OperationRecord.Status.COMPLETED) break;
+            Thread.sleep(50);
+        }
+        assertNotNull(finalRec);
+        assertEquals(OperationRecord.Status.COMPLETED, finalRec.status,
+                "recovery must finalize the IN_PROGRESS row");
+        assertTrue(finalRec.result instanceof SuccessfulAssetCreation);
+        assertEquals(1, restarted.createCalls,
+                "recovery must call the (restarted) underlying service exactly once");
+
+        // Quiet the original "crashed" worker so the test pool can shut down.
+        crashed.released.countDown();
+    }
+
+}

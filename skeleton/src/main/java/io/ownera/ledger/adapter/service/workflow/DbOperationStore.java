@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Database-backed implementation of {@link OperationStore}.
@@ -55,12 +57,15 @@ public class DbOperationStore implements OperationStore {
     }
 
     @Override
-    public void save(OperationRecord record, @Nullable String pendingOutputsJson) {
+    public void save(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson) {
         var insert = dsl.insertInto(table)
                 .set(CID, record.cid)
                 .set(METHOD, record.method)
                 .set(STATUS, record.status.name())
                 .set(INPUTS_HASH, record.inputsHash);
+        if (inputsJson != null) {
+            insert = insert.set(INPUTS, JSONB.valueOf(inputsJson));
+        }
         if (pendingOutputsJson != null) {
             insert = insert.set(OUTPUTS, JSONB.valueOf(pendingOutputsJson));
         }
@@ -101,6 +106,22 @@ public class DbOperationStore implements OperationStore {
                 .where(CID.eq(cid))
                 .fetchOne(OUTPUTS);
         return row != null ? row.data() : null;
+    }
+
+    @Override
+    public List<PendingOperation> findPending(String method) {
+        return dsl.select(CID, METHOD, INPUTS)
+                .from(table)
+                .where(METHOD.eq(method))
+                .and(STATUS.eq(OperationRecord.Status.IN_PROGRESS.name()))
+                .fetch()
+                .stream()
+                .map(r -> {
+                    JSONB inputs = r.get(INPUTS);
+                    return new PendingOperation(r.get(CID), r.get(METHOD),
+                            inputs != null ? inputs.data() : null);
+                })
+                .collect(Collectors.toList());
     }
 
     private OperationRecord toRecord(org.jooq.Record r) {
