@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter;
 
 import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.model.*;
+import io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -227,6 +228,14 @@ public class Mappers {
     }
 
     public static APIApproveExecutionPlanResponse toAPIResponse(PlanApprovalStatus status) {
+        APIExecutionPlanApprovalOperation cached = unwrapCachedPlan(status);
+        if (cached != null) {
+            return new APIApproveExecutionPlanResponse()
+                    .cid(cached.getCid())
+                    .isCompleted(cached.getIsCompleted())
+                    .operationMetadata(cached.getOperationMetadata())
+                    .approval(cached.getApproval());
+        }
         if (status instanceof PendingPlan) {
             PendingPlan pending = (PendingPlan) status;
             return new APIApproveExecutionPlanResponse()
@@ -310,6 +319,15 @@ public class Mappers {
     }
 
     public static APICreateAssetResponse toAPIResponse(AssetCreationStatus status) {
+        APICreateAssetOperation cached = unwrapCachedCreateAsset(status);
+        if (cached != null) {
+            return new APICreateAssetResponse()
+                    .cid(cached.getCid())
+                    .isCompleted(cached.getIsCompleted())
+                    .operationMetadata(cached.getOperationMetadata())
+                    .error(cached.getError())
+                    .response(cached.getResponse());
+        }
         APICreateAssetResponse response = new APICreateAssetResponse();
         if (status instanceof PendingAssetCreation) {
             PendingAssetCreation pending = (PendingAssetCreation) status;
@@ -379,6 +397,15 @@ public class Mappers {
     }
 
     public static APIDepositInstructionResponse toAPIResponse(DepositOperation status) {
+        APIDepositOperation cached = unwrapCachedDeposit(status);
+        if (cached != null) {
+            return new APIDepositInstructionResponse()
+                    .cid(cached.getCid())
+                    .isCompleted(cached.getIsCompleted())
+                    .operationMetadata(cached.getOperationMetadata())
+                    .error(cached.getError())
+                    .response(cached.getResponse());
+        }
         APIDepositInstructionResponse response = new APIDepositInstructionResponse();
         if (status instanceof PendingDepositOperation) {
             PendingDepositOperation pending = (PendingDepositOperation) status;
@@ -484,6 +511,8 @@ public class Mappers {
     }
 
     public static APIReceiptOperation toAPI(ReceiptOperation op) {
+        APIReceiptOperation cached = unwrapCachedReceipt(op);
+        if (cached != null) return cached;
         APIReceiptOperation operation = new APIReceiptOperation();
         if (op instanceof SuccessReceiptStatus) {
             SuccessReceiptStatus success = (SuccessReceiptStatus) op;
@@ -846,6 +875,16 @@ public class Mappers {
     // --- Payout response mapping ---
 
     public static APIPayoutResponse toAPIPayoutResponse(ReceiptOperation op) {
+        APIReceiptOperation cached = unwrapCachedReceipt(op);
+        if (cached != null) {
+            // Byte-faithful replay: APIPayoutResponse shares the same fields as APIReceiptOperation.
+            return new APIPayoutResponse()
+                    .cid(cached.getCid())
+                    .isCompleted(cached.getIsCompleted())
+                    .operationMetadata(cached.getOperationMetadata())
+                    .error(cached.getError())
+                    .response(cached.getResponse());
+        }
         APIPayoutResponse response = new APIPayoutResponse();
         if (op instanceof SuccessReceiptStatus) {
             SuccessReceiptStatus success = (SuccessReceiptStatus) op;
@@ -1091,6 +1130,53 @@ public class Mappers {
                 apiReceipt.getId(), opType, asset, source, destination,
                 apiReceipt.getQuantity(), txDetails, tradeDetails, null, timestamp);
         return new SuccessReceiptStatus(receipt);
+    }
+
+    // --- Byte-faithful cached-replay unwrappers ---
+    //
+    // The workflow proxy returns a {@link CachedJsonOperationStatus} for any existing row instead
+    // of reconstructing the internal type from stored outputs (which would lose non-roundtripping
+    // fields). The Controller's response mappers detect that marker via these helpers and emit the
+    // stored API operation directly — byte-identical to the original POST's response.
+
+    private static APIReceiptOperation unwrapCachedReceipt(ReceiptOperation op) {
+        if (!(op instanceof CachedJsonOperationStatus)) return null;
+        Object actual = ((CachedJsonOperationStatus) op).apiStatus.getActualInstance();
+        if (actual instanceof APIOperationStatusReceipt) {
+            return ((APIOperationStatusReceipt) actual).getOperation();
+        }
+        throw new MappingException("Cached outputs do not wrap a receipt operation: "
+                + (actual != null ? actual.getClass().getName() : "null"));
+    }
+
+    private static APICreateAssetOperation unwrapCachedCreateAsset(AssetCreationStatus status) {
+        if (!(status instanceof CachedJsonOperationStatus)) return null;
+        Object actual = ((CachedJsonOperationStatus) status).apiStatus.getActualInstance();
+        if (actual instanceof APIOperationStatusCreateAsset) {
+            return ((APIOperationStatusCreateAsset) actual).getOperation();
+        }
+        throw new MappingException("Cached outputs do not wrap a createAsset operation: "
+                + (actual != null ? actual.getClass().getName() : "null"));
+    }
+
+    private static APIDepositOperation unwrapCachedDeposit(DepositOperation status) {
+        if (!(status instanceof CachedJsonOperationStatus)) return null;
+        Object actual = ((CachedJsonOperationStatus) status).apiStatus.getActualInstance();
+        if (actual instanceof APIOperationStatusDeposit) {
+            return ((APIOperationStatusDeposit) actual).getOperation();
+        }
+        throw new MappingException("Cached outputs do not wrap a deposit operation: "
+                + (actual != null ? actual.getClass().getName() : "null"));
+    }
+
+    private static APIExecutionPlanApprovalOperation unwrapCachedPlan(PlanApprovalStatus status) {
+        if (!(status instanceof CachedJsonOperationStatus)) return null;
+        Object actual = ((CachedJsonOperationStatus) status).apiStatus.getActualInstance();
+        if (actual instanceof APIOperationStatusApproval) {
+            return ((APIOperationStatusApproval) actual).getOperation();
+        }
+        throw new MappingException("Cached outputs do not wrap a plan approval operation: "
+                + (actual != null ? actual.getClass().getName() : "null"));
     }
 
     private static ErrorDetails toErrorDetails(@Nullable Integer code, @Nullable String message) {

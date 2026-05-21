@@ -1,6 +1,8 @@
 package io.ownera.ledger.adapter.postgres;
 
 import io.ownera.ledger.adapter.PostgresContainerHolder;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifierTypeCAIP19;
+import io.ownera.ledger.adapter.api.model.APIOperationStatusCreateAsset;
 import io.ownera.ledger.adapter.service.TokenService;
 import io.ownera.ledger.adapter.service.TokenServiceException;
 import io.ownera.ledger.adapter.service.model.Asset;
@@ -255,12 +257,14 @@ public class WorkflowServiceProxyTest {
             start.countDown();
             AssetCreationStatus r1 = f1.get(5, java.util.concurrent.TimeUnit.SECONDS);
             AssetCreationStatus r2 = f2.get(5, java.util.concurrent.TimeUnit.SECONDS);
-            assertTrue(r1 instanceof PendingAssetCreation, "first call must return Pending, got " + r1.getClass());
-            assertTrue(r2 instanceof PendingAssetCreation, "second call must return Pending (not blow up), got " + r2.getClass());
-            // Both must point at the same cid — Node's saveOperation guarantees a single winner.
-            assertEquals(((PendingAssetCreation) r1).correlationId,
-                    ((PendingAssetCreation) r2).correlationId,
-                    "both concurrent calls must converge on the same cid");
+            // Winner returns its own freshly-built Pending; loser hits resolveExisting and
+            // returns a CachedJsonOperationStatus wrapping the persisted pending payload. Both
+            // must carry the same cid.
+            String c1 = extractCid(r1);
+            String c2 = extractCid(r2);
+            assertNotNull(c1, "first call must carry a cid, got " + r1.getClass());
+            assertNotNull(c2, "second call must carry a cid, got " + r2.getClass());
+            assertEquals(c1, c2, "both concurrent calls must converge on the same cid");
             assertEquals(1, stub.createCalls, "underlying service must run exactly once across the race");
         } finally {
             stub.released.countDown();
@@ -293,13 +297,22 @@ public class WorkflowServiceProxyTest {
         stub.failWith = null;
         AssetCreationStatus second = proxied.createAsset(ik, a, null, null, null, null, null);
 
-        assertTrue(second instanceof io.ownera.ledger.adapter.service.model.FailedAssetCreation,
-                "duplicate after failure must return the persisted failure, got " + second.getClass());
+        assertTrue(second instanceof io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus,
+                "duplicate after failure must return the cached marker wrapping stored JSON, got " + second.getClass());
+        APIOperationStatusCreateAsset wrap = (APIOperationStatusCreateAsset)
+                ((io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus) second).apiStatus.getActualInstance();
+        assertTrue(wrap.getOperation().getIsCompleted());
+        assertNotNull(wrap.getOperation().getError(), "cached duplicate must carry the original failure payload");
         assertEquals(1, stub.createCalls, "underlying service must run exactly once across failure + duplicate");
     }
 
     @Test
     void duplicateCallShortCircuitsToExistingOutputs() throws Exception {
+        // Duplicate POST on a COMPLETED row returns the stored outputs JSON byte-faithfully via
+        // the CachedJsonOperationStatus marker. This is the Node createServiceProxy contract:
+        // "if (!inserted) return storageOperation.outputs" — the wire response on a duplicate must
+        // match the original, including fields that the internal-model round-trip would drop
+        // (LedgerReference.network/standard, here).
         StubTokenService stub = new StubTokenService();
         TokenService proxied = wrap(stub, null);
 
@@ -317,9 +330,23 @@ public class WorkflowServiceProxyTest {
         }
 
         AssetCreationStatus second = proxied.createAsset(ik, a, null, null, null, null, null);
-        assertTrue(second instanceof SuccessfulAssetCreation,
-                "second identical call must return the cached success payload, got " + second.getClass());
+        assertTrue(second instanceof io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus,
+                "duplicate must return the cached marker wrapping stored JSON, got " + second.getClass());
         assertEquals(1, stub.createCalls, "underlying service must run once across duplicate requests");
+
+        // Byte-faithfulness: network + standard survive on the duplicate. The internal-model
+        // round-trip (Mappers.fromAPI(create)) drops LedgerReference, so without the cached
+        // marker these fields would come back as empty strings.
+        APIOperationStatusCreateAsset wrap = (APIOperationStatusCreateAsset)
+                ((io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus) second).apiStatus.getActualInstance();
+        APILedgerAssetIdentifierTypeCAIP19 caip19 = (APILedgerAssetIdentifierTypeCAIP19)
+                wrap.getOperation().getResponse().getLedgerAssetInfo()
+                        .getLedgerIdentifier().getActualInstance();
+        assertEquals("hedera:testnet", caip19.getNetwork(),
+                "network must round-trip on cached duplicate");
+        assertEquals("HTS", caip19.getStandard(),
+                "standard must round-trip on cached duplicate");
+        assertEquals("tok-ast-DUP", caip19.getTokenId());
     }
 
     @Test
@@ -330,6 +357,20 @@ public class WorkflowServiceProxyTest {
         // persisting a row.
         String balance = proxied.getBalance(asset("ast-B"), "fin-1");
         assertEquals("0", balance);
+    }
+
+    /** Pulls the cid out of either a freshly-built Pending (winner of an insert race) or a
+     * CachedJsonOperationStatus marker (loser, or any duplicate hit). */
+    private static String extractCid(AssetCreationStatus s) {
+        if (s instanceof PendingAssetCreation) {
+            return ((PendingAssetCreation) s).correlationId;
+        }
+        if (s instanceof io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus) {
+            APIOperationStatusCreateAsset wrap = (APIOperationStatusCreateAsset)
+                    ((io.ownera.ledger.adapter.service.workflow.CachedJsonOperationStatus) s).apiStatus.getActualInstance();
+            return wrap.getOperation().getCid();
+        }
+        return null;
     }
 
     @Test
