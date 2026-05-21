@@ -158,13 +158,19 @@ public class WorkflowServiceProxy {
     }
 
     private Object resolveExisting(String methodName, OperationRecord existing) {
-        if (existing.status == OperationRecord.Status.COMPLETED && existing.result != null) {
-            logger.debug("Returning cached completed result for method={}, cid={}", methodName, existing.cid);
+        // Mirror Node's createServiceProxy: "if (!inserted) return storageOperation.outputs" —
+        // return whatever payload is persisted for the row regardless of status. A COMPLETED row
+        // returns success, FAILED returns the failure payload, IN_PROGRESS returns the pending
+        // payload persisted at insert time. Only fall back to building a fresh pending
+        // placeholder when result is null (row created before outputs were persisted, or the
+        // outputs JSON failed to parse — see DbOperationStore.toRecord's best-effort decode).
+        if (existing.result != null) {
+            logger.debug("Returning persisted {} result for method={}, cid={}",
+                    existing.status, methodName, existing.cid);
             return existing.result;
         }
-        // In-flight or failed-without-result: hand back a pending placeholder so the caller can
-        // poll. Matches Node: the row is the source of truth for status, the response shape is
-        // built from the persisted outputs once finalization completes.
+        logger.debug("Existing row has no decoded result; returning fresh pending placeholder for method={}, cid={}",
+                methodName, existing.cid);
         return WorkflowOutcomes.pendingFor(methodName, existing.cid, opMetadata);
     }
 

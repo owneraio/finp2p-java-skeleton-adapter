@@ -268,6 +268,37 @@ public class WorkflowServiceProxyTest {
     }
 
     @Test
+    void duplicateCallAfterFailureReturnsFailurePayload() throws Exception {
+        // Reviewer-flagged regression: a duplicate POST after the first call FAILED used to fall
+        // through to a fresh Pending placeholder. Node returns operation.outputs verbatim for
+        // any existing row, so the duplicate must immediately surface the original failure.
+        StubTokenService stub = new StubTokenService();
+        stub.failWith = new RuntimeException("boom");
+        TokenService proxied = wrap(stub, null);
+
+        String ik = "ik-fail-dup-" + System.nanoTime();
+        Asset a = asset("ast-FAIL-DUP");
+
+        AssetCreationStatus first = proxied.createAsset(ik, a, null, null, null, null, null);
+        String cid = ((PendingAssetCreation) first).correlationId;
+
+        // Wait for the row to reach FAILED.
+        for (int i = 0; i < 100; i++) {
+            OperationRecord r = store.findByCid(cid);
+            if (r != null && r.status == OperationRecord.Status.FAILED) break;
+            Thread.sleep(50);
+        }
+
+        // Stop the underlying service from throwing — a subsequent call must NOT re-run it.
+        stub.failWith = null;
+        AssetCreationStatus second = proxied.createAsset(ik, a, null, null, null, null, null);
+
+        assertTrue(second instanceof io.ownera.ledger.adapter.service.model.FailedAssetCreation,
+                "duplicate after failure must return the persisted failure, got " + second.getClass());
+        assertEquals(1, stub.createCalls, "underlying service must run exactly once across failure + duplicate");
+    }
+
+    @Test
     void duplicateCallShortCircuitsToExistingOutputs() throws Exception {
         StubTokenService stub = new StubTokenService();
         TokenService proxied = wrap(stub, null);
