@@ -58,7 +58,25 @@ public class DbOperationStore implements OperationStore {
 
     @Override
     public void save(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson) {
-        var insert = dsl.insertInto(table)
+        buildInsert(record, inputsJson, pendingOutputsJson).execute();
+    }
+
+    @Override
+    public boolean tryInsert(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson) {
+        // ON CONFLICT (inputs_hash) DO NOTHING returns 0 affected rows when the row already
+        // exists, 1 when we actually inserted. This is the atomic guarantee that two concurrent
+        // identical requests don't both blow up on the unique constraint.
+        int affected = buildInsert(record, inputsJson, pendingOutputsJson)
+                .onConflict(INPUTS_HASH)
+                .doNothing()
+                .execute();
+        return affected == 1;
+    }
+
+    private org.jooq.InsertSetMoreStep<?> buildInsert(OperationRecord record,
+                                                      @Nullable String inputsJson,
+                                                      @Nullable String pendingOutputsJson) {
+        org.jooq.InsertSetMoreStep<?> insert = dsl.insertInto(table)
                 .set(CID, record.cid)
                 .set(METHOD, record.method)
                 .set(STATUS, record.status.name())
@@ -69,7 +87,7 @@ public class DbOperationStore implements OperationStore {
         if (pendingOutputsJson != null) {
             insert = insert.set(OUTPUTS, JSONB.valueOf(pendingOutputsJson));
         }
-        insert.execute();
+        return insert;
     }
 
     @Override

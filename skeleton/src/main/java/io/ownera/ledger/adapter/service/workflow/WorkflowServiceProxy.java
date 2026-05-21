@@ -119,16 +119,11 @@ public class WorkflowServiceProxy {
         String inputsJson = argsCodec.encode(args == null ? new Object[0] : args);
         String inputsHash = OperationExecutor.computeInputsHash(methodName, inputsJson);
 
+        // Optimistic fast-path: most duplicate calls are spread far enough apart in time that the
+        // row already exists when the second arrives. Skip the insert attempt in that case.
         OperationRecord existing = store.findByInputsHash(inputsHash);
         if (existing != null) {
-            if (existing.status == OperationRecord.Status.COMPLETED && existing.result != null) {
-                logger.debug("Returning cached completed result for method={}, cid={}", methodName, existing.cid);
-                return existing.result;
-            }
-            // In-flight or failed-without-result: return the pending placeholder built for this
-            // method so the caller can poll. Matches Node behavior: the row is the source of truth.
-            logger.debug("Returning pending placeholder (existing row) for method={}, cid={}", methodName, existing.cid);
-            return WorkflowOutcomes.pendingFor(methodName, existing.cid, opMetadata);
+            return resolveExisting(methodName, existing);
         }
 
         String cid = CorrelationIdGenerator.generate();
@@ -137,12 +132,40 @@ public class WorkflowServiceProxy {
 
         OperationRecord record = new OperationRecord(
                 cid, methodName, OperationRecord.Status.IN_PROGRESS, inputsHash, null);
-        store.save(record, inputsJson, pendingJson);
 
-        // Fire-and-forget background execution; finalize handles success + failure paths.
+        // Race-safe insert: ON CONFLICT (inputs_hash) DO NOTHING. If we lose to a concurrent
+        // identical call, tryInsert returns false and we read the winner's row instead of
+        // bubbling a unique-constraint violation up to the caller. Mirrors Node's saveOperation
+        // returning (op, inserted) from skeleton/src/workflows/storage.ts.
+        boolean inserted = store.tryInsert(record, inputsJson, pendingJson);
+        if (!inserted) {
+            OperationRecord winner = store.findByInputsHash(inputsHash);
+            if (winner != null) {
+                logger.debug("Lost insert race for method={}; returning winner's outputs cid={}",
+                        methodName, winner.cid);
+                return resolveExisting(methodName, winner);
+            }
+            // Should not happen: the conflict said the row exists, but lookup found nothing.
+            // Fall through to pending so the caller has something pollable.
+            logger.warn("tryInsert reported conflict but findByInputsHash returned null for method={}", methodName);
+            return pending;
+        }
+
+        // Won the race — kick off background work.
         Object[] argsCopy = args == null ? new Object[0] : args.clone();
         executor.submit(() -> executeAndFinalize(method, argsCopy, cid));
         return pending;
+    }
+
+    private Object resolveExisting(String methodName, OperationRecord existing) {
+        if (existing.status == OperationRecord.Status.COMPLETED && existing.result != null) {
+            logger.debug("Returning cached completed result for method={}, cid={}", methodName, existing.cid);
+            return existing.result;
+        }
+        // In-flight or failed-without-result: hand back a pending placeholder so the caller can
+        // poll. Matches Node: the row is the source of truth for status, the response shape is
+        // built from the persisted outputs once finalization completes.
+        return WorkflowOutcomes.pendingFor(methodName, existing.cid, opMetadata);
     }
 
     private void executeAndFinalize(Method method, Object[] args, String cid) {

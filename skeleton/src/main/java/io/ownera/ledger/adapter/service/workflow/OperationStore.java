@@ -23,6 +23,17 @@ public interface OperationStore {
     void save(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson);
 
     /**
+     * Atomic insert-or-noop on the unique {@code inputs_hash} key. Returns {@code true} if this
+     * call inserted the row, {@code false} if the row already existed (and the caller lost the
+     * race).
+     *
+     * <p>Mirrors Node's {@code saveOperation(...)} (skeleton/src/workflows/storage.ts): two
+     * concurrent identical requests must not collide on the unique constraint — the loser must
+     * be able to read the winner's persisted outputs and return them instead of erroring.
+     */
+    boolean tryInsert(OperationRecord record, @Nullable String inputsJson, @Nullable String pendingOutputsJson);
+
+    /**
      * Backward-compatible overload: no inputs to persist.
      */
     default void save(OperationRecord record, @Nullable String pendingOutputsJson) {

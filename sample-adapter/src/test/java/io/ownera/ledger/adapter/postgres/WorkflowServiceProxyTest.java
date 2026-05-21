@@ -202,6 +202,72 @@ public class WorkflowServiceProxyTest {
     }
 
     @Test
+    void tryInsertOnInputsHashConflictReturnsFalseInsteadOfThrowing() {
+        // Direct store-level race proof: two tryInsert calls with the same inputs_hash and
+        // different cids must NOT both succeed and must NOT throw on the second. The second
+        // call gets false and the row keeps the first cid.
+        String inputsHash = "hash-race-" + System.nanoTime();
+        OperationRecord first = new OperationRecord(
+                "cid-first-" + System.nanoTime(), "createAsset",
+                OperationRecord.Status.IN_PROGRESS, inputsHash, null);
+        OperationRecord second = new OperationRecord(
+                "cid-second-" + System.nanoTime(), "createAsset",
+                OperationRecord.Status.IN_PROGRESS, inputsHash, null);
+
+        assertTrue(store.tryInsert(first, (String) null, "{\"a\":1}"), "first insert must win");
+        assertFalse(store.tryInsert(second, (String) null, "{\"a\":2}"),
+                "second insert with the same inputs_hash must report conflict (false), not throw");
+
+        OperationRecord winner = store.findByInputsHash(inputsHash);
+        assertNotNull(winner);
+        assertEquals(first.cid, winner.cid, "winning row must keep the first cid");
+    }
+
+    @Test
+    void concurrentDuplicateCallsBothShortCircuit() throws Exception {
+        // Race test: two concurrent identical calls used to blow up the loser on the unique
+        // inputs_hash constraint because the lookup + insert path was non-atomic. With
+        // tryInsert (ON CONFLICT DO NOTHING) the loser must instead see the winner's row and
+        // return a Pending placeholder for the same cid.
+        StubTokenService stub = new StubTokenService();
+        stub.hold = true; // both calls' background work blocks so neither finalizes early
+        TokenService proxied = wrap(stub, null);
+        try {
+            String ik = "ik-race-" + System.nanoTime();
+            Asset a = asset("ast-RACE");
+            java.util.concurrent.CountDownLatch start = new java.util.concurrent.CountDownLatch(1);
+            java.util.concurrent.CompletableFuture<AssetCreationStatus> f1 = new java.util.concurrent.CompletableFuture<>();
+            java.util.concurrent.CompletableFuture<AssetCreationStatus> f2 = new java.util.concurrent.CompletableFuture<>();
+            Runnable call = () -> {
+                try {
+                    start.await();
+                    f1.complete(proxied.createAsset(ik, a, null, null, null, null, null));
+                } catch (Throwable t) { f1.completeExceptionally(t); }
+            };
+            Runnable call2 = () -> {
+                try {
+                    start.await();
+                    f2.complete(proxied.createAsset(ik, a, null, null, null, null, null));
+                } catch (Throwable t) { f2.completeExceptionally(t); }
+            };
+            new Thread(call).start();
+            new Thread(call2).start();
+            start.countDown();
+            AssetCreationStatus r1 = f1.get(5, java.util.concurrent.TimeUnit.SECONDS);
+            AssetCreationStatus r2 = f2.get(5, java.util.concurrent.TimeUnit.SECONDS);
+            assertTrue(r1 instanceof PendingAssetCreation, "first call must return Pending, got " + r1.getClass());
+            assertTrue(r2 instanceof PendingAssetCreation, "second call must return Pending (not blow up), got " + r2.getClass());
+            // Both must point at the same cid — Node's saveOperation guarantees a single winner.
+            assertEquals(((PendingAssetCreation) r1).correlationId,
+                    ((PendingAssetCreation) r2).correlationId,
+                    "both concurrent calls must converge on the same cid");
+            assertEquals(1, stub.createCalls, "underlying service must run exactly once across the race");
+        } finally {
+            stub.released.countDown();
+        }
+    }
+
+    @Test
     void duplicateCallShortCircuitsToExistingOutputs() throws Exception {
         StubTokenService stub = new StubTokenService();
         TokenService proxied = wrap(stub, null);
