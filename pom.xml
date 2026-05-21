@@ -28,6 +28,7 @@
 
     <modules>
         <module>skeleton</module>
+        <module>vanilla-service</module>
         <module>sample-adapter</module>
     </modules>
 
