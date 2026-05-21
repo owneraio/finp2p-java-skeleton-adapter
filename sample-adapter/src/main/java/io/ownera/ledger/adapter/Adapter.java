@@ -18,15 +18,9 @@ public class Adapter {
 
     private final static Logger logger = LoggerFactory.getLogger(Adapter.class);
 
-    @Bean
-    public PaymentService paymentService() {
-        return new CollateralService();
-    }
-
-    @Bean
-    public PlanApprovalService planApprovalService() {
-        return new AutoPlanApprovalService();
-    }
+    // PaymentService and PlanApprovalService beans live in WorkflowProxyConfig — they are
+    // exposed as WorkflowServiceProxy-wrapped versions so all proxied payment/plan operations
+    // flow through the durable async workflow path.
 
     @Bean
     public SimpleHealthService healthService() {
@@ -43,10 +37,9 @@ public class Adapter {
         return new CryptoService();
     }
 
-    @Bean
-    public OperationExecutor operationExecutor(OperationStore operationStore) {
-        return new OperationExecutor(operationStore, null);
-    }
+    // OperationExecutor (the sync workflow path) is still available in the skeleton for adapters
+    // that prefer it over the proxy. The sample-adapter wires services through
+    // WorkflowProxyConfig instead and no longer needs this bean.
 
     // Uncomment to enable transaction lifecycle hooks:
     // @Bean

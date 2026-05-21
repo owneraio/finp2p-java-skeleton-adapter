@@ -5,7 +5,6 @@ import io.ownera.ledger.adapter.api.model.*;
 import io.ownera.ledger.adapter.service.*;
 import io.ownera.ledger.adapter.service.model.*;
 import io.ownera.ledger.adapter.service.workflow.CorrelationIdGenerator;
-import io.ownera.ledger.adapter.service.workflow.OperationExecutor;
 import io.ownera.ledger.adapter.service.workflow.OperationStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 import static io.ownera.ledger.adapter.Mappers.*;
-import static io.ownera.ledger.adapter.service.workflow.OperationExecutor.computeInputsHash;
 
 @RestController
 public class Controller {
@@ -29,7 +27,6 @@ public class Controller {
     private final CommonService commonService;
     private final HealthService healthService;
     private final SignatureVerifier signatureVerifier;
-    private final OperationExecutor operationExecutor;
     private final Optional<TransactionHook> transactionHook;
     private final OperationStore operationStore;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -37,7 +34,7 @@ public class Controller {
     public Controller(EscrowService escrowService, TokenService tokenService, PaymentService paymentService,
                       PlanApprovalService planApprovalService, CommonService commonService,
                       HealthService healthService, SignatureVerifier signatureVerifier,
-                      OperationExecutor operationExecutor, Optional<TransactionHook> transactionHook,
+                      Optional<TransactionHook> transactionHook,
                       OperationStore operationStore) {
         this.escrowService = escrowService;
         this.tokenService = tokenService;
@@ -46,7 +43,6 @@ public class Controller {
         this.commonService = commonService;
         this.healthService = healthService;
         this.signatureVerifier = signatureVerifier;
-        this.operationExecutor = operationExecutor;
         this.transactionHook = transactionHook;
         this.operationStore = operationStore;
     }
@@ -94,11 +90,7 @@ public class Controller {
         String ik = ensureIdempotencyKey(idempotencyKey);
         String planId = request.getExecutionPlan().getId();
         logger.info("Approve plan: {}", planId);
-        PlanApprovalStatus status = operationExecutor.execute(
-                "approvePlan", computeInputsHash("approvePlan", ik, planId),
-                () -> planApprovalService.approvePlan(ik, planId),
-                cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        PlanApprovalStatus status = planApprovalService.approvePlan(ik, planId);
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
 
@@ -114,27 +106,15 @@ public class Controller {
 
         PlanApprovalStatus status;
         if (proposal instanceof APIExecutionPlanCancellationProposal) {
-            status = operationExecutor.execute(
-                    "proposeCancelPlan", computeInputsHash("proposeCancelPlan", ik, planId),
-                    () -> planApprovalService.proposeCancelPlan(ik, planId),
-                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
-            );
+            status = planApprovalService.proposeCancelPlan(ik, planId);
         } else if (proposal instanceof APIExecutionPlanResetProposal) {
             APIExecutionPlanResetProposal reset = (APIExecutionPlanResetProposal) proposal;
             int seq = reset.getProposedSequence() != null ? reset.getProposedSequence() : 0;
-            status = operationExecutor.execute(
-                    "proposeResetPlan", computeInputsHash("proposeResetPlan", ik, planId, String.valueOf(seq)),
-                    () -> planApprovalService.proposeResetPlan(ik, planId, seq),
-                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
-            );
+            status = planApprovalService.proposeResetPlan(ik, planId, seq);
         } else if (proposal instanceof APIExecutionPlanInstructionProposal) {
             APIExecutionPlanInstructionProposal instr = (APIExecutionPlanInstructionProposal) proposal;
             int seq = instr.getInstructionSequence() != null ? instr.getInstructionSequence() : 0;
-            status = operationExecutor.execute(
-                    "proposeInstructionApproval", computeInputsHash("proposeInstructionApproval", ik, planId, String.valueOf(seq)),
-                    () -> planApprovalService.proposeInstructionApproval(ik, planId, seq),
-                    cid -> new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))
-            );
+            status = planApprovalService.proposeInstructionApproval(ik, planId, seq);
         } else {
             logger.warn("Unknown proposal type: {}", proposal.getClass().getName());
             status = new ApprovedPlan();
@@ -166,18 +146,14 @@ public class Controller {
     ) {
         String ik = ensureIdempotencyKey(idempotencyKey);
         logger.info("Create asset: {}", request);
-        AssetCreationStatus status = operationExecutor.execute(
-                "createAsset", computeInputsHash("createAsset", ik, request.toString()),
-                () -> tokenService.createAsset(
-                        ik,
-                        fromAPI(request.getAsset()),
-                        fromAPI(request.getLedgerAssetBinding()),
-                        request.getMetadata(),
-                        request.getName(),
-                        request.getIssuerId(),
-                        fromAPI(request.getDenomination())
-                ),
-                cid -> new PendingAssetCreation(cid, new OperationMetadata(new PollingResponseStrategy()))
+        AssetCreationStatus status = tokenService.createAsset(
+                ik,
+                fromAPI(request.getAsset()),
+                fromAPI(request.getLedgerAssetBinding()),
+                request.getMetadata(),
+                request.getName(),
+                request.getIssuerId(),
+                fromAPI(request.getDenomination())
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(status));
     }
@@ -199,11 +175,7 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.ISSUE, null,
                 destination.destination(), asset, request.getQuantity(), null, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "issue", computeInputsHash("issue", ik, request.toString()),
-                () -> tokenService.issue(ik, asset, destination, request.getQuantity(), exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = tokenService.issue(ik, asset, destination, request.getQuantity(), exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.ISSUE, null,
@@ -234,12 +206,8 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.TRANSFER, source, destination, asset,
                 request.getQuantity(), sig, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "transfer", computeInputsHash("transfer", ik, request.toString()),
-                () -> tokenService.transfer(ik, request.getNonce(), source, destination, asset,
-                        request.getQuantity(), sig, exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = tokenService.transfer(ik, request.getNonce(), source, destination, asset,
+                request.getQuantity(), sig, exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.TRANSFER, source, destination, asset,
@@ -269,12 +237,8 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.REDEEM, source.source(), null, asset,
                 request.getQuantity(), sig, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "redeem", computeInputsHash("redeem", ik, request.toString()),
-                () -> tokenService.redeem(ik, request.getNonce(), source, asset,
-                        request.getQuantity(), request.getOperationId(), sig, exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = tokenService.redeem(ik, request.getNonce(), source, asset,
+                request.getQuantity(), request.getOperationId(), sig, exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.REDEEM, source.source(), null, asset,
@@ -357,12 +321,8 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.HOLD, source, destination, asset,
                 request.getQuantity(), sig, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "hold", computeInputsHash("hold", ik, request.toString()),
-                () -> escrowService.hold(ik, request.getNonce(), source, destination, asset,
-                        request.getQuantity(), sig, request.getOperationId(), exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = escrowService.hold(ik, request.getNonce(), source, destination, asset,
+                request.getQuantity(), sig, request.getOperationId(), exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.HOLD, source, destination, asset,
@@ -387,12 +347,8 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.RELEASE, source, destination, asset,
                 request.getQuantity(), null, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "release", computeInputsHash("release", ik, request.toString()),
-                () -> escrowService.release(ik, source, destination, asset,
-                        request.getQuantity(), request.getOperationId(), exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = escrowService.release(ik, source, destination, asset,
+                request.getQuantity(), request.getOperationId(), exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.RELEASE, source, destination, asset,
@@ -416,12 +372,8 @@ public class Controller {
         transactionHook.ifPresent(h -> h.preTransaction(
                 ik, OperationType.ROLLBACK, source, null, asset,
                 request.getQuantity(), null, exCtx));
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "rollback", computeInputsHash("rollback", ik, request.toString()),
-                () -> escrowService.rollback(ik, source, asset,
-                        request.getQuantity(), request.getOperationId(), exCtx),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = escrowService.rollback(ik, source, asset,
+                request.getQuantity(), request.getOperationId(), exCtx);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.ROLLBACK, source, null, asset,
@@ -445,19 +397,15 @@ public class Controller {
         // if (sig != null && !signatureVerifier.verify(sig, request.getOwner().getFinId())) {
         //     throw new BusinessException(4, "Signature verification failed");
         // }
-        DepositOperation rcptOp = operationExecutor.execute(
-                "depositInstruction", computeInputsHash("depositInstruction", ik, request.toString()),
-                () -> paymentService.getDepositInstruction(
-                        ik,
-                        sourceFromAPI(request.getOwner()),
-                        destinationFromAPI(request.getDestination()),
-                        fromAPI(request.getAsset()),
-                        request.getAmount(),
-                        request.getDetails(),
-                        request.getNonce(),
-                        fromAPI(request.getSignature())
-                ),
-                cid -> new PendingDepositOperation(cid, new OperationMetadata(new PollingResponseStrategy()))
+        DepositOperation rcptOp = paymentService.getDepositInstruction(
+                ik,
+                sourceFromAPI(request.getOwner()),
+                destinationFromAPI(request.getDestination()),
+                fromAPI(request.getAsset()),
+                request.getAmount(),
+                request.getDetails(),
+                request.getNonce(),
+                fromAPI(request.getSignature())
         );
         return ResponseEntity.status(HttpStatus.OK).body(toAPIResponse(rcptOp));
     }
@@ -488,12 +436,8 @@ public class Controller {
             description = request.getPayoutInstruction().getDescription();
         }
         String desc = description;
-        ReceiptOperation rcptOp = operationExecutor.execute(
-                "payout", computeInputsHash("payout", ik, request.toString()),
-                () -> paymentService.payout(ik, source, destination, asset,
-                        request.getQuantity(), desc, request.getNonce(), sig),
-                cid -> new PendingReceiptStatus(cid, new OperationMetadata(new PollingResponseStrategy()))
-        );
+        ReceiptOperation rcptOp = paymentService.payout(ik, source, destination, asset,
+                request.getQuantity(), desc, request.getNonce(), sig);
 
         transactionHook.ifPresent(h -> h.postTransaction(
                 ik, OperationType.TRANSFER, source, destination, asset,
