@@ -20,14 +20,23 @@ public class OperationExecutor {
     private final @Nullable CallbackClient callbackClient;
     private final boolean async;
     private final @Nullable ExecutorService executorPool;
+    private final OperationOutputSerializer outputSerializer;
 
     public OperationExecutor(OperationStore store,
                              @Nullable CallbackClient callbackClient,
                              boolean async) {
+        this(store, callbackClient, async, OperationOutputSerializer.defaultSerializer());
+    }
+
+    public OperationExecutor(OperationStore store,
+                             @Nullable CallbackClient callbackClient,
+                             boolean async,
+                             OperationOutputSerializer outputSerializer) {
         this.store = store;
         this.callbackClient = callbackClient;
         this.async = async;
         this.executorPool = async ? Executors.newCachedThreadPool() : null;
+        this.outputSerializer = outputSerializer;
     }
 
     /**
@@ -72,7 +81,8 @@ public class OperationExecutor {
                 logger.debug("Returning cached result for method={}, cid={}", method, existing.cid);
                 return (T) existing.result;
             }
-            logger.debug("Operation in progress for method={}, cid={}", method, existing.cid);
+            logger.debug("Operation in progress or completed (cached outputs only durable via polling) "
+                    + "for method={}, cid={}", method, existing.cid);
             return pendingFactory.createPending(existing.cid);
         }
 
@@ -92,7 +102,8 @@ public class OperationExecutor {
     private <T extends OperationStatus> T executeOperation(String cid, String method, Supplier<T> operation) {
         try {
             T result = operation.get();
-            store.updateStatus(cid, OperationRecord.Status.COMPLETED, result);
+            String outputsJson = trySerialize(cid, method, result);
+            store.updateStatus(cid, OperationRecord.Status.COMPLETED, outputsJson);
 
             if (callbackClient != null) {
                 try {
@@ -105,8 +116,19 @@ public class OperationExecutor {
             return result;
         } catch (Exception e) {
             logger.error("Operation failed: method={}, cid={}, error={}", method, cid, e.getMessage());
-            store.updateStatus(cid, OperationRecord.Status.FAILED, null);
+            store.updateStatus(cid, OperationRecord.Status.FAILED, (String) null);
             if (!async) throw e;
+            return null;
+        }
+    }
+
+    private String trySerialize(String cid, String method, OperationStatus result) {
+        try {
+            return outputSerializer.serialize(result);
+        } catch (Exception e) {
+            // Outputs are an optimization for polling/replay — never block the operation's
+            // completion on a serialization failure. Log and persist with null outputs.
+            logger.warn("Failed to serialize outputs for method={}, cid={}: {}", method, cid, e.getMessage());
             return null;
         }
     }

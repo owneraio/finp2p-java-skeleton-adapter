@@ -10,8 +10,35 @@ public interface OperationStore {
 
     void save(OperationRecord record);
 
-    void updateStatus(String cid, OperationRecord.Status status, @Nullable OperationStatus result);
+    /**
+     * Persist a status transition with serialized outputs.
+     *
+     * <p>{@code outputsJson} should be the JSON of {@link io.ownera.ledger.adapter.api.model.APIOperationStatus}
+     * (or {@code null} when no payload is available). PR 0 added this overload because the original
+     * (cid, status, OperationStatus) signature silently dropped its result argument — the polling
+     * endpoint and idempotent-replay path both depended on persisted outputs.
+     */
+    void updateStatus(String cid, OperationRecord.Status status, @Nullable String outputsJson);
+
+    /**
+     * Backward-compatible overload that ignores the in-memory {@code OperationStatus}.
+     * New callers should serialize first and pass JSON via the {@code (cid, status, String)} overload.
+     *
+     * @deprecated kept for callers built before PR 0; will be removed in a future release.
+     */
+    @Deprecated
+    default void updateStatus(String cid, OperationRecord.Status status, @Nullable OperationStatus result) {
+        updateStatus(cid, status, (String) null);
+    }
 
     @Nullable
     OperationRecord findByCid(String cid);
+
+    /**
+     * Read the persisted outputs JSON for a cid — the serialized
+     * {@link io.ownera.ledger.adapter.api.model.APIOperationStatus}. Returns {@code null} when
+     * the cid does not exist or the operation has not yet completed (no outputs persisted).
+     */
+    @Nullable
+    String findOutputsByCid(String cid);
 }
