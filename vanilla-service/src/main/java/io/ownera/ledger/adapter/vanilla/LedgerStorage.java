@@ -97,7 +97,7 @@ public class LedgerStorage {
                     "LIMIT 1";
 
     private static final String LIST_DISTRIBUTED_ACCOUNTS_TEMPLATE =
-            "SELECT fin_id, balance::TEXT AS balance " +
+            "SELECT fin_id, balance::TEXT AS balance, held::TEXT AS held " +
                     "FROM %s " +
                     "WHERE asset_id = ? AND asset_type = ? AND fin_id != ? AND balance > 0 " +
                     "ORDER BY fin_id";
@@ -336,7 +336,8 @@ public class LedgerStorage {
                 .stream()
                 .map(r -> new DistributedAccount(
                         r.get("fin_id", String.class),
-                        r.get("balance", String.class)))
+                        r.get("balance", String.class),
+                        r.get("held", String.class)))
                 .collect(java.util.stream.Collectors.toList());
     }
 

@@ -96,8 +96,20 @@ public class VanillaDistributionService implements DistributionService {
         List<DistributedAccount> accounts = storage.listDistributedAccounts(
                 OMNIBUS_FIN_ID, assetId, assetTypeStr);
         logger.info("Flushing {} distributed account(s) for assetId={}", accounts.size(), assetId);
+        // Reclaim only the spendable portion (balance − held). An account with an outstanding
+        // escrow lock would trip the CHECK (held <= balance) constraint if we tried to move its
+        // full balance, and the flush would exit with earlier accounts already drained —
+        // leaving the asset in a partially-reclaimed state. Pulling just `available` always
+        // succeeds; the held portion stays put until the escrow is released or rolled back,
+        // and the caller can re-run flush afterwards. (Shared concern with the Node
+        // implementation; tracked there too.)
         for (DistributedAccount account : accounts) {
-            reclaim(account.finId, assetId, assetType, account.balance);
+            if ("0".equals(account.available)) {
+                logger.info("Skipping flush of fully-held account finId={} (balance={}, held={})",
+                        account.finId, account.balance, account.held);
+                continue;
+            }
+            reclaim(account.finId, assetId, assetType, account.available);
         }
         return getDistributionStatus(assetId, assetType);
     }

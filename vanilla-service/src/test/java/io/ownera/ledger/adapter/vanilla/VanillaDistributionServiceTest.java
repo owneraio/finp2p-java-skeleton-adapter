@@ -126,6 +126,62 @@ class VanillaDistributionServiceTest {
     }
 
     @Test
+    void flushDistributionsReclaimsAvailableAndLeavesHeldBalancesInPlace() {
+        // Reviewer-flagged: flush used to enumerate raw balance and try to reclaim the full
+        // amount, which would trip CHECK(held <= balance) on any account with an outstanding
+        // hold — and worse, leave the asset partially flushed because earlier loop iterations
+        // had already drained other investors. The fix moves only the spendable portion;
+        // held value stays put and the flush completes cleanly across every investor.
+        String assetId = "asset-flush-held-" + System.nanoTime();
+        // Order the finIds so the all-available account flushes BEFORE the partially-held
+        // one. Under the old behavior that ordering was exactly the trap: inv1 would be
+        // drained, then the loop would throw on inv2 mid-flush.
+        String inv1 = "aaa-" + System.nanoTime();
+        String inv2 = "bbb-" + System.nanoTime();
+        storage.ensureAccount(VanillaDistributionService.OMNIBUS_FIN_ID, assetId);
+        storage.credit(VanillaDistributionService.OMNIBUS_FIN_ID, "1000", assetId,
+                new LedgerDetails("seed-" + System.nanoTime(), null, "issue", null, null));
+        service.distribute(inv1, assetId, AssetType.FINP2P, "300");
+        service.distribute(inv2, assetId, AssetType.FINP2P, "400");
+        // Tie up part of inv2's balance in an escrow lock.
+        storage.lock(inv2, "250", assetId,
+                new LedgerDetails("hold-" + System.nanoTime(), "op-x", "hold", null, null));
+
+        DistributionStatus s = service.flushDistributions(assetId, AssetType.FINP2P);
+
+        // inv1 fully drained, inv2 keeps its 250 held value (balance == held); the available
+        // 150 was reclaimed.
+        assertEquals("0",   storage.getBalance(inv1, assetId).balance);
+        assertEquals("250", storage.getBalance(inv2, assetId).balance,
+                "held portion must remain on the investor row");
+        assertEquals("250", storage.getBalance(inv2, assetId).held);
+        // Post-flush status: omnibus rehydrated by 850 (300 + 150), 250 still "distributed".
+        assertEquals("1000", s.omnibusBalance);
+        assertEquals("250",  s.distributedBalance);
+        assertEquals("750",  s.availableBalance);
+    }
+
+    @Test
+    void flushDistributionsSkipsFullyHeldAccount() {
+        String assetId = "asset-flush-allheld-" + System.nanoTime();
+        String inv = "inv-" + System.nanoTime();
+        storage.ensureAccount(VanillaDistributionService.OMNIBUS_FIN_ID, assetId);
+        storage.credit(VanillaDistributionService.OMNIBUS_FIN_ID, "500", assetId,
+                new LedgerDetails("seed-" + System.nanoTime(), null, "issue", null, null));
+        service.distribute(inv, assetId, AssetType.FINP2P, "200");
+        storage.lock(inv, "200", assetId,
+                new LedgerDetails("hold-" + System.nanoTime(), "op-y", "hold", null, null));
+
+        DistributionStatus s = service.flushDistributions(assetId, AssetType.FINP2P);
+
+        // Nothing spendable to reclaim — investor row is untouched.
+        assertEquals("200", storage.getBalance(inv, assetId).balance);
+        assertEquals("200", storage.getBalance(inv, assetId).held);
+        assertEquals("300", s.availableBalance, "omnibus still at 300 (no flush moved anything)");
+        assertEquals("200", s.distributedBalance);
+    }
+
+    @Test
     void flushDistributionsReclaimsAllInvestorBalances() {
         String assetId = "asset-flush-" + System.nanoTime();
         String inv1 = "inv-1-" + System.nanoTime();

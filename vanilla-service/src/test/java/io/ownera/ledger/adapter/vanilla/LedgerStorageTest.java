@@ -257,6 +257,25 @@ class LedgerStorageTest {
     }
 
     @Test
+    void listDistributedAccountsReportsBalanceHeldAndAvailable() {
+        String assetId = "asset-dist-held-" + System.nanoTime();
+        String inv = "inv-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv, assetId);
+        storage.credit(OMNIBUS, "1000", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv, "300", assetId, details("ik-m-" + System.nanoTime(), "distribute"));
+        // Lock 200 of the investor's 300 — typical mid-trade state.
+        storage.lock(inv, "200", assetId, details("ik-l-" + System.nanoTime(), "hold"));
+
+        java.util.List<DistributedAccount> rows = storage.listDistributedAccounts(OMNIBUS, assetId, "finp2p");
+        assertEquals(1, rows.size());
+        DistributedAccount row = rows.get(0);
+        assertEquals("300", row.balance);
+        assertEquals("200", row.held);
+        assertEquals("100", row.available, "derived available = balance − held");
+    }
+
+    @Test
     void getDistributionStatusReturnsOmnibusDistributedAvailableBreakdown() {
         String assetId = "asset-dist-status-" + System.nanoTime();
         String inv1 = "inv-1-" + System.nanoTime();
