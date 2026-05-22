@@ -310,6 +310,47 @@ class VanillaServiceImplTest {
     }
 
     @Test
+    void getReceiptForExternalTransferRoundTripsDelegateTxIdAndLedgerAccount() {
+        // Reviewer-flagged: external transfer POST returns a receipt with
+        // transactionDetails.transactionId = the delegate's external id and destination =
+        // LedgerAccount("wallet", ...). The follow-up getReceipt(localTxId) must reproduce both.
+        String src = "fin-src-" + System.nanoTime();
+        Asset a = asset("ast-ext-rt-" + System.nanoTime());
+        VanillaServiceImpl svcSeed = service();
+        svcSeed.issue(uniqueIk("ik-iss"), a, new FinIdAccount(src), "100", null);
+
+        TransferDelegate td = Mockito.mock(TransferDelegate.class);
+        Mockito.when(td.outboundTransfer(Mockito.anyString(), Mockito.any(), Mockito.any(),
+                Mockito.any(), Mockito.anyString(), Mockito.any()))
+                .thenReturn(DelegateResult.success("EXT-TX-ROUNDTRIP"));
+
+        Destination external = new Destination("fin-ext",
+                new io.ownera.ledger.adapter.service.model.LedgerAccount("wallet", "0xabc"));
+
+        VanillaServiceImpl svc = service(null, td, null);
+        ReceiptOperation op = svc.transfer(uniqueIk("ik-ext-rt"), "nonce",
+                new Source(src, new FinIdAccount(src)), external, a, "30", sig(), null);
+        assertTrue(op instanceof SuccessReceiptStatus);
+        io.ownera.ledger.adapter.service.model.Receipt post = ((SuccessReceiptStatus) op).receipt;
+        assertEquals("EXT-TX-ROUNDTRIP", post.transactionDetails.transactionId);
+        assertTrue(post.destination.account instanceof io.ownera.ledger.adapter.service.model.LedgerAccount,
+                "POST receipt destination must be LedgerAccount, got " + post.destination.account.getClass());
+
+        // Now look it up by the storage tx id — the receipt must carry the same fields.
+        ReceiptOperation looked = svc.getReceipt(post.id);
+        assertTrue(looked instanceof SuccessReceiptStatus);
+        io.ownera.ledger.adapter.service.model.Receipt got = ((SuccessReceiptStatus) looked).receipt;
+        assertEquals("EXT-TX-ROUNDTRIP", got.transactionDetails.transactionId,
+                "external tx id must round-trip through getReceipt");
+        assertTrue(got.destination.account instanceof io.ownera.ledger.adapter.service.model.LedgerAccount,
+                "destination must rehydrate as LedgerAccount, not be coerced back to FinIdAccount");
+        io.ownera.ledger.adapter.service.model.LedgerAccount la =
+                (io.ownera.ledger.adapter.service.model.LedgerAccount) got.destination.account;
+        assertEquals("wallet", la.type);
+        assertEquals("0xabc", la.address);
+    }
+
+    @Test
     void getReceiptNotFoundReturnsFailed() {
         assertTrue(service().getReceipt("does-not-exist-" + System.nanoTime()) instanceof FailedReceiptStatus);
     }

@@ -161,9 +161,12 @@ public class VanillaServiceImpl implements
                     asset.assetType.name().toLowerCase());
             return new FailedReceiptStatus(new ErrorDetails(1, ext.error != null ? ext.error : "outbound transfer failed"));
         }
+        // Final write captures the delegate's external tx id + counterparty account shapes so a
+        // later getReceipt() can reproduce the same receipt the caller received here.
+        LedgerDetails finalDetails = details(idempotencyKey + ":debit", null, "transfer", exCtx,
+                source, destination, ext.transactionId);
         LedgerTransaction tx = storage.unlockAndDebit(source.finId, quantity, asset.assetId,
-                details.withIdempotencyKey(idempotencyKey + ":debit"),
-                asset.assetType.name().toLowerCase());
+                finalDetails, asset.assetType.name().toLowerCase());
         return new SuccessReceiptStatus(buildReceipt(tx, OperationType.TRANSFER, asset, source, destination,
                 quantity, exCtx, null, ext.transactionId));
     }
@@ -227,7 +230,6 @@ public class VanillaServiceImpl implements
                                     Asset asset, String quantity, String operationId,
                                     @Nullable ExecutionContext exCtx) {
         logger.info("Release {} of {} from {} to {}", quantity, asset.assetId, source.finId, destination.finId);
-        LedgerDetails details = details(idempotencyKey, operationId, "release", exCtx);
 
         // Delegate first: if the external release fails, the funds stay held locally so the
         // operator can retry (matches Node's ordering and comment).
@@ -239,6 +241,10 @@ public class VanillaServiceImpl implements
             }
             externalTxId = ext.transactionId;
         }
+        // The storage row carries the external tx id + counterparty account shapes so
+        // getReceipt() can reproduce this receipt later.
+        LedgerDetails details = details(idempotencyKey, operationId, "release", exCtx,
+                source, destination, externalTxId);
         storage.ensureAccount(destination.finId, asset.assetId, asset.assetType.name().toLowerCase());
         LedgerTransaction tx = storage.unlockAndMove(source.finId, destination.finId, quantity, asset.assetId, details,
                 asset.assetType.name().toLowerCase());
@@ -250,7 +256,6 @@ public class VanillaServiceImpl implements
     public ReceiptOperation rollback(String idempotencyKey, Source source, Asset asset,
                                      String quantity, String operationId, @Nullable ExecutionContext exCtx) {
         logger.info("Rollback {} of {} on {}", quantity, asset.assetId, source.finId);
-        LedgerDetails details = details(idempotencyKey, operationId, "rollback", exCtx);
         String externalTxId = null;
         if (escrowDelegate != null) {
             DelegateResult ext = escrowDelegate.rollback(idempotencyKey, source, asset, quantity, operationId, exCtx);
@@ -259,6 +264,8 @@ public class VanillaServiceImpl implements
             }
             externalTxId = ext.transactionId;
         }
+        LedgerDetails details = details(idempotencyKey, operationId, "rollback", exCtx,
+                source, null, externalTxId);
         LedgerTransaction tx = storage.unlock(source.finId, quantity, asset.assetId, details,
                 asset.assetType.name().toLowerCase());
         return new SuccessReceiptStatus(buildReceipt(tx, OperationType.ROLLBACK, asset,
@@ -279,10 +286,38 @@ public class VanillaServiceImpl implements
         }
         OperationType opType = parseOperationType(tx.details.operationType);
         Asset asset = new Asset(tx.assetId, parseAssetType(tx.assetType), null);
-        Source source = tx.source != null ? new Source(tx.source, new FinIdAccount(tx.source)) : null;
-        Destination destination = tx.destination != null ? new Destination(tx.destination, new FinIdAccount(tx.destination)) : null;
+        // Reconstruct the counterparty shapes from details. A delegate-backed row carries a
+        // LedgerAccountRef in details (finId + wallet type/address) when the counterparty isn't
+        // a vanilla-tracked FinId — that ref is the only place an external counterparty's finId
+        // survives, because storage.unlockAndDebit and friends are single-sided writes whose
+        // row's source/destination column holds only the local side.
+        Source source = rehydrateSource(tx.source, tx.details.sourceAccount);
+        Destination destination = rehydrateDestination(tx.destination, tx.details.destinationAccount);
         return new SuccessReceiptStatus(buildReceipt(tx, opType, asset, source, destination,
-                tx.amount, executionContextFromDetails(tx.details), tx.details.operationId, null));
+                tx.amount, executionContextFromDetails(tx.details), tx.details.operationId,
+                tx.details.transactionId));
+    }
+
+    private static @Nullable Source rehydrateSource(@Nullable String rowFinId,
+                                                    @Nullable LedgerDetails.LedgerAccountRef ref) {
+        if (ref != null) {
+            return new Source(ref.finId, new io.ownera.ledger.adapter.service.model.LedgerAccount(ref.type, ref.address));
+        }
+        if (rowFinId != null) {
+            return new Source(rowFinId, new FinIdAccount(rowFinId));
+        }
+        return null;
+    }
+
+    private static @Nullable Destination rehydrateDestination(@Nullable String rowFinId,
+                                                              @Nullable LedgerDetails.LedgerAccountRef ref) {
+        if (ref != null) {
+            return new Destination(ref.finId, new io.ownera.ledger.adapter.service.model.LedgerAccount(ref.type, ref.address));
+        }
+        if (rowFinId != null) {
+            return new Destination(rowFinId, new FinIdAccount(rowFinId));
+        }
+        return null;
     }
 
     @Override
@@ -381,10 +416,50 @@ public class VanillaServiceImpl implements
 
     private static LedgerDetails details(String idempotencyKey, @Nullable String operationId,
                                          String operationType, @Nullable ExecutionContext exCtx) {
+        return details(idempotencyKey, operationId, operationType, exCtx, null, null, null);
+    }
+
+    /**
+     * Rich details builder for the delegate-backed paths: captures the external transaction id
+     * and the non-FinId account shapes so a later {@link #getReceipt(String)} can reproduce the
+     * same receipt that was returned to the caller.
+     */
+    private static LedgerDetails details(String idempotencyKey, @Nullable String operationId,
+                                         String operationType, @Nullable ExecutionContext exCtx,
+                                         @Nullable Source source, @Nullable Destination destination,
+                                         @Nullable String externalTransactionId) {
         LedgerDetails.LedgerExecutionContext lec = exCtx != null
                 ? new LedgerDetails.LedgerExecutionContext(exCtx.planId, exCtx.sequence)
                 : null;
-        return new LedgerDetails(idempotencyKey, operationId, operationType, lec, null);
+        return new LedgerDetails(idempotencyKey, operationId, operationType, lec,
+                externalTransactionId,
+                sourceAccountRef(source),
+                destinationAccountRef(destination));
+    }
+
+    /** Captures a source counterparty's finId + (when not a FinIdAccount) the wallet shape. */
+    private static @Nullable LedgerDetails.LedgerAccountRef sourceAccountRef(@Nullable Source source) {
+        if (source == null) return null;
+        if (source.account instanceof io.ownera.ledger.adapter.service.model.LedgerAccount) {
+            io.ownera.ledger.adapter.service.model.LedgerAccount la =
+                    (io.ownera.ledger.adapter.service.model.LedgerAccount) source.account;
+            return new LedgerDetails.LedgerAccountRef(source.finId, la.type, la.address);
+        }
+        return null;
+    }
+
+    /** Captures a destination counterparty's finId + (when not a FinIdAccount) the wallet shape.
+     *  For an external transfer the destination's finId is not stored in the row's
+     *  {@code destination} column (the storage write is single-sided), so this is the only
+     *  place it survives. */
+    private static @Nullable LedgerDetails.LedgerAccountRef destinationAccountRef(@Nullable Destination destination) {
+        if (destination == null) return null;
+        if (destination.account instanceof io.ownera.ledger.adapter.service.model.LedgerAccount) {
+            io.ownera.ledger.adapter.service.model.LedgerAccount la =
+                    (io.ownera.ledger.adapter.service.model.LedgerAccount) destination.account;
+            return new LedgerDetails.LedgerAccountRef(destination.finId, la.type, la.address);
+        }
+        return null;
     }
 
     private static Receipt buildReceipt(LedgerTransaction tx, OperationType opType, Asset asset,
