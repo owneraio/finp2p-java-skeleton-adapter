@@ -42,6 +42,9 @@ public class LedgerStorage {
     private final String getTransactionSql;
     private final String findByOperationIdSql;
     private final String transferSql;
+    private final String listDistributedAccountsSql;
+    private final String getDistributionStatusSql;
+    private final String syncOmnibusBalanceSql;
 
     public LedgerStorage(DSLContext dsl, String schemaName) {
         if (!SCHEMA_NAME_RE.matcher(schemaName).matches()) {
@@ -51,11 +54,14 @@ public class LedgerStorage {
         this.schema = schemaName;
         String accountsTable = schemaName + ".accounts";
         String transactionsTable = schemaName + ".transactions";
-        this.ensureAccountSql     = String.format(ENSURE_ACCOUNT_TEMPLATE,      accountsTable);
-        this.getBalanceSql        = String.format(GET_BALANCE_TEMPLATE,         accountsTable);
-        this.getTransactionSql    = String.format(GET_TRANSACTION_TEMPLATE,     transactionsTable);
-        this.findByOperationIdSql = String.format(FIND_BY_OPERATION_ID_TEMPLATE, transactionsTable);
-        this.transferSql          = String.format(TRANSFER_SQL_TEMPLATE,        transactionsTable, accountsTable);
+        this.ensureAccountSql           = String.format(ENSURE_ACCOUNT_TEMPLATE,            accountsTable);
+        this.getBalanceSql              = String.format(GET_BALANCE_TEMPLATE,               accountsTable);
+        this.getTransactionSql          = String.format(GET_TRANSACTION_TEMPLATE,           transactionsTable);
+        this.findByOperationIdSql       = String.format(FIND_BY_OPERATION_ID_TEMPLATE,      transactionsTable);
+        this.transferSql                = String.format(TRANSFER_SQL_TEMPLATE,              transactionsTable, accountsTable);
+        this.listDistributedAccountsSql = String.format(LIST_DISTRIBUTED_ACCOUNTS_TEMPLATE, accountsTable);
+        this.getDistributionStatusSql   = String.format(GET_DISTRIBUTION_STATUS_TEMPLATE,   accountsTable);
+        this.syncOmnibusBalanceSql      = String.format(SYNC_OMNIBUS_BALANCE_TEMPLATE,      accountsTable);
     }
 
     // SQL templates. Table names are spliced once at construction via String.format — they're
@@ -89,6 +95,38 @@ public class LedgerStorage {
                     "WHERE details->>'operation_id' = ? " +
                     "ORDER BY created_at DESC, id DESC " +
                     "LIMIT 1";
+
+    private static final String LIST_DISTRIBUTED_ACCOUNTS_TEMPLATE =
+            "SELECT fin_id, balance::TEXT AS balance " +
+                    "FROM %s " +
+                    "WHERE asset_id = ? AND asset_type = ? AND fin_id != ? AND balance > 0 " +
+                    "ORDER BY fin_id";
+
+    private static final String GET_DISTRIBUTION_STATUS_TEMPLATE =
+            "SELECT COALESCE(o.balance, 0)::TEXT                          AS available, " +
+                    "       COALESCE(d.total, 0)::TEXT                          AS distributed, " +
+                    "       (COALESCE(o.balance, 0) + COALESCE(d.total, 0))::TEXT AS omnibus_balance " +
+                    "FROM " +
+                    "  (SELECT balance FROM %1$s " +
+                    "   WHERE fin_id = ? AND asset_id = ? AND asset_type = ?) o " +
+                    "FULL JOIN " +
+                    "  (SELECT SUM(balance) AS total FROM %1$s " +
+                    "   WHERE asset_id = ? AND asset_type = ? AND fin_id != ?) d ON TRUE";
+
+    private static final String SYNC_OMNIBUS_BALANCE_TEMPLATE =
+            "WITH lock_asset AS (" +
+                    "  SELECT pg_advisory_xact_lock(hashtext(?), hashtext(?))" +
+                    "), " +
+                    "distributed AS (" +
+                    "  SELECT COALESCE(SUM(a.balance), 0) AS total " +
+                    "  FROM %1$s a, lock_asset " +
+                    "  WHERE a.asset_id = ? AND a.asset_type = ? AND a.fin_id != ?" +
+                    ") " +
+                    "UPDATE %1$s a " +
+                    "SET balance = CAST(? AS NUMERIC) - d.total, updated_at = NOW() " +
+                    "FROM distributed d " +
+                    "WHERE a.fin_id = ? AND a.asset_id = ? AND a.asset_type = ? " +
+                    "RETURNING d.total::TEXT AS distributed, a.balance::TEXT AS available";
 
     /**
      * One-shot CTE template: {@code %1$s} = transactions table, {@code %2$s} = accounts table.
@@ -283,6 +321,72 @@ public class LedgerStorage {
     public LedgerTransaction findByOperationId(String operationId) {
         Record r = dsl.fetchOne(findByOperationIdSql, operationId);
         return r != null ? toLedgerTransaction(r) : null;
+    }
+
+    // ─── Distribution queries ───────────────────────────────────────────────
+
+    /**
+     * Returns all per-investor accounts with positive balances for an asset, excluding the
+     * omnibus account itself. Used to enumerate what would be touched by a bulk flush back into
+     * omnibus.
+     */
+    public java.util.List<DistributedAccount> listDistributedAccounts(
+            String omnibusFinId, String assetId, String assetType) {
+        return dsl.fetch(listDistributedAccountsSql, assetId, assetType, omnibusFinId)
+                .stream()
+                .map(r -> new DistributedAccount(
+                        r.get("fin_id", String.class),
+                        r.get("balance", String.class)))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Returns omnibus + distributed breakdown for an asset, with all arithmetic done in SQL.
+     * {@code omnibusBalance} is the conceptual top-line (omnibus row + sum of investor rows),
+     * {@code distributed} is the sum of investor balances, {@code available} is what's left on
+     * the omnibus row.
+     */
+    public DistributionTotals getDistributionStatus(
+            String omnibusFinId, String assetId, String assetType) {
+        Record r = dsl.fetchOne(getDistributionStatusSql,
+                omnibusFinId, assetId, assetType,
+                assetId, assetType, omnibusFinId);
+        if (r == null) {
+            return new DistributionTotals("0", "0", "0");
+        }
+        return new DistributionTotals(
+                r.get("omnibus_balance", String.class),
+                r.get("distributed", String.class),
+                r.get("available", String.class));
+    }
+
+    /**
+     * Atomically reconcile the omnibus DB row with the supplied on-chain balance.
+     *
+     * <p>Single UPDATE takes a per-asset advisory lock (same key as
+     * {@link #transferSql}, so sync and balance mutations serialize) and computes:
+     * {@code target = onChainBalance - SUM(other investor balances)}.
+     *
+     * <p>If {@code onChainBalance} is less than the already-distributed total, the UPDATE
+     * pushes {@code balance} below zero and the {@code CHECK (balance >= 0)} constraint
+     * aborts the statement. The caller (service layer) is expected to translate that into
+     * a meaningful business error.
+     */
+    public DistributionTotals syncOmnibusBalance(
+            String omnibusFinId, String assetId, String onChainBalance, String assetType) {
+        Record r = dsl.fetchOne(syncOmnibusBalanceSql,
+                assetId, assetType,           // lock_asset hashtext args
+                assetId, assetType, omnibusFinId, // distributed CTE
+                onChainBalance,                // SET balance = ?
+                omnibusFinId, assetId, assetType); // WHERE
+        if (r == null) {
+            throw new io.ownera.ledger.adapter.service.BusinessException(1,
+                    "syncOmnibusBalance: omnibus account row not found for assetId=" + assetId);
+        }
+        return new DistributionTotals(
+                onChainBalance,
+                r.get("distributed", String.class),
+                r.get("available", String.class));
     }
 
     // ─── Atomic CTE transfer ────────────────────────────────────────────────
