@@ -390,6 +390,12 @@ public class VanillaServiceImpl implements
             return;
         }
 
+        // Hand the delegate (and the storage row) the upstream execution context so
+        // verification has plan / instruction info, and a later getReceipt() can round-trip
+        // the same planId / sequence Node persists.
+        ExecutionContext exCtx = new ExecutionContext(ctx.planId, ctx.instructionSequence);
+        String upstreamTxId = ctx.result.transactionId != null ? ctx.result.transactionId : "";
+
         // RECEIPT path: optionally verify via the TransferDelegate, then credit. A
         // InboundTransferVerificationError thrown by the delegate skips the credit so an
         // unverifiable transfer can't reach the destination either.
@@ -397,9 +403,7 @@ public class VanillaServiceImpl implements
             Source source = new Source(ctx.source, new FinIdAccount(ctx.source));
             Destination dest = new Destination(ctx.destination, new FinIdAccount(ctx.destination));
             try {
-                transferDelegate.onInboundTransfer(
-                        ctx.result.transactionId != null ? ctx.result.transactionId : "",
-                        source, ctx.asset, dest, ctx.amount, null);
+                transferDelegate.onInboundTransfer(upstreamTxId, source, ctx.asset, dest, ctx.amount, exCtx);
             } catch (InboundTransferVerificationError e) {
                 logger.warn("Skipping inbound credit for plan={} dst={} amount={}: {}",
                         ctx.planId, ctx.destination, ctx.amount, e.getMessage());
@@ -407,8 +411,11 @@ public class VanillaServiceImpl implements
             }
         }
         storage.ensureAccount(ctx.destination, ctx.asset.assetId, ctx.asset.assetType.name().toLowerCase());
-        storage.credit(ctx.destination, ctx.amount, ctx.asset.assetId,
-                details(idempotencyKey, null, "inboundTransfer", null),
+        // Persist the upstream transaction id + execution context in details so a later
+        // getReceipt() reproduces the upstream provenance, matching Node's parity behavior.
+        LedgerDetails credited = details(idempotencyKey, null, "inboundTransfer", exCtx,
+                null, null, ctx.result.transactionId);
+        storage.credit(ctx.destination, ctx.amount, ctx.asset.assetId, credited,
                 ctx.asset.assetType.name().toLowerCase());
     }
 

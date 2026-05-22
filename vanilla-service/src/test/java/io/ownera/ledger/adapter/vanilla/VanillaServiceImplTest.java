@@ -442,6 +442,88 @@ class VanillaServiceImplTest {
     }
 
     @Test
+    void onInboundTransferPersistsUpstreamTxIdAndExecutionContextForReceiptRoundTrip() {
+        // Reviewer-flagged: the credit row used to drop planId / instructionSequence and the
+        // upstream transactionId. Now we persist all three, and the TransferDelegate gets the
+        // execution context too, so a later getReceipt() reproduces the same provenance Node
+        // writes.
+        String dst = "fin-in-rt-" + System.nanoTime();
+        Asset a = asset("ast-in-rt-" + System.nanoTime());
+        TransferDelegate td = Mockito.mock(TransferDelegate.class);
+
+        InboundTransferHook.InboundTransferContext ctx = new InboundTransferHook.InboundTransferContext(
+                "plan-RT", "fin-src", a, dst, "75", 4,
+                InboundTransferHook.InstructionResult.receipt("UPSTREAM-TX-9"));
+
+        VanillaServiceImpl svc = service(null, td, null);
+        svc.onInboundTransfer(uniqueIk("ik"), ctx);
+
+        // Delegate must see the upstream tx id AND the execution context (planId/sequence),
+        // not the previous all-null hand-off.
+        Mockito.verify(td).onInboundTransfer(
+                Mockito.eq("UPSTREAM-TX-9"),
+                Mockito.any(),
+                Mockito.eq(a),
+                Mockito.any(),
+                Mockito.eq("75"),
+                Mockito.argThat(ec -> ec != null && "plan-RT".equals(ec.planId) && ec.sequence == 4));
+
+        assertEquals("75", storage.getBalance(dst, a.assetId).balance);
+
+        // Pull the credit row by transaction id (the credit returned a tx; we look it up via
+        // the receipt API) and check planId / sequence / upstream tx id survived.
+        io.ownera.ledger.adapter.vanilla.LedgerTransaction credit =
+                storage.findByOperationId("__missing__"); // sanity: lookups by operation_id won't find it (we didn't set one)
+        assertNull(credit);
+
+        // The most-recent credit row for this destination is what we just wrote.
+        // getReceipt by storage tx id should reproduce the upstream tx id and exCtx.
+        // Find the row id by scanning the most recent balance-bearing tx for this finId+asset:
+        // simplest: getReceipt accepts a tx id; we don't have it directly, so look it up via
+        // findByOperationId is not applicable. Instead, assert through the receipt builder
+        // by reading the row directly from the storage.
+        // (Service-level path: caller usually has the tx id from the credit return value;
+        // here we expose via the underlying storage to keep the assertion crisp.)
+        io.ownera.ledger.adapter.vanilla.LedgerTransaction row =
+                org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> latestCreditFor(dst, a.assetId));
+        assertEquals("UPSTREAM-TX-9", row.details.transactionId,
+                "upstream transactionId must round-trip into details.transaction_id");
+        assertNotNull(row.details.executionContext, "executionContext must be persisted");
+        assertEquals("plan-RT", row.details.executionContext.planId);
+        assertEquals(4, row.details.executionContext.sequence);
+
+        // Finally: the public receipt-lookup path reproduces the same fields.
+        ReceiptOperation looked = svc.getReceipt(row.id);
+        assertTrue(looked instanceof SuccessReceiptStatus);
+        io.ownera.ledger.adapter.service.model.Receipt got = ((SuccessReceiptStatus) looked).receipt;
+        assertEquals("UPSTREAM-TX-9", got.transactionDetails.transactionId,
+                "getReceipt() must return the upstream transactionId, not the local row id");
+        assertNotNull(got.tradeDetails.executionContext);
+        assertEquals("plan-RT", got.tradeDetails.executionContext.planId);
+        assertEquals(4, got.tradeDetails.executionContext.sequence);
+    }
+
+    /** Scan accounts for the destination + asset and return the inbound-transfer credit row.
+     *  Used by the round-trip test to grab the storage tx id without coupling to internals. */
+    private io.ownera.ledger.adapter.vanilla.LedgerTransaction latestCreditFor(String finId, String assetId) {
+        // The inbound-credit row is the only tx with destination = finId and action = 'credit'
+        // for this asset, so a direct query is fine here.
+        org.jooq.Record r = VanillaPostgresHolder.CTX.fetchOne(
+                "SELECT id, asset_id, asset_type, source, destination, " +
+                        "amount::TEXT AS amount, source_held::TEXT AS source_held, " +
+                        "destination_held::TEXT AS destination_held, " +
+                        "action, details, created_at " +
+                        "FROM " + VanillaPostgresHolder.SCHEMA + ".transactions " +
+                        "WHERE destination = ? AND asset_id = ? AND action = 'credit' " +
+                        "ORDER BY created_at DESC, id DESC LIMIT 1",
+                finId, assetId);
+        org.junit.jupiter.api.Assertions.assertNotNull(r);
+        // Build a LedgerTransaction via the storage's lookup so the details JSON is parsed via
+        // the same code path production uses.
+        return storage.getTransaction(r.get("id", String.class));
+    }
+
+    @Test
     void onInboundTransferSkipsCreditWhenDelegateThrowsVerificationError() {
         String dst = "fin-in-" + System.nanoTime();
         Asset a = asset("ast-in-skip-" + System.nanoTime());
