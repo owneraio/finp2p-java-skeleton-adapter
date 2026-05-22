@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Default plan approval service that fetches the execution plan from the FinP2P API,
@@ -43,19 +43,49 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
     private final @Nullable AsyncPlanApprovalPlugin asyncPlugin;
     private final @Nullable InboundTransferHook inboundTransferHook;
     private final @Nullable CallbackClient callbackClient;
+    private final @Nullable PlanAnalyzer planAnalyzer;
+    private final PlanMetadataRegistry planMetadataRegistry;
 
+    /**
+     * Back-compat constructor — no {@link PlanAnalyzer}, default in-memory metadata registry.
+     * Existing adapters keep compiling unchanged.
+     */
     public DefaultPlanApprovalService(String orgId,
                                       @Nullable OperationalSDK finP2PSDK,
                                       @Nullable PlanApprovalPlugin syncPlugin,
                                       @Nullable AsyncPlanApprovalPlugin asyncPlugin,
                                       @Nullable InboundTransferHook inboundTransferHook,
                                       @Nullable CallbackClient callbackClient) {
+        this(orgId, finP2PSDK, syncPlugin, asyncPlugin, inboundTransferHook, callbackClient,
+                null, new InMemoryPlanMetadataRegistry());
+    }
+
+    /**
+     * Full constructor. Adapter supplies a {@link PlanAnalyzer} when it wants metadata derived
+     * from each approved plan, and (optionally) its own {@link PlanMetadataRegistry} if the
+     * default in-memory store isn't durable enough.
+     */
+    public DefaultPlanApprovalService(String orgId,
+                                      @Nullable OperationalSDK finP2PSDK,
+                                      @Nullable PlanApprovalPlugin syncPlugin,
+                                      @Nullable AsyncPlanApprovalPlugin asyncPlugin,
+                                      @Nullable InboundTransferHook inboundTransferHook,
+                                      @Nullable CallbackClient callbackClient,
+                                      @Nullable PlanAnalyzer planAnalyzer,
+                                      PlanMetadataRegistry planMetadataRegistry) {
         this.orgId = orgId;
         this.finP2PSDK = finP2PSDK;
         this.syncPlugin = syncPlugin;
         this.asyncPlugin = asyncPlugin;
         this.inboundTransferHook = inboundTransferHook;
         this.callbackClient = callbackClient;
+        this.planAnalyzer = planAnalyzer;
+        this.planMetadataRegistry = planMetadataRegistry;
+    }
+
+    /** Expose the registry so adapter-side operation code can look up metadata by planId. */
+    public PlanMetadataRegistry getPlanMetadataRegistry() {
+        return planMetadataRegistry;
     }
 
     @Override
@@ -73,7 +103,25 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             return new RejectedPlan(new ErrorDetails(e.getCode(), "Failed to fetch execution plan: " + e.getMessage()));
         }
 
+        // Stash analyzer-derived metadata in the registry before validation so the registry is
+        // populated even if validation later rejects the plan — keeps the metadata available
+        // for diagnostic / audit lookups regardless of outcome. Failure inside the analyzer is
+        // contained: log and continue so a buggy analyzer can't tank approval.
+        runPlanAnalyzer(planId, execution.getPlan());
+
         return validatePlan(idempotencyKey, planId, execution);
+    }
+
+    private void runPlanAnalyzer(String planId, @Nullable ExecutionPlan plan) {
+        if (planAnalyzer == null || plan == null) return;
+        try {
+            Map<String, Object> metadata = planAnalyzer.analyzePlan(plan);
+            if (metadata != null) {
+                planMetadataRegistry.put(planId, metadata);
+            }
+        } catch (Exception e) {
+            logger.warn("Plan analyzer failed for planId={}: {}", planId, e.getMessage());
+        }
     }
 
     @Override
