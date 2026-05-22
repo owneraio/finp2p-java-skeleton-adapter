@@ -315,6 +315,35 @@ class VanillaServiceImplTest {
     }
 
     @Test
+    void getReceiptByOperationIdReturnsLatestEventAfterHoldRelease() throws Exception {
+        // Reviewer-flagged: hold and release both stamp the same operation_id into the ledger
+        // details JSONB, so by release time there are two rows sharing that id. The fallback
+        // lookup by operation_id (when the primary tx-id lookup misses) must return the
+        // terminating event — and crucially must not throw on multiple matches.
+        String src = "fin-src-" + System.nanoTime();
+        String dst = "fin-dst-" + System.nanoTime();
+        Asset a = asset("ast-lifecycle-" + System.nanoTime());
+        VanillaServiceImpl svc = service();
+        svc.issue(uniqueIk("ik-iss"), a, new FinIdAccount(src), "100", null);
+        String opId = "op-lifecycle-" + System.nanoTime();
+        svc.hold(uniqueIk("ik-h"), "n",
+                new Source(src, new FinIdAccount(src)), null, a, "40", sig(), opId, null);
+        Thread.sleep(5); // ensure timestamps differ so the ORDER BY is exercised
+        ReceiptOperation releaseOp = svc.release(uniqueIk("ik-r"),
+                new Source(src, new FinIdAccount(src)),
+                new Destination(dst, new FinIdAccount(dst)), a, "40", opId, null);
+        String releaseTxId = ((SuccessReceiptStatus) releaseOp).receipt.id;
+
+        // Calling getReceipt with the operationId (not the tx id) must succeed and resolve to
+        // the release receipt — the latest event in the lifecycle.
+        ReceiptOperation looked = svc.getReceipt(opId);
+        assertTrue(looked instanceof SuccessReceiptStatus,
+                "lookup by operation_id with multiple matches must not throw, got " + looked);
+        assertEquals(releaseTxId, ((SuccessReceiptStatus) looked).receipt.id,
+                "fallback by operation_id must return the most-recent (release) event");
+    }
+
+    @Test
     void operationStatusThrowsBecauseWorkflowProxyOwnsCidLookups() {
         assertThrows(UnsupportedOperationException.class, () -> service().operationStatus("any"));
     }

@@ -226,4 +226,33 @@ class LedgerStorageTest {
         assertNotNull(found);
         assertEquals(created.id, found.id);
     }
+
+    @Test
+    void findByOperationIdReturnsLatestWhenMultipleRowsShareOperationId() throws Exception {
+        // hold + release + redeem all stamp the caller's operation_id into details, so the
+        // same id legitimately appears on multiple ledger rows. Before this fix, fetchOne()
+        // threw TooManyRowsException once more than one row matched. Now the query returns
+        // the most-recent row (the terminating event).
+        String src = "fin-" + System.nanoTime();
+        String dst = "fin-dst-" + System.nanoTime();
+        String assetId = "asset-multi-" + System.nanoTime();
+        storage.ensureAccount(src, assetId);
+        storage.ensureAccount(dst, assetId);
+        storage.credit(src, "100", assetId, details("ik-c-" + System.nanoTime(), "issue"));
+        String opId = "op-multi-" + System.nanoTime();
+
+        LedgerTransaction holdTx = storage.lock(src, "40", assetId,
+                new LedgerDetails("ik-h-" + System.nanoTime(), opId, "hold", null, null));
+        // Ensure created_at timestamps are distinguishable; the secondary id DESC tiebreaker
+        // covers the same-tick case but we want to exercise the timestamp branch here.
+        Thread.sleep(5);
+        LedgerTransaction releaseTx = storage.unlockAndMove(src, dst, "40", assetId,
+                new LedgerDetails("ik-r-" + System.nanoTime(), opId, "release", null, null));
+
+        LedgerTransaction found = storage.findByOperationId(opId);
+        assertNotNull(found);
+        assertEquals(releaseTx.id, found.id,
+                "duplicate operation_id must resolve to the most-recent event, not throw");
+        assertNotEquals(holdTx.id, found.id);
+    }
 }

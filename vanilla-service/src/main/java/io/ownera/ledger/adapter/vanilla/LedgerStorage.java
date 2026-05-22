@@ -166,6 +166,18 @@ public class LedgerStorage {
         return r != null ? toLedgerTransaction(r) : null;
     }
 
+    /**
+     * Returns the most-recent transaction tagged with the given {@code operation_id} in its
+     * details JSONB, or {@code null} when no row matches.
+     *
+     * <p>The same {@code operation_id} is intentionally written to multiple ledger rows over a
+     * single operation lifecycle — e.g. {@code hold} writes one row, then a later
+     * {@code release} / {@code rollback} / held {@code redeem} writes another with the same
+     * id. Callers asking for "the receipt for this operation" want the terminating event, so
+     * we sort by {@code created_at} descending and return the first hit. {@code id} is used as
+     * a tie-breaker so the result is fully deterministic even when two rows land in the same
+     * timestamp tick.
+     */
     @Nullable
     public LedgerTransaction findByOperationId(String operationId) {
         Record r = dsl.fetchOne(
@@ -173,7 +185,10 @@ public class LedgerStorage {
                         "amount::TEXT AS amount, source_held::TEXT AS source_held, " +
                         "destination_held::TEXT AS destination_held, " +
                         "action, details, created_at " +
-                        "FROM " + transactionsTable + " WHERE details->>'operation_id' = ?",
+                        "FROM " + transactionsTable + " " +
+                        "WHERE details->>'operation_id' = ? " +
+                        "ORDER BY created_at DESC, id DESC " +
+                        "LIMIT 1",
                 operationId);
         return r != null ? toLedgerTransaction(r) : null;
     }
