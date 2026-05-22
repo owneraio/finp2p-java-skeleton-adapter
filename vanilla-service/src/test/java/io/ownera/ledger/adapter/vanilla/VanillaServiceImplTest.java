@@ -372,6 +372,35 @@ class VanillaServiceImplTest {
     }
 
     @Test
+    void onInboundTransferSkipsCreditWhenResultIsNull() {
+        // Today's plan service passes ctx.result = null (instruction outcome not yet known).
+        // The hook must treat that as "no confirmed inbound" and skip the credit.
+        String dst = "fin-in-null-" + System.nanoTime();
+        Asset a = asset("ast-in-null-" + System.nanoTime());
+        InboundTransferHook.InboundTransferContext ctx = new InboundTransferHook.InboundTransferContext(
+                "plan-1", "fin-src", a, dst, "50", 0, null);
+
+        service().onInboundTransfer(uniqueIk("ik"), ctx);
+
+        assertEquals("0", storage.getBalance(dst, a.assetId).balance,
+                "null instruction result must not mint a local credit");
+    }
+
+    @Test
+    void onInboundTransferSkipsCreditWhenResultIsError() {
+        String dst = "fin-in-err-" + System.nanoTime();
+        Asset a = asset("ast-in-err-" + System.nanoTime());
+        InboundTransferHook.InboundTransferContext ctx = new InboundTransferHook.InboundTransferContext(
+                "plan-1", "fin-src", a, dst, "50", 0,
+                InboundTransferHook.InstructionResult.error(1, "boom"));
+
+        service().onInboundTransfer(uniqueIk("ik"), ctx);
+
+        assertEquals("0", storage.getBalance(dst, a.assetId).balance,
+                "failed instruction result must not mint a local credit");
+    }
+
+    @Test
     void onInboundTransferSkipsCreditWhenDelegateThrowsVerificationError() {
         String dst = "fin-in-" + System.nanoTime();
         Asset a = asset("ast-in-skip-" + System.nanoTime());

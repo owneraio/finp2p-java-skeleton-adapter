@@ -342,15 +342,28 @@ public class VanillaServiceImpl implements
 
     @Override
     public void onInboundTransfer(String idempotencyKey, InboundTransferContext ctx) {
-        // Verify via TransferDelegate.onInboundTransfer if one is wired, then credit the local
-        // destination. A verification failure skips the credit so an unverifiable transfer
-        // can't inflate the destination's balance.
+        // Only mint a local credit when the upstream instruction actually produced a successful
+        // receipt. A {@code null} result means the caller doesn't yet know how the instruction
+        // landed (today's DefaultPlanApprovalService still passes null here) — treating that as
+        // success would let the destination's balance inflate without a confirmed inbound. An
+        // {@code ERROR} result means the instruction failed; same skip.
+        if (ctx.result == null
+                || ctx.result.type != InboundTransferHook.InstructionResult.Type.RECEIPT) {
+            logger.warn("Skipping inbound credit for plan={} dst={} amount={}: no successful receipt (result={})",
+                    ctx.planId, ctx.destination, ctx.amount,
+                    ctx.result != null ? ctx.result.type : "null");
+            return;
+        }
+
+        // RECEIPT path: optionally verify via the TransferDelegate, then credit. A
+        // InboundTransferVerificationError thrown by the delegate skips the credit so an
+        // unverifiable transfer can't reach the destination either.
         if (transferDelegate != null) {
             Source source = new Source(ctx.source, new FinIdAccount(ctx.source));
             Destination dest = new Destination(ctx.destination, new FinIdAccount(ctx.destination));
             try {
                 transferDelegate.onInboundTransfer(
-                        ctx.result != null && ctx.result.transactionId != null ? ctx.result.transactionId : "",
+                        ctx.result.transactionId != null ? ctx.result.transactionId : "",
                         source, ctx.asset, dest, ctx.amount, null);
             } catch (InboundTransferVerificationError e) {
                 logger.warn("Skipping inbound credit for plan={} dst={} amount={}: {}",
