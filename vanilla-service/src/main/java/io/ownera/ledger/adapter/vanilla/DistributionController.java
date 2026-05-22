@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter.vanilla;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.ownera.ledger.adapter.service.BusinessException;
 import io.ownera.ledger.adapter.service.model.AssetType;
 import org.springframework.http.HttpStatus;
@@ -58,10 +59,11 @@ public class DistributionController {
             @RequestParam("assetId") String assetId,
             @RequestParam(value = "assetType", required = false) String assetType) {
         requireNonBlank(assetId, "assetId");
-        // Bind assetType as String + parse via AssetType.fromWire so we accept the Node-style
-        // lowercase form ("finp2p"). Spring's default String→enum converter is case-sensitive
-        // and would 400 on lowercase.
-        AssetType resolved = assetType != null ? AssetType.fromWire(assetType) : AssetType.FINP2P;
+        // Bind assetType as String + parse locally so the lowercase wire form is accepted on
+        // the distribution surface only. Spring's default String→enum converter is
+        // case-sensitive and would 400 on "finp2p"; AssetType itself stays case-strict so the
+        // workflow proxy's inputs_hash isn't disturbed.
+        AssetType resolved = assetType != null ? AssetTypeWire.parse(assetType) : AssetType.FINP2P;
         return ResponseEntity.ok(distributionService.getDistributionStatus(assetId, resolved));
     }
 
@@ -115,7 +117,9 @@ public class DistributionController {
 
         @JsonCreator
         public AssetRequest(@JsonProperty("assetId") String assetId,
-                            @JsonProperty("assetType") @Nullable AssetType assetType) {
+                            @JsonProperty("assetType")
+                            @JsonDeserialize(using = AssetTypeWire.Deserializer.class)
+                            @Nullable AssetType assetType) {
             this.assetId = assetId;
             this.assetType = assetType;
         }
@@ -134,7 +138,9 @@ public class DistributionController {
         @JsonCreator
         public InvestorAmountRequest(@JsonProperty("finId") String finId,
                                      @JsonProperty("assetId") String assetId,
-                                     @JsonProperty("assetType") @Nullable AssetType assetType,
+                                     @JsonProperty("assetType")
+                                     @JsonDeserialize(using = AssetTypeWire.Deserializer.class)
+                                     @Nullable AssetType assetType,
                                      @JsonProperty("amount") String amount) {
             this.finId = finId;
             this.assetId = assetId;

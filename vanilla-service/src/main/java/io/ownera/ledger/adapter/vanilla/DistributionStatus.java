@@ -2,6 +2,8 @@ package io.ownera.ledger.adapter.vanilla;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.ownera.ledger.adapter.service.model.AssetType;
 
 /**
@@ -17,6 +19,8 @@ public final class DistributionStatus {
     public final String assetId;
 
     @JsonProperty("assetType")
+    @JsonSerialize(using = AssetTypeWire.Serializer.class)
+    @JsonDeserialize(using = AssetTypeWire.Deserializer.class)
     public final AssetType assetType;
 
     @JsonProperty("omnibusBalance")
