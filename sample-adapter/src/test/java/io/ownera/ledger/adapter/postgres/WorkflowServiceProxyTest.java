@@ -350,6 +350,22 @@ public class WorkflowServiceProxyTest {
     }
 
     @Test
+    void workflowArgsCodecKeepsUppercaseAssetTypeForHashStability() {
+        // Cross-PR regression: PR 3 added a Node-style lowercase wire format for AssetType on
+        // the /distribution/* HTTP surface. That fix must stay localized — the workflow proxy
+        // hashes its serialized args into inputs_hash, so flipping the global wire shape would
+        // make pre-upgrade rows un-findable (idempotent replay starts re-executing). The codec
+        // must still serialize AssetType as the uppercase enum name.
+        io.ownera.ledger.adapter.service.workflow.WorkflowArgsCodec codec =
+                new io.ownera.ledger.adapter.service.workflow.WorkflowArgsCodec();
+        String json = codec.encode(new Object[]{asset("ast-stable")});
+        assertTrue(json.contains("\"FINP2P\""),
+                "AssetType must serialize uppercase in workflow args (got " + json + ")");
+        assertFalse(json.contains("\"finp2p\""),
+                "AssetType must NOT serialize lowercase in workflow args (would break inputs_hash)");
+    }
+
+    @Test
     void nonProxiedMethodPassesThrough() {
         StubTokenService stub = new StubTokenService();
         TokenService proxied = wrap(stub, null);

@@ -227,6 +227,122 @@ class LedgerStorageTest {
         assertEquals(created.id, found.id);
     }
 
+    // ─── Distribution queries ───────────────────────────────────────────────
+
+    private static final String OMNIBUS = "__omnibus__";
+
+    @Test
+    void listDistributedAccountsReturnsPositiveBalancesExcludingOmnibus() {
+        String assetId = "asset-dist-list-" + System.nanoTime();
+        String inv1 = "inv-1-" + System.nanoTime();
+        String inv2 = "inv-2-" + System.nanoTime();
+        String inv3Zero = "inv-3-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv1, assetId);
+        storage.ensureAccount(inv2, assetId);
+        storage.ensureAccount(inv3Zero, assetId);
+        storage.credit(OMNIBUS, "1000", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv1, "100", assetId, details("ik-m1-" + System.nanoTime(), "distribute"));
+        storage.move(OMNIBUS, inv2, "250", assetId, details("ik-m2-" + System.nanoTime(), "distribute"));
+        // inv3Zero exists but balance == 0 → must NOT appear.
+
+        java.util.List<DistributedAccount> rows = storage.listDistributedAccounts(OMNIBUS, assetId, "finp2p");
+        assertEquals(2, rows.size());
+        assertTrue(rows.stream().anyMatch(r -> r.finId.equals(inv1) && r.balance.equals("100")));
+        assertTrue(rows.stream().anyMatch(r -> r.finId.equals(inv2) && r.balance.equals("250")));
+        assertTrue(rows.stream().noneMatch(r -> r.finId.equals(OMNIBUS)),
+                "omnibus must be excluded regardless of its balance");
+        assertTrue(rows.stream().noneMatch(r -> r.finId.equals(inv3Zero)),
+                "zero-balance investor must not appear");
+    }
+
+    @Test
+    void listDistributedAccountsReportsBalanceHeldAndAvailable() {
+        String assetId = "asset-dist-held-" + System.nanoTime();
+        String inv = "inv-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv, assetId);
+        storage.credit(OMNIBUS, "1000", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv, "300", assetId, details("ik-m-" + System.nanoTime(), "distribute"));
+        // Lock 200 of the investor's 300 — typical mid-trade state.
+        storage.lock(inv, "200", assetId, details("ik-l-" + System.nanoTime(), "hold"));
+
+        java.util.List<DistributedAccount> rows = storage.listDistributedAccounts(OMNIBUS, assetId, "finp2p");
+        assertEquals(1, rows.size());
+        DistributedAccount row = rows.get(0);
+        assertEquals("300", row.balance);
+        assertEquals("200", row.held);
+        assertEquals("100", row.available, "derived available = balance − held");
+    }
+
+    @Test
+    void getDistributionStatusReturnsOmnibusDistributedAvailableBreakdown() {
+        String assetId = "asset-dist-status-" + System.nanoTime();
+        String inv1 = "inv-1-" + System.nanoTime();
+        String inv2 = "inv-2-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv1, assetId);
+        storage.ensureAccount(inv2, assetId);
+        storage.credit(OMNIBUS, "1000", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv1, "150", assetId, details("ik-m1-" + System.nanoTime(), "distribute"));
+        storage.move(OMNIBUS, inv2, "200", assetId, details("ik-m2-" + System.nanoTime(), "distribute"));
+
+        DistributionTotals t = storage.getDistributionStatus(OMNIBUS, assetId, "finp2p");
+        assertEquals("650", t.available, "omnibus row balance after distributing 350");
+        assertEquals("350", t.distributed, "sum of inv1 + inv2");
+        assertEquals("1000", t.omnibusBalance, "available + distributed");
+    }
+
+    @Test
+    void getDistributionStatusReturnsZerosWhenAccountsDoNotExist() {
+        DistributionTotals t = storage.getDistributionStatus(OMNIBUS, "no-such-asset-" + System.nanoTime(), "finp2p");
+        assertEquals("0", t.omnibusBalance);
+        assertEquals("0", t.distributed);
+        assertEquals("0", t.available);
+    }
+
+    @Test
+    void syncOmnibusBalanceReconcilesAvailableAgainstDistributed() {
+        String assetId = "asset-sync-" + System.nanoTime();
+        String inv1 = "inv-1-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv1, assetId);
+        storage.credit(OMNIBUS, "500", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv1, "100", assetId, details("ik-m-" + System.nanoTime(), "distribute"));
+        // Local view: omnibus = 400 available, inv1 = 100, total = 500.
+
+        // Simulated on-chain balance reads 800 (e.g., a mint outside this adapter).
+        DistributionTotals t = storage.syncOmnibusBalance(OMNIBUS, assetId, "800", "finp2p");
+        assertEquals("800", t.omnibusBalance, "omnibusBalance echoes the caller's on-chain figure");
+        assertEquals("100", t.distributed, "distributed unchanged across sync");
+        assertEquals("700", t.available, "available = onChain - distributed");
+
+        // Storage state agrees.
+        assertEquals("700", storage.getBalance(OMNIBUS, assetId).balance);
+        assertEquals("100", storage.getBalance(inv1, assetId).balance);
+    }
+
+    @Test
+    void syncOmnibusBalanceLessThanDistributedTripsBalanceCheck() {
+        String assetId = "asset-sync-low-" + System.nanoTime();
+        String inv1 = "inv-1-" + System.nanoTime();
+        storage.ensureAccount(OMNIBUS, assetId);
+        storage.ensureAccount(inv1, assetId);
+        storage.credit(OMNIBUS, "300", assetId, details("ik-seed-" + System.nanoTime(), "issue"));
+        storage.move(OMNIBUS, inv1, "200", assetId, details("ik-m-" + System.nanoTime(), "distribute"));
+        // distributed = 200, omnibus available = 100, total = 300.
+
+        // On-chain reports 150 — less than the 200 we've already distributed. The UPDATE would
+        // push omnibus balance to -50 and trip CHECK (balance >= 0). Storage surfaces this as a
+        // RuntimeException; the service layer translates it into a BusinessException.
+        assertThrows(RuntimeException.class, () ->
+                storage.syncOmnibusBalance(OMNIBUS, assetId, "150", "finp2p"));
+
+        // State unchanged after the failed sync (the constraint aborted the whole statement).
+        assertEquals("100", storage.getBalance(OMNIBUS, assetId).balance);
+        assertEquals("200", storage.getBalance(inv1, assetId).balance);
+    }
+
     @Test
     void findByOperationIdReturnsLatestWhenMultipleRowsShareOperationId() throws Exception {
         // hold + release + redeem all stamp the caller's operation_id into details, so the
