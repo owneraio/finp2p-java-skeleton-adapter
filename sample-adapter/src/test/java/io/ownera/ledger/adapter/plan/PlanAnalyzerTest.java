@@ -156,6 +156,48 @@ class PlanAnalyzerTest {
     }
 
     @Test
+    void inMemoryRegistrySnapshotsMetadataOnWrite() {
+        // Reviewer-flagged: the previous impl wrapped the caller's map with unmodifiableMap
+        // without copying. Mutating the source after put() then leaked into the registry.
+        // The fix snapshots on write, so post-put mutations are invisible to readers.
+        Map<String, Object> caller = new HashMap<>();
+        caller.put("version", 1);
+        registry.put("plan-snapshot", caller);
+
+        // Caller continues to own + mutate their map after put().
+        caller.put("version", 2);
+        caller.put("added-after-put", "should-not-leak");
+
+        Map<String, Object> stored = registry.get("plan-snapshot").orElseThrow();
+        assertEquals(1, stored.get("version"),
+                "post-put mutation must not retroactively change the stored value");
+        assertNull(stored.get("added-after-put"),
+                "post-put keys must not appear in the registry");
+    }
+
+    @Test
+    void inMemoryRegistryIsolatesPlansWhenAnalyzerReusesSameMap() {
+        // A perfectly legitimate analyzer might hold a single Map instance as a field and
+        // mutate it per call. Without the defensive copy, the second put() would replace the
+        // first plan's entry with the second's contents and ongoing mutations would corrupt
+        // both. The fix guarantees each put() captures the map's state at that moment.
+        Map<String, Object> reused = new HashMap<>();
+
+        reused.clear(); reused.put("planId", "A"); reused.put("counter", 1);
+        registry.put("plan-A", reused);
+
+        reused.clear(); reused.put("planId", "B"); reused.put("counter", 2);
+        registry.put("plan-B", reused);
+
+        Map<String, Object> a = registry.get("plan-A").orElseThrow();
+        Map<String, Object> b = registry.get("plan-B").orElseThrow();
+        assertEquals("A", a.get("planId"), "plan-A's snapshot must not be overwritten by plan-B's put()");
+        assertEquals(1, a.get("counter"));
+        assertEquals("B", b.get("planId"));
+        assertEquals(2, b.get("counter"));
+    }
+
+    @Test
     void backCompatConstructorDefaultsToInMemoryRegistryAndNoAnalyzer() throws Exception {
         // Existing adapters using the 6-arg constructor keep working: no analyzer is called,
         // and the registry the service uses internally is the in-memory default.

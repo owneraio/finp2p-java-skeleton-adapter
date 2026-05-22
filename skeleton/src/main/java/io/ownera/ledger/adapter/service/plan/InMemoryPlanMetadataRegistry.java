@@ -2,6 +2,7 @@ package io.ownera.ledger.adapter.service.plan;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +27,13 @@ public class InMemoryPlanMetadataRegistry implements PlanMetadataRegistry {
     public void put(String planId, Map<String, Object> metadata) {
         if (planId == null) throw new IllegalArgumentException("planId must not be null");
         if (metadata == null) throw new IllegalArgumentException("metadata must not be null");
-        store.put(planId, Collections.unmodifiableMap(metadata));
+        // Defensive copy on write so a mutable caller-owned map can't retroactively rewrite the
+        // stash. {@code PlanAnalyzer} only promises {@code Map<String, Object>}, and a
+        // legitimate analyzer might reuse the same instance across calls (or mutate it after
+        // returning). Without the copy, that mutation would bleed into the registry and even
+        // across planIds. The {@code unmodifiableMap} wrapper still protects readers from
+        // mutating the stored entry through the returned reference.
+        store.put(planId, Collections.unmodifiableMap(new HashMap<>(metadata)));
     }
 
     @Override
