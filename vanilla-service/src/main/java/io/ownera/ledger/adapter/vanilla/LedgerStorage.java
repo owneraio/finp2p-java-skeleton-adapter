@@ -39,6 +39,7 @@ public class LedgerStorage {
     private final String schema;
     private final String accountsTable;
     private final String transactionsTable;
+    private final String transferSql;
 
     public LedgerStorage(DSLContext dsl, String schemaName) {
         if (!SCHEMA_NAME_RE.matcher(schemaName).matches()) {
@@ -48,7 +49,84 @@ public class LedgerStorage {
         this.schema = schemaName;
         this.accountsTable = schemaName + ".accounts";
         this.transactionsTable = schemaName + ".transactions";
+        this.transferSql = String.format(TRANSFER_SQL_TEMPLATE, transactionsTable, accountsTable);
     }
+
+    /**
+     * One-shot CTE template: {@code %1$s} = transactions table, {@code %2$s} = accounts table.
+     * Splice once at construction (the schema name has already been validated against
+     * {@link #SCHEMA_NAME_RE}, so the substitution is safe). All runtime values come in
+     * through {@code ?} bind parameters.
+     */
+    private static final String TRANSFER_SQL_TEMPLATE =
+            "WITH params AS (\n" +
+                    "  SELECT CAST(? AS VARCHAR(50))  AS tx_id,\n" +
+                    "         CAST(? AS NUMERIC)      AS amount,\n" +
+                    "         CAST(? AS NUMERIC)      AS src_hold,\n" +
+                    "         CAST(? AS NUMERIC)      AS dst_hold,\n" +
+                    "         CAST(? AS VARCHAR(255)) AS source,\n" +
+                    "         CAST(? AS VARCHAR(255)) AS destination,\n" +
+                    "         CAST(? AS VARCHAR(255)) AS asset_id,\n" +
+                    "         CAST(? AS VARCHAR(64))  AS asset_type,\n" +
+                    "         CAST(? AS VARCHAR(64))  AS action,\n" +
+                    "         CAST(? AS JSONB)        AS details\n" +
+                    "),\n" +
+                    "lock_asset AS (\n" +
+                    "  SELECT pg_advisory_xact_lock(hashtext(p.asset_id), hashtext(p.asset_type))\n" +
+                    "  FROM params p\n" +
+                    "),\n" +
+                    "found_tx AS (\n" +
+                    "  SELECT t.id, t.asset_id, t.asset_type, t.source, t.destination,\n" +
+                    "         t.amount::TEXT AS amount, t.source_held::TEXT AS source_held,\n" +
+                    "         t.destination_held::TEXT AS destination_held,\n" +
+                    "         t.action, t.details, t.created_at\n" +
+                    "  FROM %1$s t, params p, lock_asset l\n" +
+                    "  WHERE t.details->>'idempotency_key' = p.details->>'idempotency_key'\n" +
+                    "),\n" +
+                    "src_upd AS (\n" +
+                    "  UPDATE %2$s a\n" +
+                    "  SET balance = a.balance - p.amount,\n" +
+                    "      held    = a.held + p.src_hold,\n" +
+                    "      updated_at = NOW()\n" +
+                    "  FROM params p\n" +
+                    "  WHERE a.fin_id = p.source\n" +
+                    "    AND a.asset_id = p.asset_id\n" +
+                    "    AND a.asset_type = p.asset_type\n" +
+                    "    AND NOT EXISTS (SELECT 1 FROM found_tx)\n" +
+                    "  RETURNING a.fin_id\n" +
+                    "),\n" +
+                    "dst_upd AS (\n" +
+                    "  UPDATE %2$s a\n" +
+                    "  SET balance = a.balance + p.amount,\n" +
+                    "      held    = a.held + p.dst_hold,\n" +
+                    "      updated_at = NOW()\n" +
+                    "  FROM params p\n" +
+                    "  WHERE a.fin_id = p.destination\n" +
+                    "    AND a.asset_id = p.asset_id\n" +
+                    "    AND a.asset_type = p.asset_type\n" +
+                    "    AND NOT EXISTS (SELECT 1 FROM found_tx)\n" +
+                    "  RETURNING a.fin_id\n" +
+                    "),\n" +
+                    "insert_tx AS (\n" +
+                    "  INSERT INTO %1$s\n" +
+                    "    (id, asset_id, asset_type, source, destination, amount, source_held, destination_held, action, details)\n" +
+                    "  SELECT p.tx_id, p.asset_id, p.asset_type,\n" +
+                    "         NULLIF(s.fin_id, ''), NULLIF(d.fin_id, ''),\n" +
+                    "         p.amount, p.src_hold, p.dst_hold, p.action, p.details\n" +
+                    "  FROM params p\n" +
+                    "    LEFT OUTER JOIN src_upd s ON 1=1\n" +
+                    "    LEFT OUTER JOIN dst_upd d ON 1=1\n" +
+                    "  WHERE NOT EXISTS (SELECT 1 FROM found_tx)\n" +
+                    "    AND COALESCE(s.fin_id, '') = p.source\n" +
+                    "    AND COALESCE(d.fin_id, '') = p.destination\n" +
+                    "  RETURNING id, asset_id, asset_type, source, destination,\n" +
+                    "            amount::TEXT AS amount, source_held::TEXT AS source_held,\n" +
+                    "            destination_held::TEXT AS destination_held,\n" +
+                    "            action, details, created_at\n" +
+                    ")\n" +
+                    "SELECT * FROM insert_tx\n" +
+                    "UNION ALL\n" +
+                    "SELECT * FROM found_tx";
 
     /** Schema this storage is bound to; callers (e.g. AccountMappingService) can use it to
      *  qualify other queries against the same database. */
@@ -219,79 +297,11 @@ public class LedgerStorage {
             LedgerDetails details) {
         String txId = generateTxId();
         String detailsJson = serializeDetails(details);
-        String sql =
-                "WITH params AS (" +
-                        "  SELECT CAST(? AS VARCHAR(50))  AS tx_id," +
-                        "         CAST(? AS NUMERIC)      AS amount," +
-                        "         CAST(? AS NUMERIC)      AS src_hold," +
-                        "         CAST(? AS NUMERIC)      AS dst_hold," +
-                        "         CAST(? AS VARCHAR(255)) AS source," +
-                        "         CAST(? AS VARCHAR(255)) AS destination," +
-                        "         CAST(? AS VARCHAR(255)) AS asset_id," +
-                        "         CAST(? AS VARCHAR(64))  AS asset_type," +
-                        "         CAST(? AS VARCHAR(64))  AS action," +
-                        "         CAST(? AS JSONB)        AS details" +
-                        ")," +
-                        "lock_asset AS (" +
-                        "  SELECT pg_advisory_xact_lock(hashtext(p.asset_id), hashtext(p.asset_type))" +
-                        "  FROM params p" +
-                        ")," +
-                        "found_tx AS (" +
-                        "  SELECT t.id, t.asset_id, t.asset_type, t.source, t.destination," +
-                        "         t.amount::TEXT AS amount, t.source_held::TEXT AS source_held," +
-                        "         t.destination_held::TEXT AS destination_held," +
-                        "         t.action, t.details, t.created_at" +
-                        "  FROM " + transactionsTable + " t, params p, lock_asset l" +
-                        "  WHERE t.details->>'idempotency_key' = p.details->>'idempotency_key'" +
-                        ")," +
-                        "src_upd AS (" +
-                        "  UPDATE " + accountsTable + " a" +
-                        "  SET balance = a.balance - p.amount," +
-                        "      held    = a.held + p.src_hold," +
-                        "      updated_at = NOW()" +
-                        "  FROM params p" +
-                        "  WHERE a.fin_id = p.source" +
-                        "    AND a.asset_id = p.asset_id" +
-                        "    AND a.asset_type = p.asset_type" +
-                        "    AND NOT EXISTS (SELECT 1 FROM found_tx)" +
-                        "  RETURNING a.fin_id" +
-                        ")," +
-                        "dst_upd AS (" +
-                        "  UPDATE " + accountsTable + " a" +
-                        "  SET balance = a.balance + p.amount," +
-                        "      held    = a.held + p.dst_hold," +
-                        "      updated_at = NOW()" +
-                        "  FROM params p" +
-                        "  WHERE a.fin_id = p.destination" +
-                        "    AND a.asset_id = p.asset_id" +
-                        "    AND a.asset_type = p.asset_type" +
-                        "    AND NOT EXISTS (SELECT 1 FROM found_tx)" +
-                        "  RETURNING a.fin_id" +
-                        ")," +
-                        "insert_tx AS (" +
-                        "  INSERT INTO " + transactionsTable +
-                        "    (id, asset_id, asset_type, source, destination, amount, source_held, destination_held, action, details)" +
-                        "  SELECT p.tx_id, p.asset_id, p.asset_type," +
-                        "         NULLIF(s.fin_id, ''), NULLIF(d.fin_id, '')," +
-                        "         p.amount, p.src_hold, p.dst_hold, p.action, p.details" +
-                        "  FROM params p" +
-                        "    LEFT OUTER JOIN src_upd s ON 1=1" +
-                        "    LEFT OUTER JOIN dst_upd d ON 1=1" +
-                        "  WHERE NOT EXISTS (SELECT 1 FROM found_tx)" +
-                        "    AND COALESCE(s.fin_id, '') = p.source" +
-                        "    AND COALESCE(d.fin_id, '') = p.destination" +
-                        "  RETURNING id, asset_id, asset_type, source, destination," +
-                        "            amount::TEXT AS amount, source_held::TEXT AS source_held," +
-                        "            destination_held::TEXT AS destination_held," +
-                        "            action, details, created_at" +
-                        ")" +
-                        "SELECT * FROM insert_tx" +
-                        " UNION ALL " +
-                        "SELECT * FROM found_tx";
         try {
             // detailsJson is passed as a String; the CAST(? AS JSONB) in the SQL turns it into
-            // the JSONB the table expects.
-            Result<Record> rows = dsl.fetch(sql,
+            // the JSONB the table expects. transferSql is precomputed once per instance with
+            // the schema-qualified table names already spliced in (see TRANSFER_SQL_TEMPLATE).
+            Result<Record> rows = dsl.fetch(transferSql,
                     txId, amount, sourceHeld, destHeld,
                     source, destination, assetId, assetType,
                     action, detailsJson);
