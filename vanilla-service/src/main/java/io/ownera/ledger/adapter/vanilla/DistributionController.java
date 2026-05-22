@@ -56,10 +56,13 @@ public class DistributionController {
     @GetMapping("/status")
     public ResponseEntity<DistributionStatus> status(
             @RequestParam("assetId") String assetId,
-            @RequestParam(value = "assetType", required = false) AssetType assetType) {
+            @RequestParam(value = "assetType", required = false) String assetType) {
         requireNonBlank(assetId, "assetId");
-        return ResponseEntity.ok(distributionService.getDistributionStatus(
-                assetId, assetType != null ? assetType : AssetType.FINP2P));
+        // Bind assetType as String + parse via AssetType.fromWire so we accept the Node-style
+        // lowercase form ("finp2p"). Spring's default String→enum converter is case-sensitive
+        // and would 400 on lowercase.
+        AssetType resolved = assetType != null ? AssetType.fromWire(assetType) : AssetType.FINP2P;
+        return ResponseEntity.ok(distributionService.getDistributionStatus(assetId, resolved));
     }
 
     @PostMapping("/distribute")

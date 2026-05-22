@@ -77,6 +77,55 @@ class DistributionControllerTest {
     }
 
     @Test
+    void getStatusEmitsLowercaseAssetTypeMatchingNodeWire() throws Exception {
+        // Reviewer-flagged: the wire shape for assetType must be lowercase to round-trip with
+        // the Node distribution surface. Deserializing into DistributionStatus would mask an
+        // uppercase serialization, so this test inspects the raw JSON body.
+        String assetId = "asset-wire-out-" + System.nanoTime();
+        seedOmnibus(assetId, "100");
+
+        ResponseEntity<String> resp = rest.getForEntity(
+                "/distribution/status?assetId=" + assetId, String.class);
+        assertEquals(200, resp.getStatusCodeValue());
+        com.fasterxml.jackson.databind.JsonNode body =
+                new com.fasterxml.jackson.databind.ObjectMapper().readTree(resp.getBody());
+        assertEquals("finp2p", body.get("assetType").asText(),
+                "response must serialize assetType as the Node-style lowercase form");
+    }
+
+    @Test
+    void getStatusAcceptsLowercaseAssetTypeQueryParameter() {
+        // Symmetric input case: Node-style ?assetType=finp2p must not 400.
+        String assetId = "asset-wire-in-" + System.nanoTime();
+        seedOmnibus(assetId, "100");
+
+        ResponseEntity<DistributionStatus> resp = rest.getForEntity(
+                "/distribution/status?assetId=" + assetId + "&assetType=finp2p",
+                DistributionStatus.class);
+        assertEquals(200, resp.getStatusCodeValue());
+        assertEquals(AssetType.FINP2P, resp.getBody().assetType);
+    }
+
+    @Test
+    void postDistributeAcceptsLowercaseAssetTypeInRequestBody() {
+        // Request bodies go through Jackson — the @JsonCreator on AssetType must accept
+        // lowercase. Without it, "assetType":"finp2p" deserialization throws and we 400.
+        String assetId = "asset-body-in-" + System.nanoTime();
+        String inv = "inv-" + System.nanoTime();
+        seedOmnibus(assetId, "300");
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("finId", inv);
+        body.put("assetId", assetId);
+        body.put("assetType", "finp2p"); // Node-style lowercase
+        body.put("amount", "100");
+
+        ResponseEntity<Map> resp = rest.postForEntity("/distribution/distribute", json(body), Map.class);
+        assertEquals(200, resp.getStatusCodeValue(), "lowercase assetType in body must not 400");
+        assertEquals("100", storage.getBalance(inv, assetId).balance);
+    }
+
+    @Test
     void getStatusRejectsMissingAssetId() {
         ResponseEntity<Map> resp = rest.getForEntity(
                 "/distribution/status", Map.class);
