@@ -37,8 +37,10 @@ public class LedgerStorage {
 
     private final DSLContext dsl;
     private final String schema;
-    private final String accountsTable;
-    private final String transactionsTable;
+    private final String ensureAccountSql;
+    private final String getBalanceSql;
+    private final String getTransactionSql;
+    private final String findByOperationIdSql;
     private final String transferSql;
 
     public LedgerStorage(DSLContext dsl, String schemaName) {
@@ -47,10 +49,46 @@ public class LedgerStorage {
         }
         this.dsl = dsl;
         this.schema = schemaName;
-        this.accountsTable = schemaName + ".accounts";
-        this.transactionsTable = schemaName + ".transactions";
-        this.transferSql = String.format(TRANSFER_SQL_TEMPLATE, transactionsTable, accountsTable);
+        String accountsTable = schemaName + ".accounts";
+        String transactionsTable = schemaName + ".transactions";
+        this.ensureAccountSql     = String.format(ENSURE_ACCOUNT_TEMPLATE,      accountsTable);
+        this.getBalanceSql        = String.format(GET_BALANCE_TEMPLATE,         accountsTable);
+        this.getTransactionSql    = String.format(GET_TRANSACTION_TEMPLATE,     transactionsTable);
+        this.findByOperationIdSql = String.format(FIND_BY_OPERATION_ID_TEMPLATE, transactionsTable);
+        this.transferSql          = String.format(TRANSFER_SQL_TEMPLATE,        transactionsTable, accountsTable);
     }
+
+    // SQL templates. Table names are spliced once at construction via String.format — they're
+    // validated against {@link #SCHEMA_NAME_RE} before any substitution, so splicing is safe.
+    // All runtime values flow through {@code ?} bind parameters.
+
+    private static final String ENSURE_ACCOUNT_TEMPLATE =
+            "INSERT INTO %s (fin_id, asset_id, asset_type) " +
+                    "VALUES (?, ?, ?) " +
+                    "ON CONFLICT (fin_id, asset_id, asset_type) DO NOTHING";
+
+    private static final String GET_BALANCE_TEMPLATE =
+            "SELECT balance::TEXT AS balance, held::TEXT AS held, " +
+                    "       (balance - held)::TEXT AS available " +
+                    "FROM %s " +
+                    "WHERE fin_id = ? AND asset_id = ? AND asset_type = ?";
+
+    private static final String GET_TRANSACTION_TEMPLATE =
+            "SELECT id, asset_id, asset_type, source, destination, " +
+                    "       amount::TEXT AS amount, source_held::TEXT AS source_held, " +
+                    "       destination_held::TEXT AS destination_held, " +
+                    "       action, details, created_at " +
+                    "FROM %s WHERE id = ?";
+
+    private static final String FIND_BY_OPERATION_ID_TEMPLATE =
+            "SELECT id, asset_id, asset_type, source, destination, " +
+                    "       amount::TEXT AS amount, source_held::TEXT AS source_held, " +
+                    "       destination_held::TEXT AS destination_held, " +
+                    "       action, details, created_at " +
+                    "FROM %s " +
+                    "WHERE details->>'operation_id' = ? " +
+                    "ORDER BY created_at DESC, id DESC " +
+                    "LIMIT 1";
 
     /**
      * One-shot CTE template: {@code %1$s} = transactions table, {@code %2$s} = accounts table.
@@ -139,11 +177,7 @@ public class LedgerStorage {
     }
 
     public void ensureAccount(String finId, String assetId, String assetType) {
-        dsl.execute(
-                "INSERT INTO " + accountsTable + " (fin_id, asset_id, asset_type) " +
-                        "VALUES (?, ?, ?) " +
-                        "ON CONFLICT (fin_id, asset_id, asset_type) DO NOTHING",
-                finId, assetId, assetType);
+        dsl.execute(ensureAccountSql, finId, assetId, assetType);
     }
 
     // ─── Balance ────────────────────────────────────────────────────────────
@@ -153,12 +187,7 @@ public class LedgerStorage {
     }
 
     public LedgerBalance getBalance(String finId, String assetId, String assetType) {
-        Record r = dsl.fetchOne(
-                "SELECT balance::TEXT AS balance, held::TEXT AS held, " +
-                        "(balance - held)::TEXT AS available " +
-                        "FROM " + accountsTable + " " +
-                        "WHERE fin_id = ? AND asset_id = ? AND asset_type = ?",
-                finId, assetId, assetType);
+        Record r = dsl.fetchOne(getBalanceSql, finId, assetId, assetType);
         if (r == null) return LedgerBalance.zero();
         return new LedgerBalance(
                 r.get("balance", String.class),
@@ -234,13 +263,7 @@ public class LedgerStorage {
 
     @Nullable
     public LedgerTransaction getTransaction(String txId) {
-        Record r = dsl.fetchOne(
-                "SELECT id, asset_id, asset_type, source, destination, " +
-                        "amount::TEXT AS amount, source_held::TEXT AS source_held, " +
-                        "destination_held::TEXT AS destination_held, " +
-                        "action, details, created_at " +
-                        "FROM " + transactionsTable + " WHERE id = ?",
-                txId);
+        Record r = dsl.fetchOne(getTransactionSql, txId);
         return r != null ? toLedgerTransaction(r) : null;
     }
 
@@ -258,16 +281,7 @@ public class LedgerStorage {
      */
     @Nullable
     public LedgerTransaction findByOperationId(String operationId) {
-        Record r = dsl.fetchOne(
-                "SELECT id, asset_id, asset_type, source, destination, " +
-                        "amount::TEXT AS amount, source_held::TEXT AS source_held, " +
-                        "destination_held::TEXT AS destination_held, " +
-                        "action, details, created_at " +
-                        "FROM " + transactionsTable + " " +
-                        "WHERE details->>'operation_id' = ? " +
-                        "ORDER BY created_at DESC, id DESC " +
-                        "LIMIT 1",
-                operationId);
+        Record r = dsl.fetchOne(findByOperationIdSql, operationId);
         return r != null ? toLedgerTransaction(r) : null;
     }
 
