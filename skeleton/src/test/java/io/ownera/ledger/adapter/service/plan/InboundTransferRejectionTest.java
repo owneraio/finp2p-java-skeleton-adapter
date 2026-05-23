@@ -50,7 +50,7 @@ class InboundTransferRejectionTest {
         };
 
         DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, hook, null);
+                "org-test", sdk, null, hook);
 
         PlanApprovalStatus status = svc.approvePlan("ik-" + System.nanoTime(), planId);
         assertTrue(status instanceof RejectedPlan, "InboundTransferRejection must produce RejectedPlan, got " + status.getClass());
@@ -74,7 +74,7 @@ class InboundTransferRejectionTest {
         };
 
         DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, hook, null);
+                "org-test", sdk, null, hook);
 
         PlanApprovalStatus status = svc.approvePlan("ik-" + System.nanoTime(), planId);
         assertTrue(status instanceof ApprovedPlan, "non-typed hook failure must not reject the plan, got " + status.getClass());
@@ -93,7 +93,7 @@ class InboundTransferRejectionTest {
         };
 
         DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, hook, null);
+                "org-test", sdk, null, hook);
 
         PlanApprovalStatus status = svc.proposeInstructionApproval("ik-" + System.nanoTime(), planId, 7);
         assertTrue(status instanceof RejectedPlan, "instruction-level reject must produce RejectedPlan, got " + status.getClass());
@@ -115,7 +115,7 @@ class InboundTransferRejectionTest {
         };
 
         DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, hook, null);
+                "org-test", sdk, null, hook);
 
         PlanApprovalStatus status = svc.proposeInstructionApproval("ik-" + System.nanoTime(), planId, 7);
         assertTrue(status instanceof ApprovedPlan, "non-typed hook failure must not reject the instruction, got " + status.getClass());

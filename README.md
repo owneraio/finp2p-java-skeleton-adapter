@@ -67,8 +67,7 @@ Adapters implement these interfaces as Spring beans:
 | Interface | Purpose |
 |-----------|---------|
 | `TransactionHook` | Pre/post transaction lifecycle callbacks |
-| `PlanApprovalPlugin` | Synchronous plan instruction validation |
-| `AsyncPlanApprovalPlugin` | Asynchronous plan validation with callback |
+| `PlanApprovalPlugin` | Plan instruction validation — returns `ApprovedPlan` / `RejectedPlan` / `PendingPlan` (the pending case carries a CID and the plugin calls back via `CallbackClient`) |
 | `InboundTransferHook` | Notifications for planned/executed inbound transfers |
 | `MappingProvisionHook` | Provision external accounts when mappings are created |
 | `CallbackClient` | Send operation results to external systems |
@@ -233,13 +232,12 @@ new OperationExecutor(store, callbackClient, true)
 
 ## Plan Approval
 
-The skeleton supports three approaches:
+Two approaches:
 
-1. **Auto-approve**: Use `AutoPlanApprovalService` (no validation)
-2. **Sync plugin**: Implement `PlanApprovalPlugin` for immediate validation
-3. **Async plugin**: Implement `AsyncPlanApprovalPlugin` for deferred validation with callback
+1. **Auto-approve**: Use `AutoPlanApprovalService` (no validation).
+2. **Custom**: Implement `PlanApprovalPlugin` and wire it through `DefaultPlanApprovalService`.
 
-For SDK-integrated approval, use `DefaultPlanApprovalService`:
+For SDK-integrated approval:
 
 ```java
 @Bean
@@ -247,11 +245,17 @@ public PlanApprovalService planApprovalService(
         @Value("${ORG_ID}") String orgId,
         OperationalSDK sdk,
         PlanApprovalPlugin plugin) {
-    return new DefaultPlanApprovalService(orgId, sdk, plugin, null, null, null);
+    return new DefaultPlanApprovalService(orgId, sdk, plugin, null);
 }
 ```
 
-This fetches the execution plan from the FinP2P API, filters instructions by org, and delegates validation to the plugin. Plugin validation methods receive the `organizations` list responsible for each instruction.
+`DefaultPlanApprovalService` fetches the execution plan from the FinP2P API, filters instructions by org, and delegates to the plugin. Plugin methods return a `PlanApprovalStatus`:
+
+- `new ApprovedPlan()` — accept immediately.
+- `new RejectedPlan(new ErrorDetails(code, message))` — reject with code + message.
+- `new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()))` — defer; generate `cid` via `CorrelationIdGenerator.generate()` and call back later via `CallbackClient.sendOperationResult(cid, ...)`.
+
+Single interface for both immediate and deferred decisions — matches the Node.js skeleton.
 
 ## Versioning
 
