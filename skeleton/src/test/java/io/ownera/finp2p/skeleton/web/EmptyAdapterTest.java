@@ -1,9 +1,8 @@
-package io.ownera.ledger.adapter.web;
+package io.ownera.finp2p.skeleton.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -15,28 +14,28 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Zero-service adapter — proves the capability-presence ↔ route-presence principle holds
- * at the empty end of the spectrum. The application context starts cleanly without any
- * service beans, and <em>every</em> framework route returns 404 because no controller is
- * conditionally activated. No misleading "wired-but-throws" 500s or 501s.
+ * Zero-service adapter — proves the capability-presence ↔ route-presence principle holds at
+ * the empty end of the spectrum, and that the bare framework has no DB / Flyway / jOOQ
+ * runtime requirements.
+ *
+ * <p>The test deliberately lives in {@code skeleton/src/test} so the classpath at execution
+ * time mirrors what a real limited-access adapter sees: skeleton + Spring Boot's test starter,
+ * <em>no</em> PostgreSQL driver, <em>no</em> Flyway, <em>no</em> jOOQ at runtime. If
+ * anything in the framework silently expected those, this test would fail to bootstrap. It
+ * doesn't, because the framework doesn't.
+ *
+ * <p>Spring Boot starts, no service beans are wired, and every framework route returns 404
+ * because no controller is conditionally activated. No misleading "wired-but-throws" 500s
+ * or 501s.
  */
 @SpringBootTest(
         classes = EmptyAdapterTest.EmptyAdapterApp.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        // Stub DB properties so the sample-adapter's application.properties placeholders
-        // resolve. The empty-adapter test deliberately doesn't wire any data source — these
-        // exist purely to satisfy property-placeholder expansion, not to connect to a DB.
-        properties = {
-                "DB_CONNECTION_STRING=jdbc:postgresql://invalid:1/none",
-                "DB_USERNAME=none",
-                "DB_PASSWORD=none",
-                "spring.flyway.enabled=false"
-        })
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EmptyAdapterTest {
 
-    /** Minimal Spring Boot bootstrap that supplies no service beans. */
+    /** Minimal Spring Boot bootstrap that supplies no service beans and no DataSource. */
     @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
+    @EnableAutoConfiguration
     public static class EmptyAdapterApp {}
 
     @Autowired

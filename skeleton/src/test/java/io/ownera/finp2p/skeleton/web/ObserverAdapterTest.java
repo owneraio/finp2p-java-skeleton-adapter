@@ -1,4 +1,4 @@
-package io.ownera.ledger.adapter.web;
+package io.ownera.finp2p.skeleton.web;
 
 import io.ownera.ledger.adapter.service.PlanApprovalService;
 import io.ownera.ledger.adapter.service.model.ApprovedPlan;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
@@ -24,16 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * Observer-mode adapter — wires <em>only</em> a {@link PlanApprovalService} (the limited-access
  * deployment shape that motivated the conditional-controller split). The {@code /api/plan/*}
  * routes activate; everything else stays absent (404).
+ *
+ * <p>Lives in {@code skeleton/src/test} so the runtime classpath has no DB / Flyway / jOOQ
+ * deps — proving the observer-mode deployment doesn't need them.
  */
 @SpringBootTest(
         classes = ObserverAdapterTest.ObserverAdapterApp.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "DB_CONNECTION_STRING=jdbc:postgresql://invalid:1/none",
-                "DB_USERNAME=none",
-                "DB_PASSWORD=none",
-                "spring.flyway.enabled=false"
-        })
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ObserverAdapterTest {
 
     /** Trivial PlanApprovalService that always approves — enough to prove the route is alive. */
@@ -46,7 +42,7 @@ class ObserverAdapterTest {
     }
 
     @SpringBootConfiguration
-    @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
+    @EnableAutoConfiguration
     public static class ObserverAdapterApp {
         @Bean
         public PlanApprovalService planApprovalService() {
