@@ -106,6 +106,14 @@
             <version>${jooq.version}</version>
             <optional>true</optional>
         </dependency>
+
+        <!-- Test scope: bare-adapter web tests prove a limited-access adapter starts without
+             any DB / Flyway / jOOQ deps on its runtime classpath. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
