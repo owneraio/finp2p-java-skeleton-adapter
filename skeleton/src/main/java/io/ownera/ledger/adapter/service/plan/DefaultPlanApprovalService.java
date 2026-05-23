@@ -15,8 +15,6 @@ import io.ownera.finp2p.opapi.model.RedemptionInstruction;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
 import io.ownera.ledger.adapter.service.model.*;
-import io.ownera.ledger.adapter.service.workflow.CallbackClient;
-import io.ownera.ledger.adapter.service.workflow.CorrelationIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +28,9 @@ import java.util.Map;
  * filters instructions for the current org, and delegates validation to a plugin.
  * <p>
  * If no plugin is registered, all plans are auto-approved.
- * Sync plugin returns immediate approval/rejection.
- * Async plugin returns pending with CID; the plugin calls back when done.
+ * The plugin returns {@link PlanApprovalStatus} per instruction — {@link ApprovedPlan},
+ * {@link RejectedPlan}, or {@link PendingPlan} for deferred decisions (the plugin then calls
+ * back via {@code CallbackClient}).
  */
 public class DefaultPlanApprovalService implements PlanApprovalService {
 
@@ -39,25 +38,19 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
 
     private final String orgId;
     private final @Nullable OperationalSDK finP2PSDK;
-    private final @Nullable PlanApprovalPlugin syncPlugin;
-    private final @Nullable AsyncPlanApprovalPlugin asyncPlugin;
+    private final @Nullable PlanApprovalPlugin plugin;
     private final @Nullable InboundTransferHook inboundTransferHook;
-    private final @Nullable CallbackClient callbackClient;
     private final @Nullable PlanAnalyzer planAnalyzer;
     private final PlanMetadataRegistry planMetadataRegistry;
 
     /**
      * Back-compat constructor — no {@link PlanAnalyzer}, default in-memory metadata registry.
-     * Existing adapters keep compiling unchanged.
      */
     public DefaultPlanApprovalService(String orgId,
                                       @Nullable OperationalSDK finP2PSDK,
-                                      @Nullable PlanApprovalPlugin syncPlugin,
-                                      @Nullable AsyncPlanApprovalPlugin asyncPlugin,
-                                      @Nullable InboundTransferHook inboundTransferHook,
-                                      @Nullable CallbackClient callbackClient) {
-        this(orgId, finP2PSDK, syncPlugin, asyncPlugin, inboundTransferHook, callbackClient,
-                null, new InMemoryPlanMetadataRegistry());
+                                      @Nullable PlanApprovalPlugin plugin,
+                                      @Nullable InboundTransferHook inboundTransferHook) {
+        this(orgId, finP2PSDK, plugin, inboundTransferHook, null, new InMemoryPlanMetadataRegistry());
     }
 
     /**
@@ -67,18 +60,14 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
      */
     public DefaultPlanApprovalService(String orgId,
                                       @Nullable OperationalSDK finP2PSDK,
-                                      @Nullable PlanApprovalPlugin syncPlugin,
-                                      @Nullable AsyncPlanApprovalPlugin asyncPlugin,
+                                      @Nullable PlanApprovalPlugin plugin,
                                       @Nullable InboundTransferHook inboundTransferHook,
-                                      @Nullable CallbackClient callbackClient,
                                       @Nullable PlanAnalyzer planAnalyzer,
                                       PlanMetadataRegistry planMetadataRegistry) {
         this.orgId = orgId;
         this.finP2PSDK = finP2PSDK;
-        this.syncPlugin = syncPlugin;
-        this.asyncPlugin = asyncPlugin;
+        this.plugin = plugin;
         this.inboundTransferHook = inboundTransferHook;
-        this.callbackClient = callbackClient;
         this.planAnalyzer = planAnalyzer;
         this.planMetadataRegistry = planMetadataRegistry;
     }
@@ -230,7 +219,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                                                                List<String> organizations, Object instruction) {
         if (instruction instanceof IssueInstruction) {
             IssueInstruction issue = (IssueInstruction) instruction;
-            return validateIssuance(idempotencyKey, organizations,
+            return validateIssuance(organizations,
                     toFinIdAccount(issue.getDestination()),
                     toInternalAsset(issue.getDestination()),
                     issue.getAmount());
@@ -260,11 +249,11 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                 }
             }
 
-            return validateTransfer(idempotencyKey, organizations, source, dest, asset, transfer.getAmount());
+            return validateTransfer(organizations, source, dest, asset, transfer.getAmount());
 
         } else if (instruction instanceof HoldInstruction) {
             HoldInstruction hold = (HoldInstruction) instruction;
-            return validateTransfer(idempotencyKey, organizations,
+            return validateTransfer(organizations,
                     toFinIdAccount(hold.getSource()),
                     toDestinationAccount(hold.getDestination()),
                     toInternalAsset(hold.getSource() != null ? hold.getSource() : hold.getDestination()),
@@ -272,7 +261,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
 
         } else if (instruction instanceof RedemptionInstruction) {
             RedemptionInstruction redeem = (RedemptionInstruction) instruction;
-            return validateRedemption(idempotencyKey, organizations,
+            return validateRedemption(organizations,
                     toFinIdAccount(redeem.getSource()),
                     toDestinationAccount(redeem.getDestination()),
                     toInternalAsset(redeem.getSource() != null ? redeem.getSource() : redeem.getDestination()),
@@ -283,41 +272,26 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateIssuance(String idempotencyKey, List<String> organizations,
-                                                   FinIdAccount destination, Asset asset, String amount) {
-        if (asyncPlugin != null) {
-            String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateIssuance(idempotencyKey, cid, organizations, destination, asset, amount);
-            return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
-        }
-        if (syncPlugin != null) {
-            return syncPlugin.validateIssuance(organizations, destination, asset, amount);
+    private PlanApprovalStatus validateIssuance(List<String> organizations,
+                                                FinIdAccount destination, Asset asset, String amount) {
+        if (plugin != null) {
+            return plugin.validateIssuance(organizations, destination, asset, amount);
         }
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateTransfer(String idempotencyKey, List<String> organizations,
-                                                    FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
-        if (asyncPlugin != null) {
-            String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateTransfer(idempotencyKey, cid, organizations, source, destination, asset, amount);
-            return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
-        }
-        if (syncPlugin != null) {
-            return syncPlugin.validateTransfer(organizations, source, destination, asset, amount);
+    private PlanApprovalStatus validateTransfer(List<String> organizations,
+                                                FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
+        if (plugin != null) {
+            return plugin.validateTransfer(organizations, source, destination, asset, amount);
         }
         return new ApprovedPlan();
     }
 
-    private PlanApprovalStatus validateRedemption(String idempotencyKey, List<String> organizations,
-                                                      FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
-        if (asyncPlugin != null) {
-            String cid = CorrelationIdGenerator.generate();
-            asyncPlugin.validateRedemption(idempotencyKey, cid, organizations, source, destination, asset, amount);
-            return new PendingPlan(cid, new OperationMetadata(new PollingResponseStrategy()));
-        }
-        if (syncPlugin != null) {
-            return syncPlugin.validateRedemption(organizations, source, destination, asset, amount);
+    private PlanApprovalStatus validateRedemption(List<String> organizations,
+                                                  FinIdAccount source, DestinationAccount destination, Asset asset, String amount) {
+        if (plugin != null) {
+            return plugin.validateRedemption(organizations, source, destination, asset, amount);
         }
         return new ApprovedPlan();
     }

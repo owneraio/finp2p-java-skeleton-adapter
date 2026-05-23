@@ -36,7 +36,7 @@ class PlanAnalyzerTest {
 
     private DefaultPlanApprovalService service(PlanAnalyzer analyzer) {
         return new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, null, null, analyzer, registry);
+                "org-test", sdk, null, null, analyzer, registry);
     }
 
     /**
@@ -199,13 +199,13 @@ class PlanAnalyzerTest {
 
     @Test
     void backCompatConstructorDefaultsToInMemoryRegistryAndNoAnalyzer() throws Exception {
-        // Existing adapters using the 6-arg constructor keep working: no analyzer is called,
-        // and the registry the service uses internally is the in-memory default.
+        // 4-arg constructor: no analyzer is called, and the registry the service uses
+        // internally is the in-memory default.
         String planId = "plan-back-compat-" + System.nanoTime();
         Mockito.when(sdk.getExecutionPlan(planId)).thenReturn(executionWith(planId));
 
         DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
-                "org-test", sdk, null, null, null, null);
+                "org-test", sdk, null, null);
         PlanApprovalStatus status = svc.approvePlan("ik-" + System.nanoTime(), planId);
         assertTrue(status instanceof ApprovedPlan);
 
