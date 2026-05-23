@@ -178,6 +178,10 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                                         asset,
                                         destFinId, transfer.getAmount(),
                                         instructionSequence, null));
+                    } catch (InboundTransferRejection r) {
+                        logger.info("Inbound transfer rejected by hook: plan={}, seq={}, code={}, msg={}",
+                                planId, instructionSequence, r.getCode(), r.getMessage());
+                        return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
                     } catch (Exception e) {
                         logger.warn("Inbound transfer hook failed: {}", e.getMessage());
                     }
@@ -247,6 +251,10 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                                     asset,
                                     finIdOf(transfer.getDestination()),
                                     transfer.getAmount()));
+                } catch (InboundTransferRejection r) {
+                    logger.info("Planned inbound transfer rejected by hook: plan={}, code={}, msg={}",
+                            planId, r.getCode(), r.getMessage());
+                    return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
                 } catch (Exception e) {
                     logger.warn("Planned inbound transfer hook failed: {}", e.getMessage());
                 }
