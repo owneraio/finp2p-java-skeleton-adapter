@@ -6,16 +6,23 @@ import javax.annotation.Nullable;
 
 /**
  * Hook for inbound transfer notifications during plan execution.
+ *
+ * <p><strong>Rejecting:</strong> throw {@link InboundTransferRejection} to deliberately reject
+ * the plan with a supplied error {@code code} / {@code message}. Any other exception is
+ * treated as a hook bug — warn-logged, otherwise ignored — so unrelated failures don't
+ * silently fail-close legitimate plans.
  */
 public interface InboundTransferHook {
 
     /**
-     * Called during plan approval when a planned inbound transfer is detected.
+     * Called during plan approval when a planned inbound transfer is detected. Throw
+     * {@link InboundTransferRejection} to reject the plan.
      */
     void onPlannedInboundTransfer(String idempotencyKey, PlannedInboundTransferContext ctx);
 
     /**
-     * Called after an instruction-level proposal is executed for an inbound transfer.
+     * Called after an instruction-level proposal is executed for an inbound transfer. Throw
+     * {@link InboundTransferRejection} to reject the proposal.
      */
     void onInboundTransfer(String idempotencyKey, InboundTransferContext ctx);
 
