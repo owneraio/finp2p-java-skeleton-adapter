@@ -105,6 +105,55 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
+    void bridgesRuntimeUsernameIntoFlywayLedgerUserPlaceholder() {
+        // The skeleton's R__grant_ledger_user.sql repeatable migration grants schema/table
+        // privileges to ${ledger_user}, which is sourced from spring.flyway.placeholders.ledger_user.
+        // Without this bridge the placeholder stays empty and the migration silently no-ops —
+        // runtime app then gets "permission denied for schema" on first DB hit.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://ledger:rpw@db:5432/finp2p",
+                "MIGRATION_CONNECTION_STRING", "postgresql://migration:apw@db:5432/finp2p"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("ledger", env.getProperty("spring.datasource.username"));
+        assertEquals("ledger", env.getProperty("spring.flyway.placeholders.ledger_user"),
+                "runtime username must be mirrored into the Flyway placeholder feeding R__grant_ledger_user.sql");
+    }
+
+    @Test
+    void ledgerUserPlaceholderBacksOffWhenExplicitlyOverridden() {
+        // An adapter that wants the grant migration to target a different role than the
+        // runtime user (e.g. role-separation deployment with a shared GRANTed group) can
+        // override the placeholder explicitly — the bridge respects that.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://ledger:rpw@db:5432/finp2p",
+                "SPRING_FLYWAY_PLACEHOLDERS_LEDGER_USER", "shared_readers"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("ledger", env.getProperty("spring.datasource.username"));
+        assertEquals("shared_readers", env.getProperty("spring.flyway.placeholders.ledger_user"));
+    }
+
+    @Test
+    void ledgerUserPlaceholderIsAbsentWhenConnectionStringHasNoUserinfo() {
+        // A trust-auth deployment may use a connection string with no embedded credentials.
+        // In that case there's no runtime username to bridge — the placeholder stays unset
+        // and the grant migration becomes a deliberate no-op rather than mis-targeting.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://db:5432/finp2p"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertNull(env.getProperty("spring.datasource.username"));
+        assertNull(env.getProperty("spring.flyway.placeholders.ledger_user"));
+    }
+
+    @Test
     void readsLegacyConnectionStringAliasWhenCanonicalNameIsUnset() {
         // Older operator deployments and .env-based dev still use the LEDGER_-prefixed form.
         StandardEnvironment env = environmentWith(systemEnv(Map.of(

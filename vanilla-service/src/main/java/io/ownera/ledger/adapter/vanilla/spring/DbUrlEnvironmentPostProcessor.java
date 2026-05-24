@@ -36,6 +36,17 @@ import java.util.Map;
  *       Leave off for schema-qualified SQL.</li>
  * </ul>
  *
+ * <h2>Runtime-role grant</h2>
+ *
+ * <p>The skeleton ships an {@code R__grant_ledger_user.sql} repeatable migration that grants
+ * schema + table privileges to the runtime role. The migration runs as the admin role (from
+ * {@code MIGRATION_CONNECTION_STRING}) and needs to know which runtime role to grant access to,
+ * via the Flyway placeholder {@code ${ledger_user}}. This EPP feeds the username extracted from
+ * {@code DB_CONNECTION_STRING} into {@code spring.flyway.placeholders.ledger_user} so the grant
+ * migration applies automatically — without this bridge the placeholder is empty, the migration
+ * is a silent no-op, and the runtime app gets {@code "permission denied for schema"} on first
+ * DB hit.
+ *
  * <h2>Precedence</h2>
  *
  * <p>Runs as an {@link EnvironmentPostProcessor}, so it executes <em>before</em> Spring Boot's
@@ -78,7 +89,18 @@ public class DbUrlEnvironmentPostProcessor implements EnvironmentPostProcessor {
             try {
                 Parsed parsed = parse(runtimeUrl);
                 derived.put("spring.datasource.url", parsed.jdbcUrl);
-                if (parsed.username != null) derived.put("spring.datasource.username", parsed.username);
+                if (parsed.username != null) {
+                    derived.put("spring.datasource.username", parsed.username);
+                    // Feed the runtime username into the Flyway placeholder consumed by the
+                    // skeleton's R__grant_ledger_user.sql. The grant migration runs as the
+                    // admin role (MIGRATION_CONNECTION_STRING) and needs to know which runtime
+                    // role to grant access to. Without this bridge the placeholder is empty,
+                    // the migration silently no-ops, and the runtime app gets "permission
+                    // denied for schema" on first DB hit.
+                    if (!isOverriddenByHigherPrecedenceSource(env, "spring.flyway.placeholders.ledger_user")) {
+                        derived.put("spring.flyway.placeholders.ledger_user", parsed.username);
+                    }
+                }
                 if (parsed.password != null) derived.put("spring.datasource.password", parsed.password);
             } catch (IllegalArgumentException e) {
                 logger.warn("Failed to parse DB_CONNECTION_STRING; leaving spring.datasource.* untouched: {}", e.getMessage());
