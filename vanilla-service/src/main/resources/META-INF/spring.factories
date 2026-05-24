@@ -1,0 +1,9 @@
+# EnvironmentPostProcessor registration for Spring Boot 2.7 consumers.
+#
+# Boot 3.0+ also reads META-INF/spring/org.springframework.boot.env.EnvironmentPostProcessor.imports
+# (the modern discovery mechanism) — both files coexist intentionally so the EPP loads regardless
+# of whether the downstream adapter pulls Spring Boot 2.7 or 3.x. Boot 2.7's
+# EnvironmentPostProcessorApplicationListener reads exclusively from this file for this extension
+# point; .imports-style discovery on 2.7 only applies to AutoConfiguration.
+org.springframework.boot.env.EnvironmentPostProcessor=\
+io.ownera.ledger.adapter.vanilla.spring.DbUrlEnvironmentPostProcessor
