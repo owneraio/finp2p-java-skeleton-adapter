@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.ownera.ledger.adapter.service.BusinessException;
 import io.ownera.ledger.adapter.service.model.AssetType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +44,8 @@ import java.util.Map;
 @RequestMapping("/distribution")
 public class DistributionController {
 
+    private static final Logger logger = LoggerFactory.getLogger(DistributionController.class);
+
     private final DistributionService distributionService;
 
     public DistributionController(DistributionService distributionService) {
@@ -51,7 +55,9 @@ public class DistributionController {
     @PostMapping("/sync")
     public ResponseEntity<DistributionStatus> sync(@RequestBody AssetRequest body) {
         requireNonBlank(body.assetId, "assetId");
-        return ResponseEntity.ok(distributionService.syncOmnibus(body.assetId, body.assetTypeOrDefault()));
+        AssetType assetType = body.assetTypeOrDefault();
+        logger.info("Distribution sync: assetId={}, assetType={}", body.assetId, assetType);
+        return ResponseEntity.ok(distributionService.syncOmnibus(body.assetId, assetType));
     }
 
     @GetMapping("/status")
@@ -72,7 +78,10 @@ public class DistributionController {
         requireNonBlank(body.finId, "finId");
         requireNonBlank(body.assetId, "assetId");
         requireNonBlank(body.amount, "amount");
-        distributionService.distribute(body.finId, body.assetId, body.assetTypeOrDefault(), body.amount);
+        AssetType assetType = body.assetTypeOrDefault();
+        logger.info("Distribution distribute: assetId={}, assetType={}, finId={}, amount={}",
+                body.assetId, assetType, body.finId, body.amount);
+        distributionService.distribute(body.finId, body.assetId, assetType, body.amount);
         return ResponseEntity.ok(Collections.singletonMap("status", "ok"));
     }
 
@@ -81,14 +90,19 @@ public class DistributionController {
         requireNonBlank(body.finId, "finId");
         requireNonBlank(body.assetId, "assetId");
         requireNonBlank(body.amount, "amount");
-        distributionService.reclaim(body.finId, body.assetId, body.assetTypeOrDefault(), body.amount);
+        AssetType assetType = body.assetTypeOrDefault();
+        logger.info("Distribution reclaim: assetId={}, assetType={}, finId={}, amount={}",
+                body.assetId, assetType, body.finId, body.amount);
+        distributionService.reclaim(body.finId, body.assetId, assetType, body.amount);
         return ResponseEntity.ok(Collections.singletonMap("status", "ok"));
     }
 
     @PostMapping("/flush")
     public ResponseEntity<DistributionStatus> flush(@RequestBody AssetRequest body) {
         requireNonBlank(body.assetId, "assetId");
-        return ResponseEntity.ok(distributionService.flushDistributions(body.assetId, body.assetTypeOrDefault()));
+        AssetType assetType = body.assetTypeOrDefault();
+        logger.info("Distribution flush: assetId={}, assetType={}", body.assetId, assetType);
+        return ResponseEntity.ok(distributionService.flushDistributions(body.assetId, assetType));
     }
 
     @ExceptionHandler(BusinessException.class)
