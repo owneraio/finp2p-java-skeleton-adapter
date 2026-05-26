@@ -9,8 +9,12 @@ import io.ownera.finp2p.opapi.model.ExecutionPlanOperation;
 import io.ownera.finp2p.opapi.model.Finp2pAsset;
 import io.ownera.finp2p.opapi.model.Finp2pAssetAccount;
 import io.ownera.finp2p.opapi.model.HoldInstruction;
+import io.ownera.finp2p.opapi.model.InstructionCompletionError;
+import io.ownera.finp2p.opapi.model.InstructionCompletionEvent;
+import io.ownera.finp2p.opapi.model.InstructionCompletionEventOutput;
 import io.ownera.finp2p.opapi.model.IssueInstruction;
 import io.ownera.finp2p.opapi.model.LedgerAccountAsset;
+import io.ownera.finp2p.opapi.model.ReceiptOutput;
 import io.ownera.finp2p.opapi.model.RedemptionInstruction;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
@@ -146,6 +150,14 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
             return new ApprovedPlan();
         }
 
+        // Prefer the plan's own id over the proposal envelope's id. They are usually the same
+        // value the router echoes back, but when an adapter sees a 64-char hex in the wire
+        // proposal that doesn't match a router-known plan id, falling back to plan.getId()
+        // gives the hook the canonical handle for downstream lookups (getReceipt, etc.).
+        String canonicalPlanId = plan.getId() != null && !plan.getId().isEmpty()
+                ? plan.getId()
+                : planId;
+
         for (ExecutionInstruction instr : plan.getInstructions()) {
             if (instr.getSequence() != null && instr.getSequence() == instructionSequence) {
                 ExecutionPlanOperation op = instr.getExecutionPlanOperation();
@@ -160,16 +172,20 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                             ? transfer.getDestination()
                             : transfer.getSource());
 
+                    InstructionCompletionEvent event = findCompletionEvent(execution, instructionSequence);
+                    InboundTransferHook.InstructionResult result = toInstructionResult(event);
+                    InboundTransferHook.InstructionReceipt receipt = toInstructionReceipt(event);
+
                     try {
                         inboundTransferHook.onInboundTransfer(idempotencyKey,
                                 new InboundTransferHook.InboundTransferContext(
-                                        planId, srcFinId,
+                                        canonicalPlanId, srcFinId,
                                         asset,
                                         destFinId, transfer.getAmount(),
-                                        instructionSequence, null));
+                                        instructionSequence, result, receipt));
                     } catch (InboundTransferRejection r) {
                         logger.info("Inbound transfer rejected by hook: plan={}, seq={}, code={}, msg={}",
-                                planId, instructionSequence, r.getCode(), r.getMessage());
+                                canonicalPlanId, instructionSequence, r.getCode(), r.getMessage());
                         return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
                     } catch (Exception e) {
                         logger.warn("Inbound transfer hook failed: {}", e.getMessage());
@@ -180,6 +196,77 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         }
 
         return new ApprovedPlan();
+    }
+
+    /**
+     * Pull the completion event for {@code instructionSequence} out of {@code execution}. The
+     * router populates {@code instructionsCompletionEvents} only after the instruction has
+     * actually completed on the underlying ledger; returns {@code null} if the event hasn't
+     * landed yet (proposal arrived ahead of completion, which is the common race).
+     */
+    private static @Nullable InstructionCompletionEvent findCompletionEvent(Execution execution, int instructionSequence) {
+        if (execution.getInstructionsCompletionEvents() == null) return null;
+        for (InstructionCompletionEvent event : execution.getInstructionsCompletionEvents()) {
+            if (event.getInstructionSequenceNumber() != null
+                    && event.getInstructionSequenceNumber() == instructionSequence) {
+                return event;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Map the router-side {@code InstructionCompletionEvent} into the framework-native
+     * {@link InboundTransferHook.InstructionResult} summary (transaction id + error code +
+     * error message). Either branch of the {@code InstructionCompletionEventOutput} oneOf
+     * collapses to a flat result here; {@code null} returns surface as "no completion yet".
+     */
+    private static @Nullable InboundTransferHook.InstructionResult toInstructionResult(@Nullable InstructionCompletionEvent event) {
+        if (event == null) return null;
+        InstructionCompletionEventOutput output = event.getOutput();
+        if (output == null) return null;
+        Object actual = output.getActualInstance();
+        if (actual instanceof ReceiptOutput) {
+            ReceiptOutput receipt = (ReceiptOutput) actual;
+            return InboundTransferHook.InstructionResult.receipt(receipt.getId());
+        }
+        if (actual instanceof InstructionCompletionError) {
+            InstructionCompletionError error = (InstructionCompletionError) actual;
+            int code = error.getCode() != null ? error.getCode() : 0;
+            return InboundTransferHook.InstructionResult.error(code, error.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Map the receipt branch of a {@code InstructionCompletionEventOutput} into the
+     * framework-native {@link InboundTransferHook.InstructionReceipt}. Returns {@code null}
+     * for error branches and when no event is attached — adapters use this to look up the
+     * full receipt downstream via {@code FinP2PSDK.getReceipt(transactionId)}.
+     */
+    private static @Nullable InboundTransferHook.InstructionReceipt toInstructionReceipt(@Nullable InstructionCompletionEvent event) {
+        if (event == null) return null;
+        InstructionCompletionEventOutput output = event.getOutput();
+        if (output == null) return null;
+        Object actual = output.getActualInstance();
+        if (!(actual instanceof ReceiptOutput)) return null;
+        ReceiptOutput receipt = (ReceiptOutput) actual;
+        String operationType = receipt.getOperationType() != null
+                ? receipt.getOperationType().getValue()
+                : null;
+        String sourceFinId = finIdOf(receipt.getSource());
+        String destinationFinId = finIdOf(receipt.getDestination());
+        return new InboundTransferHook.InstructionReceipt(
+                receipt.getId(),
+                operationType,
+                sourceFinId,
+                destinationFinId,
+                receipt.getQuantity());
+    }
+
+    private static @Nullable String finIdOf(@Nullable Finp2pAssetAccount account) {
+        if (account == null || account.getAccount() == null) return null;
+        return account.getAccount().getFinId();
     }
 
     @Override
