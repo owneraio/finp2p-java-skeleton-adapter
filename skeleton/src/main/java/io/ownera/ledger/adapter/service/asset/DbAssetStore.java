@@ -6,8 +6,11 @@ import io.ownera.ledger.adapter.service.model.LedgerAssetIdentifier;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Database-backed {@link AssetStore}.
@@ -15,6 +18,8 @@ import org.jooq.impl.DSL;
  * Uses jOOQ plain DSL (no codegen) so the skeleton stays self-contained.
  */
 public class DbAssetStore implements AssetStore {
+
+    private static final Logger logger = LoggerFactory.getLogger(DbAssetStore.class);
 
     private static final Field<String> TYPE = DSL.field(DSL.name("type"), String.class);
     private static final Field<String> ID = DSL.field(DSL.name("id"), String.class);
@@ -74,5 +79,46 @@ public class DbAssetStore implements AssetStore {
     @Override
     public boolean exists(String assetId) {
         return dsl.fetchCount(table, ID.eq(assetId)) > 0;
+    }
+
+    @Override
+    public Asset getByTokenId(String tokenId) {
+        if (tokenId == null || tokenId.isEmpty()) {
+            // Treat blank as a miss: the 0.27.x → 0.28 backfill inserted empty strings into
+            // existing rows, and we don't want a blank lookup to coincidentally surface those.
+            return null;
+        }
+        // V1003 added a partial index on token_id (WHERE token_id <> ''), so this should hit
+        // the index. token_id is not declared unique at the DB layer; if the adapter has ever
+        // double-bound the same on-chain token to two FinP2P assetIds (a data error), pick
+        // the first match and warn-log — better than silently failing and better than
+        // throwing in the hot path.
+        Result<? extends Record> rows = dsl.select(TYPE, ID, TOKEN_STANDARD, TOKEN_ID, NETWORK)
+                .from(table)
+                .where(TOKEN_ID.eq(tokenId))
+                .limit(2)
+                .fetch();
+        if (rows.isEmpty()) {
+            return null;
+        }
+        if (rows.size() > 1) {
+            logger.warn("Multiple assets registered with token_id={} — returning first match. "
+                    + "This is a data error; investigate.", tokenId);
+        }
+        Record row = rows.get(0);
+        AssetType type = AssetType.valueOf(row.get(TYPE));
+        String storedTokenId = row.get(TOKEN_ID);
+        String network = row.get(NETWORK);
+        String standard = row.get(TOKEN_STANDARD);
+        LedgerAssetIdentifier ledgerId = (storedTokenId != null && !storedTokenId.isEmpty())
+                ? new LedgerAssetIdentifier(network, storedTokenId, standard)
+                : null;
+        return new Asset(row.get(ID), type, ledgerId);
+    }
+
+    @Override
+    public boolean existsByTokenId(String tokenId) {
+        if (tokenId == null || tokenId.isEmpty()) return false;
+        return dsl.fetchCount(table, TOKEN_ID.eq(tokenId)) > 0;
     }
 }
