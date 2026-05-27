@@ -104,7 +104,9 @@ class InboundTransferReceiptTest {
         // (operation type, source/destination fin-ids, quantity).
         String planId = "plan-with-receipt-" + System.nanoTime();
         ReceiptOutput receipt = new ReceiptOutput();
-        receipt.setId("tx-" + System.nanoTime());
+        // Output id is the operation nonce for vanilla ops — deliberately DISTINCT from the
+        // transactionDetails.transactionId so the test proves we read the latter, not the former.
+        receipt.setId("output-nonce-b88835f9");
         receipt.setOperationType(ReceiptOutput.OperationTypeEnum.ISSUE);
         receipt.setQuantity("42");
         Finp2pAssetAccount source = finp2pAccount("src-fin-id");
@@ -113,7 +115,7 @@ class InboundTransferReceiptTest {
         receipt.setDestination(destination);
         ReceiptTransactionDetails txDetails = new ReceiptTransactionDetails();
         txDetails.setOperationId("org-test:106:plan-raw_7");
-        txDetails.setTransactionId(receipt.getId());
+        txDetails.setTransactionId("13abf622-real-tx-id");
         ReceiptAssetDetails details = new ReceiptAssetDetails();
         details.setTransactionDetails(txDetails);
         receipt.setDetails(details);
@@ -131,16 +133,48 @@ class InboundTransferReceiptTest {
         assertNotNull(ctx);
         assertNotNull(ctx.result, "lightweight result summary must be populated when a completion event lands");
         assertEquals(InboundTransferHook.InstructionResult.Type.RECEIPT, ctx.result.type);
-        assertEquals(receipt.getId(), ctx.result.transactionId);
+        assertEquals("13abf622-real-tx-id", ctx.result.transactionId,
+                "result.transactionId must come from details.transactionDetails.transactionId, not the output id");
 
         assertNotNull(ctx.receipt, "full InstructionReceipt must be attached when ReceiptOutput is available");
-        assertEquals(receipt.getId(), ctx.receipt.transactionId);
+        assertEquals("13abf622-real-tx-id", ctx.receipt.transactionId,
+                "receipt.transactionId must come from details.transactionDetails.transactionId, not the output id");
         assertEquals("org-test:106:plan-raw_7", ctx.receipt.operationId,
                 "operationId must be taken from details.transactionDetails.operationId");
         assertEquals("issue", ctx.receipt.operationType);
         assertEquals("42", ctx.receipt.quantity);
         assertEquals("src-fin-id", ctx.receipt.sourceFinId);
         assertEquals("dst-fin-id", ctx.receipt.destinationFinId);
+    }
+
+    @Test
+    void transactionIdFallsBackToOutputIdWhenTransactionDetailsAbsent() throws Exception {
+        // Malformed / partial completion event: ReceiptOutput with no details block. We fall
+        // back to the output id so the hook still gets *some* handle rather than null.
+        String planId = "plan-no-txdetails-" + System.nanoTime();
+        ReceiptOutput receipt = new ReceiptOutput();
+        receipt.setId("output-id-only");
+        receipt.setOperationType(ReceiptOutput.OperationTypeEnum.TRANSFER);
+        receipt.setQuantity("7");
+        receipt.setSource(finp2pAccount("s"));
+        receipt.setDestination(finp2pAccount("d"));
+        // no setDetails(...) → transactionDetails absent
+
+        Execution exec = executionWithTransfer(planId, 7, "org-test", receipt);
+        Mockito.when(sdk.getExecutionPlan(planId)).thenReturn(exec);
+
+        AtomicReference<InboundTransferHook.InboundTransferContext> seen = new AtomicReference<>();
+        DefaultPlanApprovalService svc = new DefaultPlanApprovalService(
+                "org-test", sdk, null, capture(seen));
+
+        svc.proposeInstructionApproval("ik", planId, 7);
+
+        InboundTransferHook.InboundTransferContext ctx = seen.get();
+        assertNotNull(ctx);
+        assertEquals("output-id-only", ctx.receipt.transactionId,
+                "with no transactionDetails, fall back to the output id");
+        assertNull(ctx.receipt.operationId, "no transactionDetails → no operationId");
+        assertEquals("output-id-only", ctx.result.transactionId);
     }
 
     @Test

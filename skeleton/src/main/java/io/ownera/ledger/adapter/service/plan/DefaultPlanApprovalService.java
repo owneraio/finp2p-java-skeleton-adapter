@@ -15,6 +15,7 @@ import io.ownera.finp2p.opapi.model.InstructionCompletionEventOutput;
 import io.ownera.finp2p.opapi.model.IssueInstruction;
 import io.ownera.finp2p.opapi.model.LedgerAccountAsset;
 import io.ownera.finp2p.opapi.model.ReceiptOutput;
+import io.ownera.finp2p.opapi.model.ReceiptTransactionDetails;
 import io.ownera.finp2p.opapi.model.RedemptionInstruction;
 import io.ownera.finp2p.opapi.model.ReleaseInstruction;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
@@ -245,7 +246,7 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         Object actual = output.getActualInstance();
         if (actual instanceof ReceiptOutput) {
             ReceiptOutput receipt = (ReceiptOutput) actual;
-            return InboundTransferHook.InstructionResult.receipt(receipt.getId());
+            return InboundTransferHook.InstructionResult.receipt(transactionIdOf(receipt));
         }
         if (actual instanceof InstructionCompletionError) {
             InstructionCompletionError error = (InstructionCompletionError) actual;
@@ -271,19 +272,37 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         String operationType = receipt.getOperationType() != null
                 ? receipt.getOperationType().getValue()
                 : null;
-        String operationId = receipt.getDetails() != null
-                && receipt.getDetails().getTransactionDetails() != null
-                ? receipt.getDetails().getTransactionDetails().getOperationId()
+        ReceiptTransactionDetails txDetails = receipt.getDetails() != null
+                ? receipt.getDetails().getTransactionDetails()
                 : null;
+        String operationId = txDetails != null ? txDetails.getOperationId() : null;
         String sourceFinId = finIdOf(receipt.getSource());
         String destinationFinId = finIdOf(receipt.getDestination());
         return new InboundTransferHook.InstructionReceipt(
-                receipt.getId(),
+                transactionIdOf(receipt),
                 operationId,
                 operationType,
                 sourceFinId,
                 destinationFinId,
                 receipt.getQuantity());
+    }
+
+    /**
+     * The transaction id of a completed instruction is {@code details.transactionDetails.transactionId}
+     * (matches Node) — NOT the output-level {@code receipt.getId()}. For on-chain ops the two
+     * coincide (both the chain tx hash), but for vanilla/db ops {@code receipt.getId()} is the
+     * operation nonce while the real transaction id is the plan-scoped UUID in
+     * {@code transactionDetails}. Falls back to {@code receipt.getId()} only when
+     * {@code transactionDetails} (or its {@code transactionId}) is absent.
+     */
+    private static @Nullable String transactionIdOf(ReceiptOutput receipt) {
+        ReceiptTransactionDetails txDetails = receipt.getDetails() != null
+                ? receipt.getDetails().getTransactionDetails()
+                : null;
+        if (txDetails != null && txDetails.getTransactionId() != null) {
+            return txDetails.getTransactionId();
+        }
+        return receipt.getId();
     }
 
     private static @Nullable String finIdOf(@Nullable Finp2pAssetAccount account) {
