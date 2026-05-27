@@ -16,6 +16,7 @@ import io.ownera.finp2p.opapi.model.IssueInstruction;
 import io.ownera.finp2p.opapi.model.LedgerAccountAsset;
 import io.ownera.finp2p.opapi.model.ReceiptOutput;
 import io.ownera.finp2p.opapi.model.RedemptionInstruction;
+import io.ownera.finp2p.opapi.model.ReleaseInstruction;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.PlanApprovalService;
 import io.ownera.ledger.adapter.service.model.*;
@@ -164,31 +165,47 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                 if (op == null) continue;
                 Object actual = op.getActualInstance();
 
+                // The inbound hook fires for both transfer and release — each moves value to a
+                // destination account, and the adapter on the receiving side credits locally.
+                LedgerAccountAsset source = null;
+                LedgerAccountAsset destination = null;
+                String amount = null;
                 if (actual instanceof TransferInstruction) {
                     TransferInstruction transfer = (TransferInstruction) actual;
-                    String destFinId = finIdOf(transfer.getDestination());
-                    String srcFinId = finIdOf(transfer.getSource());
-                    Asset asset = toInternalAsset(transfer.getDestination() != null
-                            ? transfer.getDestination()
-                            : transfer.getSource());
+                    source = transfer.getSource();
+                    destination = transfer.getDestination();
+                    amount = transfer.getAmount();
+                } else if (actual instanceof ReleaseInstruction) {
+                    ReleaseInstruction release = (ReleaseInstruction) actual;
+                    source = release.getSource();
+                    destination = release.getDestination();
+                    amount = release.getAmount();
+                }
 
-                    InstructionCompletionEvent event = findCompletionEvent(execution, instructionSequence);
-                    InboundTransferHook.InstructionResult result = toInstructionResult(event);
-                    InboundTransferHook.InstructionReceipt receipt = toInstructionReceipt(event);
+                // Gate on the destination asset's org: fire only when *we* are the receiving
+                // side. `instr.getOrganizations()` is the executing (sender) org and must not
+                // be used here — it would fire the inbound hook on the wrong adapter.
+                if (destination != null) {
+                    Asset destAsset = toInternalAsset(destination);
+                    if (orgId.equals(orgIdFromResource(destAsset.assetId))) {
+                        InstructionCompletionEvent event = findCompletionEvent(execution, instructionSequence);
+                        InboundTransferHook.InstructionResult result = toInstructionResult(event);
+                        InboundTransferHook.InstructionReceipt receipt = toInstructionReceipt(event);
 
-                    try {
-                        inboundTransferHook.onInboundTransfer(idempotencyKey,
-                                new InboundTransferHook.InboundTransferContext(
-                                        canonicalPlanId, srcFinId,
-                                        asset,
-                                        destFinId, transfer.getAmount(),
-                                        instructionSequence, result, receipt));
-                    } catch (InboundTransferRejection r) {
-                        logger.info("Inbound transfer rejected by hook: plan={}, seq={}, code={}, msg={}",
-                                canonicalPlanId, instructionSequence, r.getCode(), r.getMessage());
-                        return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
-                    } catch (Exception e) {
-                        logger.warn("Inbound transfer hook failed: {}", e.getMessage());
+                        try {
+                            inboundTransferHook.onInboundTransfer(idempotencyKey,
+                                    new InboundTransferHook.InboundTransferContext(
+                                            canonicalPlanId, finIdOf(source),
+                                            destAsset,
+                                            finIdOf(destination), amount,
+                                            instructionSequence, result, receipt));
+                        } catch (InboundTransferRejection r) {
+                            logger.info("Inbound transfer rejected by hook: plan={}, seq={}, code={}, msg={}",
+                                    canonicalPlanId, instructionSequence, r.getCode(), r.getMessage());
+                            return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
+                        } catch (Exception e) {
+                            logger.warn("Inbound transfer hook failed: {}", e.getMessage());
+                        }
                     }
                 }
                 break;
@@ -313,30 +330,25 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
 
         } else if (instruction instanceof TransferInstruction) {
             TransferInstruction transfer = (TransferInstruction) instruction;
+
+            PlanApprovalStatus rejection = firePlannedInboundHook(idempotencyKey, planId,
+                    transfer.getSource(), transfer.getDestination(), transfer.getAmount());
+            if (rejection != null) return rejection;
+
             FinIdAccount source = toFinIdAccount(transfer.getSource());
             DestinationAccount dest = toDestinationAccount(transfer.getDestination());
             Asset asset = toInternalAsset(transfer.getSource() != null ? transfer.getSource() : transfer.getDestination());
-
-            // Notify inbound transfer hook if destination is our org
-            if (inboundTransferHook != null && transfer.getDestination() != null) {
-                try {
-                    inboundTransferHook.onPlannedInboundTransfer(idempotencyKey,
-                            new InboundTransferHook.PlannedInboundTransferContext(
-                                    planId,
-                                    source.finId,
-                                    asset,
-                                    finIdOf(transfer.getDestination()),
-                                    transfer.getAmount()));
-                } catch (InboundTransferRejection r) {
-                    logger.info("Planned inbound transfer rejected by hook: plan={}, code={}, msg={}",
-                            planId, r.getCode(), r.getMessage());
-                    return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
-                } catch (Exception e) {
-                    logger.warn("Planned inbound transfer hook failed: {}", e.getMessage());
-                }
-            }
-
             return validateTransfer(organizations, source, dest, asset, transfer.getAmount());
+
+        } else if (instruction instanceof ReleaseInstruction) {
+            // A release moves a held position to the destination account — same inbound
+            // semantics as transfer: the destination-side adapter credits locally. Release
+            // isn't separately plugin-validated (matches Node), so only the hook fires.
+            ReleaseInstruction release = (ReleaseInstruction) instruction;
+            PlanApprovalStatus rejection = firePlannedInboundHook(idempotencyKey, planId,
+                    release.getSource(), release.getDestination(), release.getAmount());
+            if (rejection != null) return rejection;
+            return new ApprovedPlan();
 
         } else if (instruction instanceof HoldInstruction) {
             HoldInstruction hold = (HoldInstruction) instruction;
@@ -355,8 +367,55 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
                     redeem.getAmount());
         }
 
-        // AwaitInstruction, ReleaseInstruction, RevertHoldInstruction — auto-approve
+        // AwaitInstruction, RevertHoldInstruction — auto-approve
         return new ApprovedPlan();
+    }
+
+    /**
+     * Fire {@link InboundTransferHook#onPlannedInboundTransfer} during plan approval, but only
+     * when <em>we</em> own the destination asset (i.e. we're the receiving side). The gate is
+     * the destination asset's org prefix — NOT the instruction's {@code organizations} list,
+     * which carries the executing/sending org and would fire the inbound hook on the wrong
+     * adapter.
+     *
+     * @return a {@link RejectedPlan} if the hook threw {@link InboundTransferRejection};
+     *         {@code null} to continue (hook not fired, fired cleanly, or non-typed failure).
+     */
+    private @Nullable PlanApprovalStatus firePlannedInboundHook(String idempotencyKey, String planId,
+                                                                @Nullable LedgerAccountAsset source,
+                                                                @Nullable LedgerAccountAsset destination,
+                                                                String amount) {
+        if (inboundTransferHook == null || destination == null) return null;
+        Asset destAsset = toInternalAsset(destination);
+        if (!orgId.equals(orgIdFromResource(destAsset.assetId))) return null;
+        try {
+            inboundTransferHook.onPlannedInboundTransfer(idempotencyKey,
+                    new InboundTransferHook.PlannedInboundTransferContext(
+                            planId,
+                            finIdOf(source),
+                            destAsset,
+                            finIdOf(destination),
+                            amount));
+            return null;
+        } catch (InboundTransferRejection r) {
+            logger.info("Planned inbound transfer rejected by hook: plan={}, code={}, msg={}",
+                    planId, r.getCode(), r.getMessage());
+            return new RejectedPlan(new ErrorDetails(r.getCode(), r.getMessage()));
+        } catch (Exception e) {
+            logger.warn("Planned inbound transfer hook failed: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Extract the org prefix from a FinP2P resource id of the shape {@code <orgId>:<type>:<rawId>}
+     * (e.g. {@code org-b:102:a640edb1-...} → {@code org-b}). Returns {@code null} if the id is
+     * null or carries no {@code :} separator.
+     */
+    static @Nullable String orgIdFromResource(@Nullable String resourceId) {
+        if (resourceId == null) return null;
+        int i = resourceId.indexOf(':');
+        return i > 0 ? resourceId.substring(0, i) : null;
     }
 
     private PlanApprovalStatus validateIssuance(List<String> organizations,
