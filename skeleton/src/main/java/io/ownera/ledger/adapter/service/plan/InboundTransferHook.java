@@ -86,17 +86,25 @@ public interface InboundTransferHook {
     class InstructionReceipt {
         /** Router-side receipt id (== local {@code transactionId}). */
         public final String transactionId;
+        /**
+         * Router-side operation id from {@code transactionDetails.operationId} — the handle
+         * the router uses to correlate an instruction's receipt back to its operation
+         * (e.g. {@code org-c:106:<planRawId>_<seq>} for on-chain ops, or the nonce for
+         * vanilla/db ops). May be {@code null} if the router didn't populate it.
+         */
+        public final @Nullable String operationId;
         /** Operation type as reported by the router (e.g. {@code "issue"}, {@code "transfer"}). */
         public final String operationType;
         public final @Nullable String sourceFinId;
         public final @Nullable String destinationFinId;
         public final String quantity;
 
-        public InstructionReceipt(String transactionId, String operationType,
+        public InstructionReceipt(String transactionId, @Nullable String operationId, String operationType,
                                   @Nullable String sourceFinId,
                                   @Nullable String destinationFinId,
                                   String quantity) {
             this.transactionId = transactionId;
+            this.operationId = operationId;
             this.operationType = operationType;
             this.sourceFinId = sourceFinId;
             this.destinationFinId = destinationFinId;

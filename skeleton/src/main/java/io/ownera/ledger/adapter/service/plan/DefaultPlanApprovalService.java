@@ -271,10 +271,15 @@ public class DefaultPlanApprovalService implements PlanApprovalService {
         String operationType = receipt.getOperationType() != null
                 ? receipt.getOperationType().getValue()
                 : null;
+        String operationId = receipt.getDetails() != null
+                && receipt.getDetails().getTransactionDetails() != null
+                ? receipt.getDetails().getTransactionDetails().getOperationId()
+                : null;
         String sourceFinId = finIdOf(receipt.getSource());
         String destinationFinId = finIdOf(receipt.getDestination());
         return new InboundTransferHook.InstructionReceipt(
                 receipt.getId(),
+                operationId,
                 operationType,
                 sourceFinId,
                 destinationFinId,

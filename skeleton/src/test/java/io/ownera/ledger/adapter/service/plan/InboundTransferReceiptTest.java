@@ -12,7 +12,9 @@ import io.ownera.finp2p.opapi.model.InstructionCompletionError;
 import io.ownera.finp2p.opapi.model.InstructionCompletionEvent;
 import io.ownera.finp2p.opapi.model.InstructionCompletionEventOutput;
 import io.ownera.finp2p.opapi.model.LedgerAccountAsset;
+import io.ownera.finp2p.opapi.model.ReceiptAssetDetails;
 import io.ownera.finp2p.opapi.model.ReceiptOutput;
+import io.ownera.finp2p.opapi.model.ReceiptTransactionDetails;
 import io.ownera.finp2p.opapi.model.TransferInstruction;
 import io.ownera.ledger.adapter.service.model.PlanApprovalStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,6 +111,12 @@ class InboundTransferReceiptTest {
         Finp2pAssetAccount destination = finp2pAccount("dst-fin-id");
         receipt.setSource(source);
         receipt.setDestination(destination);
+        ReceiptTransactionDetails txDetails = new ReceiptTransactionDetails();
+        txDetails.setOperationId("org-test:106:plan-raw_7");
+        txDetails.setTransactionId(receipt.getId());
+        ReceiptAssetDetails details = new ReceiptAssetDetails();
+        details.setTransactionDetails(txDetails);
+        receipt.setDetails(details);
 
         Execution exec = executionWithTransfer(planId, 7, "org-test", receipt);
         Mockito.when(sdk.getExecutionPlan(planId)).thenReturn(exec);
@@ -127,6 +135,8 @@ class InboundTransferReceiptTest {
 
         assertNotNull(ctx.receipt, "full InstructionReceipt must be attached when ReceiptOutput is available");
         assertEquals(receipt.getId(), ctx.receipt.transactionId);
+        assertEquals("org-test:106:plan-raw_7", ctx.receipt.operationId,
+                "operationId must be taken from details.transactionDetails.operationId");
         assertEquals("issue", ctx.receipt.operationType);
         assertEquals("42", ctx.receipt.quantity);
         assertEquals("src-fin-id", ctx.receipt.sourceFinId);
