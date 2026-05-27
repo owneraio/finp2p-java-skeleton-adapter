@@ -132,15 +132,19 @@ class InboundTransferRejectionTest {
         FinIdAccount1 dstFin = new FinIdAccount1();
         dstFin.setFinId("dst-fin-id");
 
-        Finp2pAsset asset = new Finp2pAsset();
-        asset.setId("asset-1");
+        // Destination asset must carry the org prefix matching orgId so the inbound hook's
+        // destination-asset-org gate fires (the hook only triggers when we own the dest asset).
+        Finp2pAsset destAsset = new Finp2pAsset();
+        destAsset.setId(orgId + ":102:asset-1");
+        Finp2pAsset srcAsset = new Finp2pAsset();
+        srcAsset.setId("org-other:102:asset-src");
 
         Finp2pAssetAccount srcAcct = new Finp2pAssetAccount();
         srcAcct.setAccount(srcFin);
-        srcAcct.setAsset(asset);
+        srcAcct.setAsset(srcAsset);
         Finp2pAssetAccount dstAcct = new Finp2pAssetAccount();
         dstAcct.setAccount(dstFin);
-        dstAcct.setAsset(asset);
+        dstAcct.setAsset(destAsset);
 
         LedgerAccountAsset src = new LedgerAccountAsset();
         src.setFinp2pAccount(srcAcct);

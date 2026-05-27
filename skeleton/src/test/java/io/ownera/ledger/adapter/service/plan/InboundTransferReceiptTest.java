@@ -207,8 +207,9 @@ class InboundTransferReceiptTest {
      */
     private static Execution executionWithTransfer(String planId, int sequence, String orgId, ReceiptOutput receipt) {
         TransferInstruction transfer = new TransferInstruction();
-        transfer.setSource(ledgerAccount("src-fin"));
-        transfer.setDestination(ledgerAccount("dst-fin"));
+        transfer.setSource(ledgerAccount("src-fin", "org-other:102:asset-src"));
+        // Destination asset carries the org prefix so the inbound hook's dest-asset-org gate fires.
+        transfer.setDestination(ledgerAccount("dst-fin", orgId + ":102:asset-dst"));
         transfer.setAmount("100");
 
         ExecutionPlanOperation op = new ExecutionPlanOperation();
@@ -255,10 +256,14 @@ class InboundTransferReceiptTest {
     }
 
     private static LedgerAccountAsset ledgerAccount(String finId) {
+        return ledgerAccount(finId, "asset-test");
+    }
+
+    private static LedgerAccountAsset ledgerAccount(String finId, String assetId) {
         FinIdAccount1 fin = new FinIdAccount1();
         fin.setFinId(finId);
         Finp2pAsset asset = new Finp2pAsset();
-        asset.setId("asset-test");
+        asset.setId(assetId);
         Finp2pAssetAccount acct = new Finp2pAssetAccount();
         acct.setAccount(fin);
         acct.setAsset(asset);
