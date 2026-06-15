@@ -197,29 +197,32 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
-    void defaultSchemaIsDerivedFromHostnameWhenNoExplicitSchemaIsSet() {
-        // No LEDGER_SCHEMA / LEDGER_SCHEMA_NAME → fall through to HOSTNAME, sanitised through
-        // PostgresIdentifier so the kubernetes-pod naming convention (lower-case + hyphens)
-        // becomes a valid Postgres identifier without operator hand-coding.
+    void defaultSchemaIsDerivedFromAdapterIdWhenNoExplicitSchemaIsSet() {
+        // No LEDGER_SCHEMA / LEDGER_SCHEMA_NAME → fall through to ADAPTER_ID, sanitised
+        // through PostgresIdentifier so the operator-style hyphenated CR names like
+        // `swift-rails` become valid Postgres identifiers without operator hand-coding.
+        // ADAPTER_ID is stable across rollouts/scale events — unlike HOSTNAME, which is
+        // pod-instance-specific and would silently move the adapter onto a fresh schema
+        // every restart.
         StandardEnvironment env = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
-                "HOSTNAME", "swift-rails-0"
+                "ADAPTER_ID", "swift-rails"
         )));
 
         epp.postProcessEnvironment(env, null);
 
-        assertEquals("swift_rails_0", env.getProperty("spring.flyway.default-schema"),
-                "schema must derive from HOSTNAME, sanitised via PostgresIdentifier.coerce");
+        assertEquals("swift_rails", env.getProperty("spring.flyway.default-schema"),
+                "schema must derive from ADAPTER_ID, sanitised via PostgresIdentifier.coerce");
     }
 
     @Test
-    void explicitLedgerSchemaWinsOverHostnameFallback() {
-        // Sanity: if the operator wants a shared schema across replicas they set
-        // LEDGER_SCHEMA explicitly; that must beat the HOSTNAME-derived fallback.
+    void explicitLedgerSchemaWinsOverAdapterIdFallback() {
+        // The operator can pin a shared schema explicitly via LEDGER_SCHEMA; that must beat
+        // the ADAPTER_ID-derived fallback.
         StandardEnvironment env = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
                 "LEDGER_SCHEMA", "shared",
-                "HOSTNAME", "swift-rails-0"
+                "ADAPTER_ID", "swift-rails"
         )));
 
         epp.postProcessEnvironment(env, null);
@@ -228,12 +231,12 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
-    void hostnameFallbackOnlyKicksInWhenBothSchemaAliasesAreUnset() {
-        // LEGACY alias still wins over HOSTNAME (matches the alias precedence we documented).
+    void adapterIdFallbackOnlyKicksInWhenBothSchemaAliasesAreUnset() {
+        // LEGACY alias still wins over ADAPTER_ID (matches the alias precedence we documented).
         StandardEnvironment env = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
                 "LEDGER_SCHEMA_NAME", "legacy_named",
-                "HOSTNAME", "swift-rails-0"
+                "ADAPTER_ID", "swift-rails"
         )));
 
         epp.postProcessEnvironment(env, null);
@@ -242,12 +245,12 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
-    void constantDefaultIsUsedWhenHostnameIsAlsoUnset() {
-        // When neither schema env var nor HOSTNAME is set, fall back to the framework constant.
-        // This is the last-resort path for non-containerised dev / fat-jar runs without an env.
+    void constantDefaultIsUsedWhenAdapterIdIsAlsoUnset() {
+        // When neither schema env var nor ADAPTER_ID is set, fall back to the framework
+        // constant. This is the last-resort path for non-operator dev / fat-jar runs.
         StandardEnvironment env = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d"
-                // no HOSTNAME, no LEDGER_SCHEMA*
+                // no ADAPTER_ID, no LEDGER_SCHEMA*
         )));
 
         epp.postProcessEnvironment(env, null);

@@ -75,6 +75,13 @@ public class DbUrlEnvironmentPostProcessor implements EnvironmentPostProcessor {
     public static final String LEGACY_MIGRATION_CONNECTION_STRING = "LEDGER_MIGRATION_CONNECTION_STRING";
     public static final String LEDGER_SCHEMA = "LEDGER_SCHEMA";
     public static final String LEGACY_LEDGER_SCHEMA = "LEDGER_SCHEMA_NAME";
+    /**
+     * Operator-provided stable identifier for the RouterAdapter custom resource. Used as the
+     * schema-derivation source when neither {@link #LEDGER_SCHEMA} nor
+     * {@link #LEGACY_LEDGER_SCHEMA} is set. Survives rollouts and scale events — unlike
+     * {@code HOSTNAME}, which is pod-instance-specific.
+     */
+    public static final String ADAPTER_ID = "ADAPTER_ID";
     public static final String DEFAULT_SCHEMA = "ledger_adapter";
     public static final String ENABLE_SEARCH_PATH = "LEDGER_DATASOURCE_SEARCH_PATH";
 
@@ -127,19 +134,25 @@ public class DbUrlEnvironmentPostProcessor implements EnvironmentPostProcessor {
         // truly no-op so vanilla-service stays compatible with bare / observer-mode deployments).
         if (!derived.isEmpty()) {
             // Resolution chain: explicit LEDGER_SCHEMA wins, then the legacy alias, then a
-            // schema derived from the pod's HOSTNAME (sanitised through PostgresIdentifier so
-            // k8s-style hyphenated names like `swift-rails-0` map cleanly to `swift_rails_0`),
-            // then the static framework default. Sanitising in code keeps adapter operators
-            // from having to think about Postgres' identifier grammar at the env-var layer.
+            // schema derived from the operator-provided ADAPTER_ID (sanitised through
+            // PostgresIdentifier so a name like `swift-rails` maps cleanly to `swift_rails`),
+            // then the static framework default.
+            //
+            // ADAPTER_ID is stable across rollouts and scale events — it's the RouterAdapter
+            // CR's name, set by the operator (see routeradapter_controller.go's
+            // buildAdapterInterpolationVars). Crucially NOT the pod's HOSTNAME, which changes
+            // every rollout for Deployments (<name>-<rs-hash>-<rand>) and yields per-ordinal
+            // schemas for StatefulSets — both would silently move the adapter onto a fresh
+            // empty schema on restart/scale, hiding existing operations/assets/transactions.
             String schema = firstNonBlank(env.getProperty(LEDGER_SCHEMA), env.getProperty(LEGACY_LEDGER_SCHEMA));
             if (schema == null) {
-                String hostname = env.getProperty("HOSTNAME");
-                if (hostname != null && !hostname.isEmpty()) {
+                String adapterId = env.getProperty(ADAPTER_ID);
+                if (adapterId != null && !adapterId.isEmpty()) {
                     try {
-                        schema = PostgresIdentifier.coerce(hostname);
+                        schema = PostgresIdentifier.coerce(adapterId);
                     } catch (IllegalArgumentException e) {
-                        logger.warn("HOSTNAME={} could not be coerced to a Postgres identifier; falling back to default schema '{}': {}",
-                                hostname, DEFAULT_SCHEMA, e.getMessage());
+                        logger.warn("ADAPTER_ID={} could not be coerced to a Postgres identifier; falling back to default schema '{}': {}",
+                                adapterId, DEFAULT_SCHEMA, e.getMessage());
                     }
                 }
             }
