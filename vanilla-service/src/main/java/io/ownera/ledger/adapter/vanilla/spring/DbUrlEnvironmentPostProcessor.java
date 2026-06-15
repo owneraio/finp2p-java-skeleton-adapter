@@ -1,5 +1,6 @@
 package io.ownera.ledger.adapter.vanilla.spring;
 
+import io.ownera.ledger.adapter.service.PostgresIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -125,7 +126,23 @@ public class DbUrlEnvironmentPostProcessor implements EnvironmentPostProcessor {
         // schema setting into adapters that don't use a DB at all (the no-op case must stay
         // truly no-op so vanilla-service stays compatible with bare / observer-mode deployments).
         if (!derived.isEmpty()) {
+            // Resolution chain: explicit LEDGER_SCHEMA wins, then the legacy alias, then a
+            // schema derived from the pod's HOSTNAME (sanitised through PostgresIdentifier so
+            // k8s-style hyphenated names like `swift-rails-0` map cleanly to `swift_rails_0`),
+            // then the static framework default. Sanitising in code keeps adapter operators
+            // from having to think about Postgres' identifier grammar at the env-var layer.
             String schema = firstNonBlank(env.getProperty(LEDGER_SCHEMA), env.getProperty(LEGACY_LEDGER_SCHEMA));
+            if (schema == null) {
+                String hostname = env.getProperty("HOSTNAME");
+                if (hostname != null && !hostname.isEmpty()) {
+                    try {
+                        schema = PostgresIdentifier.coerce(hostname);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("HOSTNAME={} could not be coerced to a Postgres identifier; falling back to default schema '{}': {}",
+                                hostname, DEFAULT_SCHEMA, e.getMessage());
+                    }
+                }
+            }
             if (schema == null) schema = DEFAULT_SCHEMA;
             if (!isOverriddenByHigherPrecedenceSource(env, "spring.flyway.default-schema")) {
                 derived.put("spring.flyway.default-schema", schema);

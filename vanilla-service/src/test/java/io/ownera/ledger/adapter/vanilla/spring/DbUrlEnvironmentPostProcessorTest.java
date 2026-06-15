@@ -197,6 +197,66 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
+    void defaultSchemaIsDerivedFromHostnameWhenNoExplicitSchemaIsSet() {
+        // No LEDGER_SCHEMA / LEDGER_SCHEMA_NAME → fall through to HOSTNAME, sanitised through
+        // PostgresIdentifier so the kubernetes-pod naming convention (lower-case + hyphens)
+        // becomes a valid Postgres identifier without operator hand-coding.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "HOSTNAME", "swift-rails-0"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("swift_rails_0", env.getProperty("spring.flyway.default-schema"),
+                "schema must derive from HOSTNAME, sanitised via PostgresIdentifier.coerce");
+    }
+
+    @Test
+    void explicitLedgerSchemaWinsOverHostnameFallback() {
+        // Sanity: if the operator wants a shared schema across replicas they set
+        // LEDGER_SCHEMA explicitly; that must beat the HOSTNAME-derived fallback.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "LEDGER_SCHEMA", "shared",
+                "HOSTNAME", "swift-rails-0"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("shared", env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
+    void hostnameFallbackOnlyKicksInWhenBothSchemaAliasesAreUnset() {
+        // LEGACY alias still wins over HOSTNAME (matches the alias precedence we documented).
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "LEDGER_SCHEMA_NAME", "legacy_named",
+                "HOSTNAME", "swift-rails-0"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("legacy_named", env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
+    void constantDefaultIsUsedWhenHostnameIsAlsoUnset() {
+        // When neither schema env var nor HOSTNAME is set, fall back to the framework constant.
+        // This is the last-resort path for non-containerised dev / fat-jar runs without an env.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d"
+                // no HOSTNAME, no LEDGER_SCHEMA*
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals(DbUrlEnvironmentPostProcessor.DEFAULT_SCHEMA,
+                env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
     void searchPathInjectionIsOptInAndDefaultsOff() {
         StandardEnvironment off = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
