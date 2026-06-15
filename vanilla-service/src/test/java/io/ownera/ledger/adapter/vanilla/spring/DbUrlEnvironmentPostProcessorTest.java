@@ -197,6 +197,69 @@ class DbUrlEnvironmentPostProcessorTest {
     }
 
     @Test
+    void defaultSchemaIsDerivedFromAdapterIdWhenNoExplicitSchemaIsSet() {
+        // No LEDGER_SCHEMA / LEDGER_SCHEMA_NAME → fall through to ADAPTER_ID, sanitised
+        // through PostgresIdentifier so the operator-style hyphenated CR names like
+        // `swift-rails` become valid Postgres identifiers without operator hand-coding.
+        // ADAPTER_ID is stable across rollouts/scale events — unlike HOSTNAME, which is
+        // pod-instance-specific and would silently move the adapter onto a fresh schema
+        // every restart.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "ADAPTER_ID", "swift-rails"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("swift_rails", env.getProperty("spring.flyway.default-schema"),
+                "schema must derive from ADAPTER_ID, sanitised via PostgresIdentifier.coerce");
+    }
+
+    @Test
+    void explicitLedgerSchemaWinsOverAdapterIdFallback() {
+        // The operator can pin a shared schema explicitly via LEDGER_SCHEMA; that must beat
+        // the ADAPTER_ID-derived fallback.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "LEDGER_SCHEMA", "shared",
+                "ADAPTER_ID", "swift-rails"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("shared", env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
+    void adapterIdFallbackOnlyKicksInWhenBothSchemaAliasesAreUnset() {
+        // LEGACY alias still wins over ADAPTER_ID (matches the alias precedence we documented).
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
+                "LEDGER_SCHEMA_NAME", "legacy_named",
+                "ADAPTER_ID", "swift-rails"
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals("legacy_named", env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
+    void constantDefaultIsUsedWhenAdapterIdIsAlsoUnset() {
+        // When neither schema env var nor ADAPTER_ID is set, fall back to the framework
+        // constant. This is the last-resort path for non-operator dev / fat-jar runs.
+        StandardEnvironment env = environmentWith(systemEnv(Map.of(
+                "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d"
+                // no ADAPTER_ID, no LEDGER_SCHEMA*
+        )));
+
+        epp.postProcessEnvironment(env, null);
+
+        assertEquals(DbUrlEnvironmentPostProcessor.DEFAULT_SCHEMA,
+                env.getProperty("spring.flyway.default-schema"));
+    }
+
+    @Test
     void searchPathInjectionIsOptInAndDefaultsOff() {
         StandardEnvironment off = environmentWith(systemEnv(Map.of(
                 "DB_CONNECTION_STRING", "postgresql://u:p@h:5432/d",
