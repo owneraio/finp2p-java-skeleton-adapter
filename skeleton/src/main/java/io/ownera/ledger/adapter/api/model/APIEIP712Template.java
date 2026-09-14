@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Domain;
 import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -42,9 +42,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIEIP712Template.JSON_PROPERTY_MESSAGE,
   APIEIP712Template.JSON_PROPERTY_TYPES,
   APIEIP712Template.JSON_PROPERTY_PRIMARY_TYPE,
-  APIEIP712Template.JSON_PROPERTY_HASH
+  APIEIP712Template.JSON_PROPERTY_HASH,
+  APIEIP712Template.JSON_PROPERTY_TEMPLATE_VERSION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIEIP712Template {
   /**
    * Gets or Sets type
@@ -96,6 +97,9 @@ public class APIEIP712Template {
 
   public static final String JSON_PROPERTY_HASH = "hash";
   private String hash;
+
+  public static final String JSON_PROPERTY_TEMPLATE_VERSION = "templateVersion";
+  private Integer templateVersion;
 
   public APIEIP712Template() { 
   }
@@ -156,6 +160,9 @@ public class APIEIP712Template {
   }
 
   public APIEIP712Template putMessageItem(String key, APIEIP712TypedValue messageItem) {
+    if (this.message == null) {
+      this.message = new HashMap<>();
+    }
     this.message.put(key, messageItem);
     return this;
   }
@@ -255,6 +262,31 @@ public class APIEIP712Template {
   }
 
 
+  public APIEIP712Template templateVersion(Integer templateVersion) {
+    this.templateVersion = templateVersion;
+    return this;
+  }
+
+   /**
+   * Template shape version. When omitted, the verifier resolves the version from the signature proof context.
+   * @return templateVersion
+  **/
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TEMPLATE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTemplateVersion() {
+    return templateVersion;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TEMPLATE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTemplateVersion(Integer templateVersion) {
+    this.templateVersion = templateVersion;
+  }
+
+
   /**
    * Return true if this EIP712Template object is equal to o.
    */
@@ -272,12 +304,13 @@ public class APIEIP712Template {
         Objects.equals(this.message, eiP712Template.message) &&
         Objects.equals(this.types, eiP712Template.types) &&
         Objects.equals(this.primaryType, eiP712Template.primaryType) &&
-        Objects.equals(this.hash, eiP712Template.hash);
+        Objects.equals(this.hash, eiP712Template.hash) &&
+        Objects.equals(this.templateVersion, eiP712Template.templateVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, domain, message, types, primaryType, hash);
+    return Objects.hash(type, domain, message, types, primaryType, hash, templateVersion);
   }
 
   @Override
@@ -290,6 +323,7 @@ public class APIEIP712Template {
     sb.append("    types: ").append(toIndentedString(types)).append("\n");
     sb.append("    primaryType: ").append(toIndentedString(primaryType)).append("\n");
     sb.append("    hash: ").append(toIndentedString(hash)).append("\n");
+    sb.append("    templateVersion: ").append(toIndentedString(templateVersion)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -370,6 +404,11 @@ public class APIEIP712Template {
     // add `hash` to the URL query string
     if (getHash() != null) {
       joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `templateVersion` to the URL query string
+    if (getTemplateVersion() != null) {
+      joiner.add(String.format("%stemplateVersion%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTemplateVersion()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

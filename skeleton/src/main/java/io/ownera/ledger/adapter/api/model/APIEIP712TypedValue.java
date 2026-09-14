@@ -17,12 +17,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
+import java.util.List;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIEIP712TypedValue.APIEIP712TypedValueDeserializer.class)
 @JsonSerialize(using = APIEIP712TypedValue.APIEIP712TypedValueSerializer.class)
 public class APIEIP712TypedValue extends AbstractOpenApiSchema {
@@ -432,12 +432,6 @@ public class APIEIP712TypedValue extends AbstractOpenApiSchema {
     if (getActualInstance() instanceof Boolean) {
         if (getActualInstance() != null) {
           joiner.add(String.format("%sone_of_2%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
-        }
-        return joiner.toString();
-    }
-    if (getActualInstance() instanceof String) {
-        if (getActualInstance() != null) {
-          joiner.add(String.format("%sone_of_3%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getActualInstance()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
         }
         return joiner.toString();
     }

@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -35,10 +35,47 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIWalletLedgerAccount.JSON_PROPERTY_TYPE,
   APIWalletLedgerAccount.JSON_PROPERTY_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T18:12:45.117074637+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIWalletLedgerAccount {
+  /**
+   * Gets or Sets type
+   */
+  public enum TypeEnum {
+    WALLETACCOUNT("walletAccount");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static TypeEnum fromValue(String value) {
+      // Legacy: this adapter emitted "wallet" before the spec closed the enum.
+      if ("wallet".equals(value)) {
+        return WALLETACCOUNT;
+      }
+      for (TypeEnum b : TypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
   public static final String JSON_PROPERTY_TYPE = "type";
-  private String type;
+  private TypeEnum type;
 
   public static final String JSON_PROPERTY_ADDRESS = "address";
   private String address;
@@ -46,7 +83,7 @@ public class APIWalletLedgerAccount {
   public APIWalletLedgerAccount() { 
   }
 
-  public APIWalletLedgerAccount type(String type) {
+  public APIWalletLedgerAccount type(TypeEnum type) {
     this.type = type;
     return this;
   }
@@ -59,14 +96,14 @@ public class APIWalletLedgerAccount {
   @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getType() {
+  public TypeEnum getType() {
     return type;
   }
 
 
   @JsonProperty(JSON_PROPERTY_TYPE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setType(String type) {
+  public void setType(TypeEnum type) {
     this.type = type;
   }
 

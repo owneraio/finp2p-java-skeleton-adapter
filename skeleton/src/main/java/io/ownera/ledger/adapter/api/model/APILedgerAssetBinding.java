@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +27,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifierTypeCAIP19;
+import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifierTypeCAIP19CreateOrBind;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,7 +55,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APILedgerAssetBinding.APILedgerAssetBindingDeserializer.class)
 @JsonSerialize(using = APILedgerAssetBinding.APILedgerAssetBindingSerializer.class)
 public class APILedgerAssetBinding extends AbstractOpenApiSchema {
@@ -92,30 +92,30 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
             boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
             int match = 0;
             JsonToken token = tree.traverse(jp.getCodec()).nextToken();
-            // deserialize APILedgerAssetIdentifierTypeCAIP19
+            // deserialize APILedgerAssetIdentifierTypeCAIP19CreateOrBind
             try {
                 boolean attemptParsing = true;
                 // ensure that we respect type coercion as set on the client ObjectMapper
-                if (APILedgerAssetIdentifierTypeCAIP19.class.equals(Integer.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Long.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Float.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Double.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Boolean.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(String.class)) {
+                if (APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Integer.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Long.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Float.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Double.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Boolean.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(String.class)) {
                     attemptParsing = typeCoercion;
                     if (!attemptParsing) {
-                        attemptParsing |= ((APILedgerAssetIdentifierTypeCAIP19.class.equals(Integer.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
-                        attemptParsing |= ((APILedgerAssetIdentifierTypeCAIP19.class.equals(Float.class) || APILedgerAssetIdentifierTypeCAIP19.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
-                        attemptParsing |= (APILedgerAssetIdentifierTypeCAIP19.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
-                        attemptParsing |= (APILedgerAssetIdentifierTypeCAIP19.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                        attemptParsing |= ((APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Integer.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Float.class) || APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
                 }
                 if (attemptParsing) {
-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APILedgerAssetIdentifierTypeCAIP19.class);
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
                     // validation, which means the 'match' count may be higher than it should be.
                     match++;
-                    log.log(Level.FINER, "Input data matches schema 'APILedgerAssetIdentifierTypeCAIP19'");
+                    log.log(Level.FINER, "Input data matches schema 'APILedgerAssetIdentifierTypeCAIP19CreateOrBind'");
                 }
             } catch (Exception e) {
                 // deserialization failed, continue
-                log.log(Level.FINER, "Input data does not match schema 'APILedgerAssetIdentifierTypeCAIP19'", e);
+                log.log(Level.FINER, "Input data does not match schema 'APILedgerAssetIdentifierTypeCAIP19CreateOrBind'", e);
             }
 
             if (match == 1) {
@@ -142,18 +142,18 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
         super("oneOf", Boolean.FALSE);
     }
 
-    public APILedgerAssetBinding(APILedgerAssetIdentifierTypeCAIP19 o) {
+    public APILedgerAssetBinding(APILedgerAssetIdentifierTypeCAIP19CreateOrBind o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
-        schemas.put("APILedgerAssetIdentifierTypeCAIP19", APILedgerAssetIdentifierTypeCAIP19.class);
+        schemas.put("APILedgerAssetIdentifierTypeCAIP19CreateOrBind", APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class);
         JSON.registerDescendants(APILedgerAssetBinding.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("CAIP-19", APILedgerAssetIdentifierTypeCAIP19.class);
-        mappings.put("ledgerAssetIdentifierTypeCAIP-19", APILedgerAssetIdentifierTypeCAIP19.class);
+        mappings.put("CAIP-19", APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class);
+        mappings.put("ledgerAssetIdentifierTypeCAIP-19CreateOrBind", APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class);
         mappings.put("ledgerAssetBinding", APILedgerAssetBinding.class);
         JSON.registerDiscriminator(APILedgerAssetBinding.class, "assetIdentifierType", mappings);
     }
@@ -166,26 +166,26 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * APILedgerAssetIdentifierTypeCAIP19
+     * APILedgerAssetIdentifierTypeCAIP19CreateOrBind
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
-        if (JSON.isInstanceOf(APILedgerAssetIdentifierTypeCAIP19.class, instance, new HashSet<Class<?>>())) {
+        if (JSON.isInstanceOf(APILedgerAssetIdentifierTypeCAIP19CreateOrBind.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        throw new RuntimeException("Invalid instance type. Must be APILedgerAssetIdentifierTypeCAIP19");
+        throw new RuntimeException("Invalid instance type. Must be APILedgerAssetIdentifierTypeCAIP19CreateOrBind");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * APILedgerAssetIdentifierTypeCAIP19
+     * APILedgerAssetIdentifierTypeCAIP19CreateOrBind
      *
-     * @return The actual instance (APILedgerAssetIdentifierTypeCAIP19)
+     * @return The actual instance (APILedgerAssetIdentifierTypeCAIP19CreateOrBind)
      */
     @Override
     public Object getActualInstance() {
@@ -193,14 +193,14 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
     }
 
     /**
-     * Get the actual instance of `APILedgerAssetIdentifierTypeCAIP19`. If the actual instance is not `APILedgerAssetIdentifierTypeCAIP19`,
+     * Get the actual instance of `APILedgerAssetIdentifierTypeCAIP19CreateOrBind`. If the actual instance is not `APILedgerAssetIdentifierTypeCAIP19CreateOrBind`,
      * the ClassCastException will be thrown.
      *
-     * @return The actual instance of `APILedgerAssetIdentifierTypeCAIP19`
-     * @throws ClassCastException if the instance is not `APILedgerAssetIdentifierTypeCAIP19`
+     * @return The actual instance of `APILedgerAssetIdentifierTypeCAIP19CreateOrBind`
+     * @throws ClassCastException if the instance is not `APILedgerAssetIdentifierTypeCAIP19CreateOrBind`
      */
-    public APILedgerAssetIdentifierTypeCAIP19 getAPILedgerAssetIdentifierTypeCAIP19() throws ClassCastException {
-        return (APILedgerAssetIdentifierTypeCAIP19)super.getActualInstance();
+    public APILedgerAssetIdentifierTypeCAIP19CreateOrBind getAPILedgerAssetIdentifierTypeCAIP19CreateOrBind() throws ClassCastException {
+        return (APILedgerAssetIdentifierTypeCAIP19CreateOrBind)super.getActualInstance();
     }
 
 
@@ -237,9 +237,9 @@ public class APILedgerAssetBinding extends AbstractOpenApiSchema {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    if (getActualInstance() instanceof APILedgerAssetIdentifierTypeCAIP19) {
+    if (getActualInstance() instanceof APILedgerAssetIdentifierTypeCAIP19CreateOrBind) {
         if (getActualInstance() != null) {
-          joiner.add(((APILedgerAssetIdentifierTypeCAIP19)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+          joiner.add(((APILedgerAssetIdentifierTypeCAIP19CreateOrBind)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
         }
         return joiner.toString();
     }

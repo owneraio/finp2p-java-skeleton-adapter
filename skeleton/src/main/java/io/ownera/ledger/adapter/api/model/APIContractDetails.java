@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIContractDetailsAdditionalContractDetails;
+import io.ownera.ledger.adapter.api.model.APIFinP2PEVMOperatorDetails;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIContractDetails.JSON_PROPERTY_TOKEN_STANDARD,
   APIContractDetails.JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIContractDetails {
   /**
    * the type of the identifier
@@ -83,7 +83,7 @@ public class APIContractDetails {
   private String tokenStandard;
 
   public static final String JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS = "additionalContractDetails";
-  private APIContractDetailsAdditionalContractDetails additionalContractDetails;
+  private APIFinP2PEVMOperatorDetails additionalContractDetails;
 
   public APIContractDetails() { 
   }
@@ -163,7 +163,7 @@ public class APIContractDetails {
   }
 
 
-  public APIContractDetails additionalContractDetails(APIContractDetailsAdditionalContractDetails additionalContractDetails) {
+  public APIContractDetails additionalContractDetails(APIFinP2PEVMOperatorDetails additionalContractDetails) {
     this.additionalContractDetails = additionalContractDetails;
     return this;
   }
@@ -176,14 +176,14 @@ public class APIContractDetails {
   @JsonProperty(JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public APIContractDetailsAdditionalContractDetails getAdditionalContractDetails() {
+  public APIFinP2PEVMOperatorDetails getAdditionalContractDetails() {
     return additionalContractDetails;
   }
 
 
   @JsonProperty(JSON_PROPERTY_ADDITIONAL_CONTRACT_DETAILS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setAdditionalContractDetails(APIContractDetailsAdditionalContractDetails additionalContractDetails) {
+  public void setAdditionalContractDetails(APIFinP2PEVMOperatorDetails additionalContractDetails) {
     this.additionalContractDetails = additionalContractDetails;
   }
 

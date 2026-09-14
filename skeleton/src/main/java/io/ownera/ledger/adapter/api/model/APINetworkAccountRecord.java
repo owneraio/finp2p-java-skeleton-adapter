@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,51 +24,81 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalRequestExecutionPlan;
+import io.ownera.ledger.adapter.api.model.APINetworkAccount;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * APIExecutionPlanProposalStatusRequestRequest
+ * Canonical account record returned on workflow completion via &#x60;GET /operations/status/{cid}&#x60;. 
  */
 @JsonPropertyOrder({
-  APIExecutionPlanProposalStatusRequestRequest.JSON_PROPERTY_EXECUTION_PLAN
+  APINetworkAccountRecord.JSON_PROPERTY_ID,
+  APINetworkAccountRecord.JSON_PROPERTY_NETWORK_ACCOUNT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
-public class APIExecutionPlanProposalStatusRequestRequest {
-  public static final String JSON_PROPERTY_EXECUTION_PLAN = "executionPlan";
-  private APIExecutionPlanProposalRequestExecutionPlan executionPlan;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+public class APINetworkAccountRecord {
+  public static final String JSON_PROPERTY_ID = "id";
+  private String id;
 
-  public APIExecutionPlanProposalStatusRequestRequest() { 
+  public static final String JSON_PROPERTY_NETWORK_ACCOUNT = "networkAccount";
+  private APINetworkAccount networkAccount;
+
+  public APINetworkAccountRecord() { 
   }
 
-  public APIExecutionPlanProposalStatusRequestRequest executionPlan(APIExecutionPlanProposalRequestExecutionPlan executionPlan) {
-    this.executionPlan = executionPlan;
+  public APINetworkAccountRecord id(String id) {
+    this.id = id;
     return this;
   }
 
    /**
-   * Get executionPlan
-   * @return executionPlan
+   * LA-assigned account identifier.
+   * @return id
   **/
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_EXECUTION_PLAN)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public APIExecutionPlanProposalRequestExecutionPlan getExecutionPlan() {
-    return executionPlan;
+  public String getId() {
+    return id;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_EXECUTION_PLAN)
+  @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setExecutionPlan(APIExecutionPlanProposalRequestExecutionPlan executionPlan) {
-    this.executionPlan = executionPlan;
+  public void setId(String id) {
+    this.id = id;
+  }
+
+
+  public APINetworkAccountRecord networkAccount(APINetworkAccount networkAccount) {
+    this.networkAccount = networkAccount;
+    return this;
+  }
+
+   /**
+   * Get networkAccount
+   * @return networkAccount
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_NETWORK_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public APINetworkAccount getNetworkAccount() {
+    return networkAccount;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_NETWORK_ACCOUNT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setNetworkAccount(APINetworkAccount networkAccount) {
+    this.networkAccount = networkAccount;
   }
 
 
   /**
-   * Return true if this executionPlanProposalStatusRequest_request object is equal to o.
+   * Return true if this networkAccountRecord object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -79,20 +108,22 @@ public class APIExecutionPlanProposalStatusRequestRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIExecutionPlanProposalStatusRequestRequest executionPlanProposalStatusRequestRequest = (APIExecutionPlanProposalStatusRequestRequest) o;
-    return Objects.equals(this.executionPlan, executionPlanProposalStatusRequestRequest.executionPlan);
+    APINetworkAccountRecord networkAccountRecord = (APINetworkAccountRecord) o;
+    return Objects.equals(this.id, networkAccountRecord.id) &&
+        Objects.equals(this.networkAccount, networkAccountRecord.networkAccount);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(executionPlan);
+    return Objects.hash(id, networkAccount);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIExecutionPlanProposalStatusRequestRequest {\n");
-    sb.append("    executionPlan: ").append(toIndentedString(executionPlan)).append("\n");
+    sb.append("class APINetworkAccountRecord {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    networkAccount: ").append(toIndentedString(networkAccount)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -140,9 +171,14 @@ public class APIExecutionPlanProposalStatusRequestRequest {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `executionPlan` to the URL query string
-    if (getExecutionPlan() != null) {
-      joiner.add(getExecutionPlan().toUrlQueryString(prefix + "executionPlan" + suffix));
+    // add `id` to the URL query string
+    if (getId() != null) {
+      joiner.add(String.format("%sid%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `networkAccount` to the URL query string
+    if (getNetworkAccount() != null) {
+      joiner.add(getNetworkAccount().toUrlQueryString(prefix + "networkAccount" + suffix));
     }
 
     return joiner.toString();

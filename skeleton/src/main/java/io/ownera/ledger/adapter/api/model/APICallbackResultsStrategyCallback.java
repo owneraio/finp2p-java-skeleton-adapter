@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -29,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APICallbackEndpoint;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,7 +55,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APICallbackResultsStrategyCallback.APICallbackResultsStrategyCallbackDeserializer.class)
 @JsonSerialize(using = APICallbackResultsStrategyCallback.APICallbackResultsStrategyCallbackSerializer.class)
 public class APICallbackResultsStrategyCallback extends AbstractOpenApiSchema {
@@ -152,8 +152,8 @@ public class APICallbackResultsStrategyCallback extends AbstractOpenApiSchema {
         JSON.registerDescendants(APICallbackResultsStrategyCallback.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("callbackEndpoint", APICallbackEndpoint.class);
         mappings.put("endpoint", APICallbackEndpoint.class);
+        mappings.put("callbackEndpoint", APICallbackEndpoint.class);
         mappings.put("callbackResultsStrategy_callback", APICallbackResultsStrategyCallback.class);
         JSON.registerDiscriminator(APICallbackResultsStrategyCallback.class, "type", mappings);
     }

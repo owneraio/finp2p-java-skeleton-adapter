@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,51 +24,80 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * APIAssetAllOf
+ * APINetworkAccountOperationErrorInformation
  */
 @JsonPropertyOrder({
-  APIAssetAllOf.JSON_PROPERTY_LEDGER_IDENTIFIER
+  APINetworkAccountOperationErrorInformation.JSON_PROPERTY_CODE,
+  APINetworkAccountOperationErrorInformation.JSON_PROPERTY_MESSAGE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
-public class APIAssetAllOf {
-  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
-  private APILedgerAssetIdentifier ledgerIdentifier;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+public class APINetworkAccountOperationErrorInformation {
+  public static final String JSON_PROPERTY_CODE = "code";
+  private Integer code;
 
-  public APIAssetAllOf() { 
+  public static final String JSON_PROPERTY_MESSAGE = "message";
+  private String message;
+
+  public APINetworkAccountOperationErrorInformation() { 
   }
 
-  public APIAssetAllOf ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
-    this.ledgerIdentifier = ledgerIdentifier;
+  public APINetworkAccountOperationErrorInformation code(Integer code) {
+    this.code = code;
     return this;
   }
 
    /**
-   * Get ledgerIdentifier
-   * @return ledgerIdentifier
+   * Get code
+   * @return code
   **/
   @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonProperty(JSON_PROPERTY_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public APILedgerAssetIdentifier getLedgerIdentifier() {
-    return ledgerIdentifier;
+  public Integer getCode() {
+    return code;
   }
 
 
-  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonProperty(JSON_PROPERTY_CODE)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
-    this.ledgerIdentifier = ledgerIdentifier;
+  public void setCode(Integer code) {
+    this.code = code;
+  }
+
+
+  public APINetworkAccountOperationErrorInformation message(String message) {
+    this.message = message;
+    return this;
+  }
+
+   /**
+   * Get message
+   * @return message
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public String getMessage() {
+    return message;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setMessage(String message) {
+    this.message = message;
   }
 
 
   /**
-   * Return true if this asset_allOf object is equal to o.
+   * Return true if this networkAccountOperationErrorInformation object is equal to o.
    */
   @Override
   public boolean equals(Object o) {
@@ -79,20 +107,22 @@ public class APIAssetAllOf {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    APIAssetAllOf assetAllOf = (APIAssetAllOf) o;
-    return Objects.equals(this.ledgerIdentifier, assetAllOf.ledgerIdentifier);
+    APINetworkAccountOperationErrorInformation networkAccountOperationErrorInformation = (APINetworkAccountOperationErrorInformation) o;
+    return Objects.equals(this.code, networkAccountOperationErrorInformation.code) &&
+        Objects.equals(this.message, networkAccountOperationErrorInformation.message);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ledgerIdentifier);
+    return Objects.hash(code, message);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class APIAssetAllOf {\n");
-    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
+    sb.append("class APINetworkAccountOperationErrorInformation {\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
+    sb.append("    message: ").append(toIndentedString(message)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -140,9 +170,14 @@ public class APIAssetAllOf {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `ledgerIdentifier` to the URL query string
-    if (getLedgerIdentifier() != null) {
-      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
+    // add `code` to the URL query string
+    if (getCode() != null) {
+      joiner.add(String.format("%scode%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `message` to the URL query string
+    if (getMessage() != null) {
+      joiner.add(String.format("%smessage%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getMessage()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

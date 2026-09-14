@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,6 +31,7 @@ import io.ownera.ledger.adapter.api.model.APIRegulationError;
 import io.ownera.ledger.adapter.api.model.APIRegulationFailure;
 import io.ownera.ledger.adapter.api.model.APIValidationFailure;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIPlanRejectedFailure.APIPlanRejectedFailureDeserializer.class)
 @JsonSerialize(using = APIPlanRejectedFailure.APIPlanRejectedFailureSerializer.class)
 public class APIPlanRejectedFailure extends AbstractOpenApiSchema {
@@ -188,10 +188,10 @@ public class APIPlanRejectedFailure extends AbstractOpenApiSchema {
         JSON.registerDescendants(APIPlanRejectedFailure.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
-        mappings.put("RegulationFailure", APIRegulationFailure.class);
-        mappings.put("ValidationFailure", APIValidationFailure.class);
         mappings.put("regulationFailure", APIRegulationFailure.class);
         mappings.put("validationFailure", APIValidationFailure.class);
+        mappings.put("RegulationFailure", APIRegulationFailure.class);
+        mappings.put("ValidationFailure", APIValidationFailure.class);
         mappings.put("PlanRejected_failure", APIPlanRejectedFailure.class);
         JSON.registerDiscriminator(APIPlanRejectedFailure.class, "failureType", mappings);
     }

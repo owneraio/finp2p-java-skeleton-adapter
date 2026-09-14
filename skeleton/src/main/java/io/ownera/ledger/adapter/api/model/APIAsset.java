@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APILedgerAssetIdentifier;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -33,44 +33,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * APIAsset
  */
 @JsonPropertyOrder({
-  APIAsset.JSON_PROPERTY_LEDGER_IDENTIFIER,
-  APIAsset.JSON_PROPERTY_RESOURCE_ID
+  APIAsset.JSON_PROPERTY_RESOURCE_ID,
+  APIAsset.JSON_PROPERTY_LEDGER_IDENTIFIER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIAsset {
-  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
-  private APILedgerAssetIdentifier ledgerIdentifier;
-
   public static final String JSON_PROPERTY_RESOURCE_ID = "resourceId";
   private String resourceId;
 
+  public static final String JSON_PROPERTY_LEDGER_IDENTIFIER = "ledgerIdentifier";
+  private APILedgerAssetIdentifier ledgerIdentifier;
+
   public APIAsset() { 
   }
-
-  public APIAsset ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
-    this.ledgerIdentifier = ledgerIdentifier;
-    return this;
-  }
-
-   /**
-   * Get ledgerIdentifier
-   * @return ledgerIdentifier
-  **/
-  @javax.annotation.Nonnull
-  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public APILedgerAssetIdentifier getLedgerIdentifier() {
-    return ledgerIdentifier;
-  }
-
-
-  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
-    this.ledgerIdentifier = ledgerIdentifier;
-  }
-
 
   public APIAsset resourceId(String resourceId) {
     this.resourceId = resourceId;
@@ -97,6 +72,31 @@ public class APIAsset {
   }
 
 
+  public APIAsset ledgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
+    return this;
+  }
+
+   /**
+   * Get ledgerIdentifier
+   * @return ledgerIdentifier
+  **/
+  @javax.annotation.Nonnull
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public APILedgerAssetIdentifier getLedgerIdentifier() {
+    return ledgerIdentifier;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_LEDGER_IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setLedgerIdentifier(APILedgerAssetIdentifier ledgerIdentifier) {
+    this.ledgerIdentifier = ledgerIdentifier;
+  }
+
+
   /**
    * Return true if this asset object is equal to o.
    */
@@ -109,21 +109,21 @@ public class APIAsset {
       return false;
     }
     APIAsset asset = (APIAsset) o;
-    return Objects.equals(this.ledgerIdentifier, asset.ledgerIdentifier) &&
-        Objects.equals(this.resourceId, asset.resourceId);
+    return Objects.equals(this.resourceId, asset.resourceId) &&
+        Objects.equals(this.ledgerIdentifier, asset.ledgerIdentifier);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(ledgerIdentifier, resourceId);
+    return Objects.hash(resourceId, ledgerIdentifier);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class APIAsset {\n");
-    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
     sb.append("    resourceId: ").append(toIndentedString(resourceId)).append("\n");
+    sb.append("    ledgerIdentifier: ").append(toIndentedString(ledgerIdentifier)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -171,14 +171,14 @@ public class APIAsset {
 
     StringJoiner joiner = new StringJoiner("&");
 
-    // add `ledgerIdentifier` to the URL query string
-    if (getLedgerIdentifier() != null) {
-      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
-    }
-
     // add `resourceId` to the URL query string
     if (getResourceId() != null) {
       joiner.add(String.format("%sresourceId%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getResourceId()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `ledgerIdentifier` to the URL query string
+    if (getLedgerIdentifier() != null) {
+      joiner.add(getLedgerIdentifier().toUrlQueryString(prefix + "ledgerIdentifier" + suffix));
     }
 
     return joiner.toString();

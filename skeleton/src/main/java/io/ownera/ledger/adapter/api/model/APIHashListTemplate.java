@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIHashGroup;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -37,9 +37,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
   APIHashListTemplate.JSON_PROPERTY_TYPE,
   APIHashListTemplate.JSON_PROPERTY_HASH_GROUPS,
-  APIHashListTemplate.JSON_PROPERTY_HASH
+  APIHashListTemplate.JSON_PROPERTY_HASH,
+  APIHashListTemplate.JSON_PROPERTY_TEMPLATE_VERSION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIHashListTemplate {
   /**
    * Gets or Sets type
@@ -83,6 +84,9 @@ public class APIHashListTemplate {
   public static final String JSON_PROPERTY_HASH = "hash";
   private String hash;
 
+  public static final String JSON_PROPERTY_TEMPLATE_VERSION = "templateVersion";
+  private Integer templateVersion;
+
   public APIHashListTemplate() { 
   }
 
@@ -117,6 +121,9 @@ public class APIHashListTemplate {
   }
 
   public APIHashListTemplate addHashGroupsItem(APIHashGroup hashGroupsItem) {
+    if (this.hashGroups == null) {
+      this.hashGroups = new ArrayList<>();
+    }
     this.hashGroups.add(hashGroupsItem);
     return this;
   }
@@ -166,6 +173,31 @@ public class APIHashListTemplate {
   }
 
 
+  public APIHashListTemplate templateVersion(Integer templateVersion) {
+    this.templateVersion = templateVersion;
+    return this;
+  }
+
+   /**
+   * Template shape version. When omitted, the verifier resolves the version from the signature proof context.
+   * @return templateVersion
+  **/
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_TEMPLATE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getTemplateVersion() {
+    return templateVersion;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_TEMPLATE_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTemplateVersion(Integer templateVersion) {
+    this.templateVersion = templateVersion;
+  }
+
+
   /**
    * Return true if this hashListTemplate object is equal to o.
    */
@@ -180,12 +212,13 @@ public class APIHashListTemplate {
     APIHashListTemplate hashListTemplate = (APIHashListTemplate) o;
     return Objects.equals(this.type, hashListTemplate.type) &&
         Objects.equals(this.hashGroups, hashListTemplate.hashGroups) &&
-        Objects.equals(this.hash, hashListTemplate.hash);
+        Objects.equals(this.hash, hashListTemplate.hash) &&
+        Objects.equals(this.templateVersion, hashListTemplate.templateVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, hashGroups, hash);
+    return Objects.hash(type, hashGroups, hash, templateVersion);
   }
 
   @Override
@@ -195,6 +228,7 @@ public class APIHashListTemplate {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    hashGroups: ").append(toIndentedString(hashGroups)).append("\n");
     sb.append("    hash: ").append(toIndentedString(hash)).append("\n");
+    sb.append("    templateVersion: ").append(toIndentedString(templateVersion)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -260,6 +294,11 @@ public class APIHashListTemplate {
     // add `hash` to the URL query string
     if (getHash() != null) {
       joiner.add(String.format("%shash%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getHash()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `templateVersion` to the URL query string
+    if (getTemplateVersion() != null) {
+      joiner.add(String.format("%stemplateVersion%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getTemplateVersion()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     return joiner.toString();

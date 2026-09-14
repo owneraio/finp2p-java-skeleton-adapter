@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanCancellationProposal;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanInstructionProposal;
 import io.ownera.ledger.adapter.api.model.APIExecutionPlanResetProposal;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIExecutionPlanProposalRequestExecutionPlanProposal.APIExecutionPlanProposalRequestExecutionPlanProposalDeserializer.class)
 @JsonSerialize(using = APIExecutionPlanProposalRequestExecutionPlanProposal.APIExecutionPlanProposalRequestExecutionPlanProposalSerializer.class)
 public class APIExecutionPlanProposalRequestExecutionPlanProposal extends AbstractOpenApiSchema {
@@ -219,11 +219,11 @@ public class APIExecutionPlanProposalRequestExecutionPlanProposal extends Abstra
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("cancel", APIExecutionPlanCancellationProposal.class);
+        mappings.put("instruction", APIExecutionPlanInstructionProposal.class);
+        mappings.put("reset", APIExecutionPlanResetProposal.class);
         mappings.put("executionPlanCancellationProposal", APIExecutionPlanCancellationProposal.class);
         mappings.put("executionPlanInstructionProposal", APIExecutionPlanInstructionProposal.class);
         mappings.put("executionPlanResetProposal", APIExecutionPlanResetProposal.class);
-        mappings.put("instruction", APIExecutionPlanInstructionProposal.class);
-        mappings.put("reset", APIExecutionPlanResetProposal.class);
         mappings.put("executionPlanProposalRequest_executionPlan_proposal", APIExecutionPlanProposalRequestExecutionPlanProposal.class);
         JSON.registerDiscriminator(APIExecutionPlanProposalRequestExecutionPlanProposal.class, "proposalType", mappings);
     }

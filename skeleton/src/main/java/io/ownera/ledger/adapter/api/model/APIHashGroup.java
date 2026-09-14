@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIHashGroup.JSON_PROPERTY_HASH,
   APIHashGroup.JSON_PROPERTY_FIELDS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIHashGroup {
   public static final String JSON_PROPERTY_HASH = "hash";
   private String hash;
@@ -80,6 +80,9 @@ public class APIHashGroup {
   }
 
   public APIHashGroup addFieldsItem(APIField fieldsItem) {
+    if (this.fields == null) {
+      this.fields = new ArrayList<>();
+    }
     this.fields.add(fieldsItem);
     return this;
   }

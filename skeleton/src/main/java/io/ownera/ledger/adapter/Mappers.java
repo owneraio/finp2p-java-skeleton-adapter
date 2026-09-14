@@ -129,17 +129,38 @@ public class Mappers {
     }
 
     /**
-     * Extract ledger account (wallet) from an APIAccount, falling back to FinIdAccount if none.
+     * Extract ledger account from an APIAccount, falling back to FinIdAccount if none.
      * Maps to a generic {@link LedgerAccount} carrying the type discriminator from the API
      * (aligns with Node.js skeleton's LedgerAccount {type, address}).
+     *
+     * <p>Since 0.28 the router's ledgerAccount oneOf admits three variants. Only walletAccount
+     * maps cleanly onto {@link LedgerAccount}'s (type, address); the others are rejected rather
+     * than silently degraded to a FinIdAccount, which would discard the caller's chain address
+     * and settle against the wrong account.
      */
     private static DestinationAccount ledgerAccountFromAPI(APIAccount account) {
         if (account.getLedgerAccount() != null) {
             Object actual = account.getLedgerAccount().getActualInstance();
             if (actual instanceof APIWalletLedgerAccount) {
                 APIWalletLedgerAccount wallet = (APIWalletLedgerAccount) actual;
-                String type = wallet.getType() != null ? wallet.getType() : "wallet";
+                String type = wallet.getType() != null
+                        ? wallet.getType().getValue()
+                        : APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT.getValue();
                 return new LedgerAccount(type, wallet.getAddress());
+            }
+            if (actual instanceof APICaip10LedgerAccount) {
+                // network is part of the account identity and LedgerAccount cannot carry it;
+                // accepting it would settle against an address on an unintended chain.
+                throw new MappingException(
+                        "caip10Account ledger accounts are not supported by this adapter");
+            }
+            if (actual instanceof APICustodialLedgerAccount) {
+                throw new MappingException(
+                        "custodialAccount ledger accounts are not supported by this adapter");
+            }
+            if (actual != null) {
+                throw new MappingException(
+                        "Unsupported ledgerAccount variant: " + actual.getClass().getSimpleName());
             }
         }
         return new FinIdAccount(account.getFinId());
@@ -379,7 +400,7 @@ public class Mappers {
         } else if (status instanceof FailedDepositOperation) {
             FailedDepositOperation failed = (FailedDepositOperation) status;
             operation.isCompleted(true);
-            operation.error(new APICreateAssetOperationErrorInformation()
+            operation.error(new APIDepositOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
@@ -417,7 +438,7 @@ public class Mappers {
             FailedDepositOperation failed = (FailedDepositOperation) status;
             response.isCompleted(true);
             response.cid("");
-            response.error(new APICreateAssetOperationErrorInformation()
+            response.error(new APIDepositOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
@@ -597,6 +618,8 @@ public class Mappers {
             case RELEASE:
             case ROLLBACK:
                 return APIOperationType.RELEASE;
+            case MOVE:
+                return APIOperationType.MOVE;
             default:
                 throw new MappingException("Unsupported operation type: " + type);
         }
@@ -637,13 +660,31 @@ public class Mappers {
     private static APIAccountLedgerAccount toAPILedger(@Nullable Object account) {
         if (account instanceof LedgerAccount) {
             LedgerAccount la = (LedgerAccount) account;
-            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(la.type).address(la.address));
+            // walletAccount is the only variant representable as (type, address). Emitting a
+            // wallet envelope for anything else would misreport the account on the wire, so
+            // an unrepresentable type is an error rather than a silent relabel.
+            if (!isWalletType(la.type)) {
+                throw new MappingException(
+                        "Cannot represent ledger account type '" + la.type + "' in the router API");
+            }
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount()
+                    .type(APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT)
+                    .address(la.address));
         }
         if (account instanceof CryptocurrencyWallet) {
             CryptocurrencyWallet wallet = (CryptocurrencyWallet) account;
-            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type("wallet").address(wallet.address));
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount()
+                    .type(APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT)
+                    .address(wallet.address));
         }
         return null;
+    }
+
+    /** Accepts the current spelling plus the "wallet" this adapter emitted before 0.28. */
+    private static boolean isWalletType(@Nullable String type) {
+        return type == null
+                || "wallet".equals(type)
+                || APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT.getValue().equals(type);
     }
 
     private static APIFinIdAccountBase toAPI(FinIdAccount account) {
@@ -1202,6 +1243,7 @@ public class Mappers {
             case REDEEM:   return OperationType.REDEEM;
             case HOLD:     return OperationType.HOLD;
             case RELEASE:  return OperationType.RELEASE;
+            case MOVE:     return OperationType.MOVE;
             default:
                 throw new MappingException("Unsupported APIOperationType: " + apiType);
         }

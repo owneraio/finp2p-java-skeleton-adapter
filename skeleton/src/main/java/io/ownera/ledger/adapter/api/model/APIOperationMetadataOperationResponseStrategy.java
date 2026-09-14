@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,6 +31,7 @@ import io.ownera.ledger.adapter.api.model.APICallbackResultsStrategy;
 import io.ownera.ledger.adapter.api.model.APICallbackResultsStrategyCallback;
 import io.ownera.ledger.adapter.api.model.APIPollingResultsStrategy;
 import io.ownera.ledger.adapter.api.model.APIPollingResultsStrategyPolling;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -58,7 +58,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIOperationMetadataOperationResponseStrategy.APIOperationMetadataOperationResponseStrategyDeserializer.class)
 @JsonSerialize(using = APIOperationMetadataOperationResponseStrategy.APIOperationMetadataOperationResponseStrategySerializer.class)
 public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenApiSchema {
@@ -188,8 +188,8 @@ public class APIOperationMetadataOperationResponseStrategy extends AbstractOpenA
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("callback", APICallbackResultsStrategy.class);
-        mappings.put("callbackResultsStrategy", APICallbackResultsStrategy.class);
         mappings.put("poll", APIPollingResultsStrategy.class);
+        mappings.put("callbackResultsStrategy", APICallbackResultsStrategy.class);
         mappings.put("pollingResultsStrategy", APIPollingResultsStrategy.class);
         mappings.put("OperationMetadata_operationResponseStrategy", APIOperationMetadataOperationResponseStrategy.class);
         JSON.registerDiscriminator(APIOperationMetadataOperationResponseStrategy.class, "type", mappings);
