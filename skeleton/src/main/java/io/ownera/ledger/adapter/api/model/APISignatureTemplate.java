@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -35,6 +34,7 @@ import io.ownera.ledger.adapter.api.model.APIEIP712Types;
 import io.ownera.ledger.adapter.api.model.APIHashGroup;
 import io.ownera.ledger.adapter.api.model.APIHashListTemplate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +64,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APISignatureTemplate.APISignatureTemplateDeserializer.class)
 @JsonSerialize(using = APISignatureTemplate.APISignatureTemplateSerializer.class)
 public class APISignatureTemplate extends AbstractOpenApiSchema {
@@ -194,8 +194,8 @@ public class APISignatureTemplate extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("EIP712", APIEIP712Template.class);
-        mappings.put("EIP712Template", APIEIP712Template.class);
         mappings.put("hashList", APIHashListTemplate.class);
+        mappings.put("EIP712Template", APIEIP712Template.class);
         mappings.put("hashListTemplate", APIHashListTemplate.class);
         mappings.put("signatureTemplate", APISignatureTemplate.class);
         JSON.registerDiscriminator(APISignatureTemplate.class, "type", mappings);

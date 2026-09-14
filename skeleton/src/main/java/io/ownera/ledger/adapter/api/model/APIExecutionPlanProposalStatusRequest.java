@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalStatusRequestRequest;
+import io.ownera.ledger.adapter.api.model.APIExecutionPlanProposalRequest;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIExecutionPlanProposalStatusRequest.JSON_PROPERTY_STATUS,
   APIExecutionPlanProposalStatusRequest.JSON_PROPERTY_REQUEST
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIExecutionPlanProposalStatusRequest {
   /**
    * Gets or Sets status
@@ -77,7 +77,7 @@ public class APIExecutionPlanProposalStatusRequest {
   private StatusEnum status;
 
   public static final String JSON_PROPERTY_REQUEST = "request";
-  private APIExecutionPlanProposalStatusRequestRequest request;
+  private APIExecutionPlanProposalRequest request;
 
   public APIExecutionPlanProposalStatusRequest() { 
   }
@@ -107,7 +107,7 @@ public class APIExecutionPlanProposalStatusRequest {
   }
 
 
-  public APIExecutionPlanProposalStatusRequest request(APIExecutionPlanProposalStatusRequestRequest request) {
+  public APIExecutionPlanProposalStatusRequest request(APIExecutionPlanProposalRequest request) {
     this.request = request;
     return this;
   }
@@ -120,14 +120,14 @@ public class APIExecutionPlanProposalStatusRequest {
   @JsonProperty(JSON_PROPERTY_REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public APIExecutionPlanProposalStatusRequestRequest getRequest() {
+  public APIExecutionPlanProposalRequest getRequest() {
     return request;
   }
 
 
   @JsonProperty(JSON_PROPERTY_REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setRequest(APIExecutionPlanProposalStatusRequestRequest request) {
+  public void setRequest(APIExecutionPlanProposalRequest request) {
     this.request = request;
   }
 

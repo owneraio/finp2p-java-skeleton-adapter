@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIIbanAccountDetails;
 import io.ownera.ledger.adapter.api.model.APISortCodeDetails;
 import io.ownera.ledger.adapter.api.model.APISwiftAccountDetails;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIWireDetails.APIWireDetailsDeserializer.class)
 @JsonSerialize(using = APIWireDetails.APIWireDetailsSerializer.class)
 public class APIWireDetails extends AbstractOpenApiSchema {
@@ -219,10 +219,10 @@ public class APIWireDetails extends AbstractOpenApiSchema {
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
         mappings.put("iban", APIIbanAccountDetails.class);
-        mappings.put("ibanAccountDetails", APIIbanAccountDetails.class);
         mappings.put("sortCode", APISortCodeDetails.class);
-        mappings.put("sortCodeDetails", APISortCodeDetails.class);
         mappings.put("swift", APISwiftAccountDetails.class);
+        mappings.put("ibanAccountDetails", APIIbanAccountDetails.class);
+        mappings.put("sortCodeDetails", APISortCodeDetails.class);
         mappings.put("swiftAccountDetails", APISwiftAccountDetails.class);
         mappings.put("wireDetails", APIWireDetails.class);
         JSON.registerDiscriminator(APIWireDetails.class, "type", mappings);

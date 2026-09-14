@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,6 +29,7 @@ import io.ownera.ledger.adapter.api.model.APIOperationType;
 import io.ownera.ledger.adapter.api.model.APIProofPolicy;
 import io.ownera.ledger.adapter.api.model.APIReceiptTradeDetails;
 import io.ownera.ledger.adapter.api.model.APITransactionDetails;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIReceipt.JSON_PROPERTY_TRADE_DETAILS,
   APIReceipt.JSON_PROPERTY_PROOF
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIReceipt {
   public static final String JSON_PROPERTY_ID = "id";
   private String id;

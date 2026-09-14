@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -29,6 +28,7 @@ import io.ownera.ledger.adapter.api.model.APIDepositAsset;
 import io.ownera.ledger.adapter.api.model.APIDepositPayoutAccount;
 import io.ownera.ledger.adapter.api.model.APIPaymentMethod;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -44,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIDepositInstruction.JSON_PROPERTY_DETAILS,
   APIDepositInstruction.JSON_PROPERTY_OPERATION_ID
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIDepositInstruction {
   public static final String JSON_PROPERTY_ACCOUNT = "account";
   private APIDepositPayoutAccount account;

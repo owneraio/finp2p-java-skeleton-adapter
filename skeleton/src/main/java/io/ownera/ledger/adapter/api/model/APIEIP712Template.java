@@ -17,7 +17,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringJoiner;
 import java.util.Objects;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Domain;
 import io.ownera.ledger.adapter.api.model.APIEIP712TypedValue;
 import io.ownera.ledger.adapter.api.model.APIEIP712Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,7 +44,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIEIP712Template.JSON_PROPERTY_PRIMARY_TYPE,
   APIEIP712Template.JSON_PROPERTY_HASH
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-23T16:47:06.183506981+03:00[Asia/Jerusalem]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIEIP712Template {
   /**
    * Gets or Sets type
@@ -156,6 +156,9 @@ public class APIEIP712Template {
   }
 
   public APIEIP712Template putMessageItem(String key, APIEIP712TypedValue messageItem) {
+    if (this.message == null) {
+      this.message = new HashMap<>();
+    }
     this.message.put(key, messageItem);
     return this;
   }
