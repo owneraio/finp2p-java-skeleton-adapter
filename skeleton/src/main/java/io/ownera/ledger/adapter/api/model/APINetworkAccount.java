@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T18:12:45.117074637+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APINetworkAccount.APINetworkAccountDeserializer.class)
 @JsonSerialize(using = APINetworkAccount.APINetworkAccountSerializer.class)
 public class APINetworkAccount extends AbstractOpenApiSchema {
@@ -104,7 +104,8 @@ public class APINetworkAccount extends AbstractOpenApiSchema {
                         attemptParsing |= (APICaip10Account.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
                 }
-                if (attemptParsing) {
+                // Patch E: an empty object belongs to the empty-object variant alone.
+                if (attemptParsing && !(tree.isObject() && tree.size() == 0)) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(APICaip10Account.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
@@ -130,7 +131,8 @@ public class APINetworkAccount extends AbstractOpenApiSchema {
                         attemptParsing |= (APICustodialAccount.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
                 }
-                if (attemptParsing) {
+                // Patch E: an empty object belongs to the empty-object variant alone.
+                if (attemptParsing && !(tree.isObject() && tree.size() == 0)) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(APICustodialAccount.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
@@ -156,7 +158,8 @@ public class APINetworkAccount extends AbstractOpenApiSchema {
                         attemptParsing |= (APIWalletAccount.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
                 }
-                if (attemptParsing) {
+                // Patch E: an empty object belongs to the empty-object variant alone.
+                if (attemptParsing && !(tree.isObject() && tree.size() == 0)) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(APIWalletAccount.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON
@@ -182,7 +185,9 @@ public class APINetworkAccount extends AbstractOpenApiSchema {
                         attemptParsing |= (Object.class.equals(String.class) && token == JsonToken.VALUE_STRING);
                     }
                 }
-                if (attemptParsing) {
+                // Patch E: bare `Object` stands for an empty-object schema; without this
+                // guard it matches every object and the oneOf can never resolve.
+                if (attemptParsing && tree.isObject() && tree.size() == 0) {
                     deserialized = tree.traverse(jp.getCodec()).readValueAs(Object.class);
                     // TODO: there is no validation against JSON schema constraints
                     // (min, max, enum, pattern...), this does not perform a strict JSON

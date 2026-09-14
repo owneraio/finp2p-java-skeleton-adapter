@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIWalletLedgerAccount.JSON_PROPERTY_TYPE,
   APIWalletLedgerAccount.JSON_PROPERTY_ADDRESS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T18:12:45.117074637+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIWalletLedgerAccount {
   /**
    * Gets or Sets type
@@ -61,6 +61,10 @@ public class APIWalletLedgerAccount {
 
     @JsonCreator
     public static TypeEnum fromValue(String value) {
+      // Legacy: this adapter emitted "wallet" before the spec closed the enum.
+      if ("wallet".equals(value)) {
+        return WALLETACCOUNT;
+      }
       for (TypeEnum b : TypeEnum.values()) {
         if (b.value.equals(value)) {
           return b;

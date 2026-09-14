@@ -6,5 +6,6 @@ public enum OperationType {
     HOLD,
     RELEASE,
     ISSUE,
-    ROLLBACK
+    ROLLBACK,
+    MOVE
 }

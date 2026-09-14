@@ -31,6 +31,18 @@ if [ ! -f "$JAR" ]; then
     "https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/${GENERATOR_VERSION}/openapi-generator-cli-${GENERATOR_VERSION}.jar"
 fi
 
+# The pin is the whole point: an OPENAPI_GENERATOR_JAR override (or any jar left at the
+# default path) must not silently regenerate with a different version, since that is how
+# breaking enum renames get in.
+ACTUAL_VERSION="$(java -jar "$JAR" version 2>/dev/null | tr -d '[:space:]')"
+if [ "$ACTUAL_VERSION" != "$GENERATOR_VERSION" ]; then
+  echo "ERROR: generator version mismatch." >&2
+  echo "  expected: $GENERATOR_VERSION" >&2
+  echo "  actual:   ${ACTUAL_VERSION:-<could not determine>}  ($JAR)" >&2
+  echo "Unset OPENAPI_GENERATOR_JAR, or point it at $GENERATOR_VERSION." >&2
+  exit 1
+fi
+
 echo "==> generating"
 java -jar "$JAR" generate \
   -i "$SPEC_FILE" \
