@@ -29,20 +29,23 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * APISwiftAccountDetails
+ * Deprecated, use bicAccountDetails. Kept for backward compatibility.
+ * @deprecated
  */
+@Deprecated
 @JsonPropertyOrder({
   APISwiftAccountDetails.JSON_PROPERTY_TYPE,
   APISwiftAccountDetails.JSON_PROPERTY_SWIFT_CODE,
+  APISwiftAccountDetails.JSON_PROPERTY_BIC,
   APISwiftAccountDetails.JSON_PROPERTY_ACCOUNT_NUMBER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APISwiftAccountDetails {
   /**
    * Gets or Sets type
    */
   public enum TypeEnum {
-    BIC("bic");
+    SWIFT("swift");
 
     private String value;
 
@@ -76,6 +79,9 @@ public class APISwiftAccountDetails {
 
   public static final String JSON_PROPERTY_SWIFT_CODE = "swiftCode";
   private String swiftCode;
+
+  public static final String JSON_PROPERTY_BIC = "bic";
+  private String bic;
 
   public static final String JSON_PROPERTY_ACCOUNT_NUMBER = "accountNumber";
   private String accountNumber;
@@ -133,6 +139,31 @@ public class APISwiftAccountDetails {
   }
 
 
+  public APISwiftAccountDetails bic(String bic) {
+    this.bic = bic;
+    return this;
+  }
+
+   /**
+   * Mirrors swiftCode during the migration to bicAccountDetails.
+   * @return bic
+  **/
+  @javax.annotation.Nullable
+  @JsonProperty(JSON_PROPERTY_BIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getBic() {
+    return bic;
+  }
+
+
+  @JsonProperty(JSON_PROPERTY_BIC)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBic(String bic) {
+    this.bic = bic;
+  }
+
+
   public APISwiftAccountDetails accountNumber(String accountNumber) {
     this.accountNumber = accountNumber;
     return this;
@@ -172,12 +203,13 @@ public class APISwiftAccountDetails {
     APISwiftAccountDetails swiftAccountDetails = (APISwiftAccountDetails) o;
     return Objects.equals(this.type, swiftAccountDetails.type) &&
         Objects.equals(this.swiftCode, swiftAccountDetails.swiftCode) &&
+        Objects.equals(this.bic, swiftAccountDetails.bic) &&
         Objects.equals(this.accountNumber, swiftAccountDetails.accountNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, swiftCode, accountNumber);
+    return Objects.hash(type, swiftCode, bic, accountNumber);
   }
 
   @Override
@@ -186,6 +218,7 @@ public class APISwiftAccountDetails {
     sb.append("class APISwiftAccountDetails {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    swiftCode: ").append(toIndentedString(swiftCode)).append("\n");
+    sb.append("    bic: ").append(toIndentedString(bic)).append("\n");
     sb.append("    accountNumber: ").append(toIndentedString(accountNumber)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -242,6 +275,11 @@ public class APISwiftAccountDetails {
     // add `swiftCode` to the URL query string
     if (getSwiftCode() != null) {
       joiner.add(String.format("%sswiftCode%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getSwiftCode()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+    }
+
+    // add `bic` to the URL query string
+    if (getBic() != null) {
+      joiner.add(String.format("%sbic%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getBic()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
     }
 
     // add `accountNumber` to the URL query string

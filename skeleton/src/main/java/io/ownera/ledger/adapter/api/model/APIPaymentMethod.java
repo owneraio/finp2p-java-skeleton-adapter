@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIPaymentMethod.JSON_PROPERTY_CURRENCY,
   APIPaymentMethod.JSON_PROPERTY_METHOD_INSTRUCTION
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIPaymentMethod {
   public static final String JSON_PROPERTY_DESCRIPTION = "description";
   private String description;

@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIReceiptOperationErrorInformation.JSON_PROPERTY_MESSAGE,
   APIReceiptOperationErrorInformation.JSON_PROPERTY_REGULATION_ERROR_DETAILS
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIReceiptOperationErrorInformation {
   public static final String JSON_PROPERTY_CODE = "code";
   private Integer code;

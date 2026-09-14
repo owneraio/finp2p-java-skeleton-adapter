@@ -38,7 +38,9 @@ public enum APIOperationType {
   
   RELEASE("release"),
   
-  REDEEM("redeem");
+  REDEEM("redeem"),
+  
+  MOVE("move");
 
   private String value;
 

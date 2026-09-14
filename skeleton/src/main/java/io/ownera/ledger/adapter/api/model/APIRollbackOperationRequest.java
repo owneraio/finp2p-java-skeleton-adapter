@@ -39,7 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIRollbackOperationRequest.JSON_PROPERTY_QUANTITY,
   APIRollbackOperationRequest.JSON_PROPERTY_EXECUTION_CONTEXT
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIRollbackOperationRequest {
   public static final String JSON_PROPERTY_OPERATION_ID = "operationId";
   private String operationId;

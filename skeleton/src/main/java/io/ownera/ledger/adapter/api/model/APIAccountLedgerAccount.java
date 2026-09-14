@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.ownera.ledger.adapter.api.model.APICaip10LedgerAccount;
+import io.ownera.ledger.adapter.api.model.APICustodialLedgerAccount;
 import io.ownera.ledger.adapter.api.model.APIWalletLedgerAccount;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -55,7 +57,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIAccountLedgerAccount.APIAccountLedgerAccountDeserializer.class)
 @JsonSerialize(using = APIAccountLedgerAccount.APIAccountLedgerAccountSerializer.class)
 public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
@@ -92,6 +94,58 @@ public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
             boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
             int match = 0;
             JsonToken token = tree.traverse(jp.getCodec()).nextToken();
+            // deserialize APICaip10LedgerAccount
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (APICaip10LedgerAccount.class.equals(Integer.class) || APICaip10LedgerAccount.class.equals(Long.class) || APICaip10LedgerAccount.class.equals(Float.class) || APICaip10LedgerAccount.class.equals(Double.class) || APICaip10LedgerAccount.class.equals(Boolean.class) || APICaip10LedgerAccount.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((APICaip10LedgerAccount.class.equals(Integer.class) || APICaip10LedgerAccount.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((APICaip10LedgerAccount.class.equals(Float.class) || APICaip10LedgerAccount.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (APICaip10LedgerAccount.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (APICaip10LedgerAccount.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APICaip10LedgerAccount.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'APICaip10LedgerAccount'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'APICaip10LedgerAccount'", e);
+            }
+
+            // deserialize APICustodialLedgerAccount
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (APICustodialLedgerAccount.class.equals(Integer.class) || APICustodialLedgerAccount.class.equals(Long.class) || APICustodialLedgerAccount.class.equals(Float.class) || APICustodialLedgerAccount.class.equals(Double.class) || APICustodialLedgerAccount.class.equals(Boolean.class) || APICustodialLedgerAccount.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((APICustodialLedgerAccount.class.equals(Integer.class) || APICustodialLedgerAccount.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((APICustodialLedgerAccount.class.equals(Float.class) || APICustodialLedgerAccount.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (APICustodialLedgerAccount.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (APICustodialLedgerAccount.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APICustodialLedgerAccount.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'APICustodialLedgerAccount'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'APICustodialLedgerAccount'", e);
+            }
+
             // deserialize APIWalletLedgerAccount
             try {
                 boolean attemptParsing = true;
@@ -142,17 +196,33 @@ public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
         super("oneOf", Boolean.FALSE);
     }
 
+    public APIAccountLedgerAccount(APICaip10LedgerAccount o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
+    public APIAccountLedgerAccount(APICustodialLedgerAccount o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
     public APIAccountLedgerAccount(APIWalletLedgerAccount o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
     }
 
     static {
+        schemas.put("APICaip10LedgerAccount", APICaip10LedgerAccount.class);
+        schemas.put("APICustodialLedgerAccount", APICustodialLedgerAccount.class);
         schemas.put("APIWalletLedgerAccount", APIWalletLedgerAccount.class);
         JSON.registerDescendants(APIAccountLedgerAccount.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        mappings.put("caip10Account", APICaip10LedgerAccount.class);
+        mappings.put("custodialAccount", APICustodialLedgerAccount.class);
         mappings.put("walletAccount", APIWalletLedgerAccount.class);
+        mappings.put("caip10LedgerAccount", APICaip10LedgerAccount.class);
+        mappings.put("custodialLedgerAccount", APICustodialLedgerAccount.class);
         mappings.put("walletLedgerAccount", APIWalletLedgerAccount.class);
         mappings.put("account_ledgerAccount", APIAccountLedgerAccount.class);
         JSON.registerDiscriminator(APIAccountLedgerAccount.class, "type", mappings);
@@ -166,30 +236,62 @@ public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * APIWalletLedgerAccount
+     * APICaip10LedgerAccount, APICustodialLedgerAccount, APIWalletLedgerAccount
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
+        if (JSON.isInstanceOf(APICaip10LedgerAccount.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
+        if (JSON.isInstanceOf(APICustodialLedgerAccount.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
         if (JSON.isInstanceOf(APIWalletLedgerAccount.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
         }
 
-        throw new RuntimeException("Invalid instance type. Must be APIWalletLedgerAccount");
+        throw new RuntimeException("Invalid instance type. Must be APICaip10LedgerAccount, APICustodialLedgerAccount, APIWalletLedgerAccount");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * APIWalletLedgerAccount
+     * APICaip10LedgerAccount, APICustodialLedgerAccount, APIWalletLedgerAccount
      *
-     * @return The actual instance (APIWalletLedgerAccount)
+     * @return The actual instance (APICaip10LedgerAccount, APICustodialLedgerAccount, APIWalletLedgerAccount)
      */
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `APICaip10LedgerAccount`. If the actual instance is not `APICaip10LedgerAccount`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `APICaip10LedgerAccount`
+     * @throws ClassCastException if the instance is not `APICaip10LedgerAccount`
+     */
+    public APICaip10LedgerAccount getAPICaip10LedgerAccount() throws ClassCastException {
+        return (APICaip10LedgerAccount)super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `APICustodialLedgerAccount`. If the actual instance is not `APICustodialLedgerAccount`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `APICustodialLedgerAccount`
+     * @throws ClassCastException if the instance is not `APICustodialLedgerAccount`
+     */
+    public APICustodialLedgerAccount getAPICustodialLedgerAccount() throws ClassCastException {
+        return (APICustodialLedgerAccount)super.getActualInstance();
     }
 
     /**
@@ -240,6 +342,18 @@ public class APIAccountLedgerAccount extends AbstractOpenApiSchema {
     if (getActualInstance() instanceof APIWalletLedgerAccount) {
         if (getActualInstance() != null) {
           joiner.add(((APIWalletLedgerAccount)getActualInstance()).toUrlQueryString(prefix + "one_of_0" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof APICaip10LedgerAccount) {
+        if (getActualInstance() != null) {
+          joiner.add(((APICaip10LedgerAccount)getActualInstance()).toUrlQueryString(prefix + "one_of_1" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof APICustodialLedgerAccount) {
+        if (getActualInstance() != null) {
+          joiner.add(((APICustodialLedgerAccount)getActualInstance()).toUrlQueryString(prefix + "one_of_2" + suffix));
         }
         return joiner.toString();
     }

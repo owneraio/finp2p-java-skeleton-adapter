@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIReceiptExecutionContext.JSON_PROPERTY_EXECUTION_PLAN_ID,
   APIReceiptExecutionContext.JSON_PROPERTY_INSTRUCTION_SEQUENCE_NUMBER
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIReceiptExecutionContext {
   public static final String JSON_PROPERTY_EXECUTION_PLAN_ID = "executionPlanId";
   private String executionPlanId;

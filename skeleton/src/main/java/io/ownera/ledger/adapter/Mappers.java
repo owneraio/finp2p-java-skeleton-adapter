@@ -138,7 +138,7 @@ public class Mappers {
             Object actual = account.getLedgerAccount().getActualInstance();
             if (actual instanceof APIWalletLedgerAccount) {
                 APIWalletLedgerAccount wallet = (APIWalletLedgerAccount) actual;
-                String type = wallet.getType() != null ? wallet.getType() : "wallet";
+                String type = wallet.getType() != null ? wallet.getType().getValue() : "wallet";
                 return new LedgerAccount(type, wallet.getAddress());
             }
         }
@@ -379,7 +379,7 @@ public class Mappers {
         } else if (status instanceof FailedDepositOperation) {
             FailedDepositOperation failed = (FailedDepositOperation) status;
             operation.isCompleted(true);
-            operation.error(new APICreateAssetOperationErrorInformation()
+            operation.error(new APIDepositOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
@@ -417,7 +417,7 @@ public class Mappers {
             FailedDepositOperation failed = (FailedDepositOperation) status;
             response.isCompleted(true);
             response.cid("");
-            response.error(new APICreateAssetOperationErrorInformation()
+            response.error(new APIDepositOperationErrorInformation()
                     .message(failed.details.message)
                     .code(failed.details.code));
 
@@ -637,11 +637,11 @@ public class Mappers {
     private static APIAccountLedgerAccount toAPILedger(@Nullable Object account) {
         if (account instanceof LedgerAccount) {
             LedgerAccount la = (LedgerAccount) account;
-            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(la.type).address(la.address));
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT).address(la.address));
         }
         if (account instanceof CryptocurrencyWallet) {
             CryptocurrencyWallet wallet = (CryptocurrencyWallet) account;
-            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type("wallet").address(wallet.address));
+            return new APIAccountLedgerAccount(new APIWalletLedgerAccount().type(APIWalletLedgerAccount.TypeEnum.WALLETACCOUNT).address(wallet.address));
         }
         return null;
     }

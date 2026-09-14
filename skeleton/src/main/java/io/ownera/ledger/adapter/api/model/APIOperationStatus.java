@@ -27,7 +27,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.ownera.ledger.adapter.api.model.APIExecutionPlanApprovalOperation;
+import io.ownera.ledger.adapter.api.model.APINetworkAccountOperation;
+import io.ownera.ledger.adapter.api.model.APIOperationStatusAccount;
 import io.ownera.ledger.adapter.api.model.APIOperationStatusApproval;
 import io.ownera.ledger.adapter.api.model.APIOperationStatusCreateAsset;
 import io.ownera.ledger.adapter.api.model.APIOperationStatusDeposit;
@@ -59,7 +60,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.ownera.ledger.adapter.api.JSON;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 @JsonDeserialize(using = APIOperationStatus.APIOperationStatusDeserializer.class)
 @JsonSerialize(using = APIOperationStatus.APIOperationStatusSerializer.class)
 public class APIOperationStatus extends AbstractOpenApiSchema {
@@ -96,6 +97,32 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
             boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
             int match = 0;
             JsonToken token = tree.traverse(jp.getCodec()).nextToken();
+            // deserialize APIOperationStatusAccount
+            try {
+                boolean attemptParsing = true;
+                // ensure that we respect type coercion as set on the client ObjectMapper
+                if (APIOperationStatusAccount.class.equals(Integer.class) || APIOperationStatusAccount.class.equals(Long.class) || APIOperationStatusAccount.class.equals(Float.class) || APIOperationStatusAccount.class.equals(Double.class) || APIOperationStatusAccount.class.equals(Boolean.class) || APIOperationStatusAccount.class.equals(String.class)) {
+                    attemptParsing = typeCoercion;
+                    if (!attemptParsing) {
+                        attemptParsing |= ((APIOperationStatusAccount.class.equals(Integer.class) || APIOperationStatusAccount.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+                        attemptParsing |= ((APIOperationStatusAccount.class.equals(Float.class) || APIOperationStatusAccount.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+                        attemptParsing |= (APIOperationStatusAccount.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+                        attemptParsing |= (APIOperationStatusAccount.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                    }
+                }
+                if (attemptParsing) {
+                    deserialized = tree.traverse(jp.getCodec()).readValueAs(APIOperationStatusAccount.class);
+                    // TODO: there is no validation against JSON schema constraints
+                    // (min, max, enum, pattern...), this does not perform a strict JSON
+                    // validation, which means the 'match' count may be higher than it should be.
+                    match++;
+                    log.log(Level.FINER, "Input data matches schema 'APIOperationStatusAccount'");
+                }
+            } catch (Exception e) {
+                // deserialization failed, continue
+                log.log(Level.FINER, "Input data does not match schema 'APIOperationStatusAccount'", e);
+            }
+
             // deserialize APIOperationStatusApproval
             try {
                 boolean attemptParsing = true;
@@ -224,6 +251,11 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
         super("oneOf", Boolean.FALSE);
     }
 
+    public APIOperationStatus(APIOperationStatusAccount o) {
+        super("oneOf", Boolean.FALSE);
+        setActualInstance(o);
+    }
+
     public APIOperationStatus(APIOperationStatusApproval o) {
         super("oneOf", Boolean.FALSE);
         setActualInstance(o);
@@ -245,6 +277,7 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
     }
 
     static {
+        schemas.put("APIOperationStatusAccount", APIOperationStatusAccount.class);
         schemas.put("APIOperationStatusApproval", APIOperationStatusApproval.class);
         schemas.put("APIOperationStatusCreateAsset", APIOperationStatusCreateAsset.class);
         schemas.put("APIOperationStatusDeposit", APIOperationStatusDeposit.class);
@@ -252,10 +285,12 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
         JSON.registerDescendants(APIOperationStatus.class, Collections.unmodifiableMap(schemas));
         // Initialize and register the discriminator mappings.
         Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
+        mappings.put("account", APIOperationStatusAccount.class);
         mappings.put("approval", APIOperationStatusApproval.class);
         mappings.put("createAsset", APIOperationStatusCreateAsset.class);
         mappings.put("deposit", APIOperationStatusDeposit.class);
         mappings.put("receipt", APIOperationStatusReceipt.class);
+        mappings.put("operationStatusAccount", APIOperationStatusAccount.class);
         mappings.put("operationStatusApproval", APIOperationStatusApproval.class);
         mappings.put("operationStatusCreateAsset", APIOperationStatusCreateAsset.class);
         mappings.put("operationStatusDeposit", APIOperationStatusDeposit.class);
@@ -272,13 +307,18 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
     /**
      * Set the instance that matches the oneOf child schema, check
      * the instance parameter is valid against the oneOf child schemas:
-     * APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt
+     * APIOperationStatusAccount, APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt
      *
      * It could be an instance of the 'oneOf' schemas.
      * The oneOf child schemas may themselves be a composed schema (allOf, anyOf, oneOf).
      */
     @Override
     public void setActualInstance(Object instance) {
+        if (JSON.isInstanceOf(APIOperationStatusAccount.class, instance, new HashSet<Class<?>>())) {
+            super.setActualInstance(instance);
+            return;
+        }
+
         if (JSON.isInstanceOf(APIOperationStatusApproval.class, instance, new HashSet<Class<?>>())) {
             super.setActualInstance(instance);
             return;
@@ -299,18 +339,29 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
             return;
         }
 
-        throw new RuntimeException("Invalid instance type. Must be APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt");
+        throw new RuntimeException("Invalid instance type. Must be APIOperationStatusAccount, APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt");
     }
 
     /**
      * Get the actual instance, which can be the following:
-     * APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt
+     * APIOperationStatusAccount, APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt
      *
-     * @return The actual instance (APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt)
+     * @return The actual instance (APIOperationStatusAccount, APIOperationStatusApproval, APIOperationStatusCreateAsset, APIOperationStatusDeposit, APIOperationStatusReceipt)
      */
     @Override
     public Object getActualInstance() {
         return super.getActualInstance();
+    }
+
+    /**
+     * Get the actual instance of `APIOperationStatusAccount`. If the actual instance is not `APIOperationStatusAccount`,
+     * the ClassCastException will be thrown.
+     *
+     * @return The actual instance of `APIOperationStatusAccount`
+     * @throws ClassCastException if the instance is not `APIOperationStatusAccount`
+     */
+    public APIOperationStatusAccount getAPIOperationStatusAccount() throws ClassCastException {
+        return (APIOperationStatusAccount)super.getActualInstance();
     }
 
     /**
@@ -412,6 +463,12 @@ public class APIOperationStatus extends AbstractOpenApiSchema {
     if (getActualInstance() instanceof APIOperationStatusApproval) {
         if (getActualInstance() != null) {
           joiner.add(((APIOperationStatusApproval)getActualInstance()).toUrlQueryString(prefix + "one_of_3" + suffix));
+        }
+        return joiner.toString();
+    }
+    if (getActualInstance() instanceof APIOperationStatusAccount) {
+        if (getActualInstance() != null) {
+          joiner.add(((APIOperationStatusAccount)getActualInstance()).toUrlQueryString(prefix + "one_of_4" + suffix));
         }
         return joiner.toString();
     }

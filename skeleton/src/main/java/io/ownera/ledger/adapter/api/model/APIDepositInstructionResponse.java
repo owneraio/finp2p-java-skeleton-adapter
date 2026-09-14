@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.ownera.ledger.adapter.api.model.APIDepositInstruction;
+import io.ownera.ledger.adapter.api.model.APIDepositOperationErrorInformation;
 import io.ownera.ledger.adapter.api.model.APIOperationMetadata;
 import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
   APIDepositInstructionResponse.JSON_PROPERTY_ERROR,
   APIDepositInstructionResponse.JSON_PROPERTY_RESPONSE
 })
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:25:08.841956333+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-09-14T17:39:52.798919559+03:00[Asia/Jerusalem]", comments = "Generator version: 7.6.0")
 public class APIDepositInstructionResponse {
   public static final String JSON_PROPERTY_CID = "cid";
   private String cid;
@@ -52,7 +53,7 @@ public class APIDepositInstructionResponse {
   private APIOperationMetadata operationMetadata;
 
   public static final String JSON_PROPERTY_ERROR = "error";
-  private Object error;
+  private APIDepositOperationErrorInformation error;
 
   public static final String JSON_PROPERTY_RESPONSE = "response";
   private APIDepositInstruction response;
@@ -135,7 +136,7 @@ public class APIDepositInstructionResponse {
   }
 
 
-  public APIDepositInstructionResponse error(Object error) {
+  public APIDepositInstructionResponse error(APIDepositOperationErrorInformation error) {
     this.error = error;
     return this;
   }
@@ -148,14 +149,14 @@ public class APIDepositInstructionResponse {
   @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Object getError() {
+  public APIDepositOperationErrorInformation getError() {
     return error;
   }
 
 
   @JsonProperty(JSON_PROPERTY_ERROR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setError(Object error) {
+  public void setError(APIDepositOperationErrorInformation error) {
     this.error = error;
   }
 
@@ -282,7 +283,7 @@ public class APIDepositInstructionResponse {
 
     // add `error` to the URL query string
     if (getError() != null) {
-      joiner.add(String.format("%serror%s=%s", prefix, suffix, URLEncoder.encode(String.valueOf(getError()), StandardCharsets.UTF_8).replaceAll("\\+", "%20")));
+      joiner.add(getError().toUrlQueryString(prefix + "error" + suffix));
     }
 
     // add `response` to the URL query string
